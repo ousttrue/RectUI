@@ -24,6 +24,13 @@ namespace DesktopDll
         SHOW = 5,
     }
 
+    [Flags]
+    public enum MB : uint
+    {
+        ICONQUESTION = 0x00000020,
+        ICONINFORMATION = 0x00000040,
+    }
+
     public static class User32
     {
         const string DLLNAME = "User32.dll";
@@ -74,7 +81,7 @@ namespace DesktopDll
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
         public static extern LRESULT DefWindowProcW(
           HWND hWnd,
-          UINT Msg,
+          WM Msg,
           WPARAM wParam,
           LPARAM lParam
         );
@@ -101,7 +108,7 @@ namespace DesktopDll
         /// <param name="wMsgFilterMax"></param>
         /// <returns></returns>
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
-        public static extern BOOL GetMessage(
+        public static extern bool GetMessageW(
           ref MSG lpMsg,
           HWND hWnd,
           UINT wMsgFilterMin,
@@ -114,5 +121,28 @@ namespace DesktopDll
         /// <returns></returns>
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
         public static extern LRESULT DispatchMessage(ref MSG lpMsg);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-messageboxw
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="lpText"></param>
+        /// <param name="lpCaption"></param>
+        /// <param name="uType"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern int MessageBoxW(
+          HWND hWnd,
+          string lpText,
+          string lpCaption,
+          MB uType
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-postquitmessage
+        /// </summary>
+        /// <param name="nExitCode"></param>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern void PostQuitMessage(int nExitCode);
     }
 }

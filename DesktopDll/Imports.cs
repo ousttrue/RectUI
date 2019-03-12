@@ -19,6 +19,10 @@ namespace DesktopDll
     public struct BOOL
     {
         public int Value;
+        public static implicit operator BOOL(int value)
+        {
+            return new BOOL { Value = value };
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -81,6 +85,10 @@ namespace DesktopDll
         {
             return new HWND { Value = value };
         }
+        public static implicit operator HWND(int value)
+        {
+            return new HWND { Value = new IntPtr(value) };
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -109,6 +117,10 @@ namespace DesktopDll
     public struct LRESULT
     {
         public IntPtr Value;
+        public static implicit operator LRESULT(int value)
+        {
+            return new LRESULT { Value = new IntPtr(value) };
+        }
         public static implicit operator LRESULT(IntPtr value)
         {
             return new LRESULT { Value = value };
@@ -142,7 +154,7 @@ namespace DesktopDll
     /// </summary>
     /// <returns></returns>
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    public delegate LRESULT WNDPROC(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    public delegate LRESULT WNDPROC(HWND hwnd, WM uMsg, WPARAM wParam, LPARAM lParam);
 
     #region Structs
     [Flags]

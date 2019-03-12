@@ -11,9 +11,16 @@ namespace SimpleDX
         const string CLASS_NAME = "class";
         const string WINDOW_NAME = "window";
 
-        static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+        static LRESULT WndProc(HWND hwnd, WM msg, WPARAM wParam, LPARAM lParam)
         {
-            return IntPtr.Zero;
+            switch (msg)
+            {
+                case WM.DESTROY:
+                    //User32.MessageBoxW(hwnd, "メッセージ", "caption", MB.ICONINFORMATION);
+                    User32.PostQuitMessage(0);
+                    return 0;
+            }
+            return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
         }
 
         /// <summary>
@@ -31,7 +38,7 @@ namespace SimpleDX
                 cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
                 style = CS.VREDRAW | CS.HREDRAW,
                 lpszClassName = CLASS_NAME,
-                lpfnWndProc = User32.DefWindowProcW,
+                lpfnWndProc = WndProc,
                 hInstance = hInstance,
             };
             var register = User32.RegisterClassExW(ref wc);
@@ -51,10 +58,13 @@ namespace SimpleDX
             User32.ShowWindow(hwnd, SW.SHOW);
 
             var msg = default(MSG);
+
             while (true)
             {
-                User32.GetMessage(ref msg, hwnd, 0, 0);
-                if (msg.message == WM.LBUTTONUP) break;
+                if (!User32.GetMessageW(ref msg, 0, 0, 0))
+                {
+                    break;
+                };
                 User32.DispatchMessage(ref msg);
             }
         }
