@@ -43,6 +43,8 @@ namespace DesktopDll
         [DllImport(DLLNAME)]
         public static extern uint RegisterClassExW(ref WNDCLASSEXW Arg1);
 
+        public const int CW_USEDEFAULT = unchecked((int)0x80000000);
+
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-createwindowexw
         /// </summary>
@@ -114,6 +116,14 @@ namespace DesktopDll
           UINT wMsgFilterMin,
           UINT wMsgFilterMax
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-translatemessage
+        /// </summary>
+        /// <param name="lpMsg"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL TranslateMessage(ref MSG lpMsg);
 
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
