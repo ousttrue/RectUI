@@ -16,6 +16,12 @@ namespace DesktopDll
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct BOOL
+    {
+        public int Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct DWORD
     {
         public uint Value;
@@ -75,6 +81,12 @@ namespace DesktopDll
         {
             return new HWND { Value = value };
         }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LONG
+    {
+        public int Value;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -158,6 +170,31 @@ namespace DesktopDll
         public string lpszMenuName;
         public string lpszClassName;
         public HICON hIconSm;
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/previous-versions//dd162805(v=vs.85)
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct POINT
+    {
+        public LONG x;
+        public LONG y;
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagmsg
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct MSG
+    {
+        public HWND hwnd;
+        public WM message;
+        public WPARAM wParam;
+        public LPARAM lParam;
+        public DWORD time;
+        public POINT pt;
+        public DWORD lPrivate;
     }
     #endregion
 }

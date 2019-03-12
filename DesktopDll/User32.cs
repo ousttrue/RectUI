@@ -19,6 +19,11 @@ namespace DesktopDll
         OVERLAPPEDWINDOW = (OVERLAPPED | CAPTION | SYSMENU | THICKFRAME | MINIMIZEBOX | MAXIMIZEBOX)
     }
 
+    public enum SW : int
+    {
+        SHOW = 5,
+    }
+
     public static class User32
     {
         const string DLLNAME = "User32.dll";
@@ -62,5 +67,52 @@ namespace DesktopDll
             HINSTANCE hInstance,
             LPVOID lpParam
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-defwindowprocw
+        /// </summary>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern LRESULT DefWindowProcW(
+          HWND hWnd,
+          UINT Msg,
+          WPARAM wParam,
+          LPARAM lParam
+        );
+
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="nCmdShow"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL ShowWindow(
+          HWND hWnd,
+          SW nCmdShow
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getmessage
+        /// </summary>
+        /// <param name="lpMsg"></param>
+        /// <param name="hWnd"></param>
+        /// <param name="wMsgFilterMin"></param>
+        /// <param name="wMsgFilterMax"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL GetMessage(
+          ref MSG lpMsg,
+          HWND hWnd,
+          UINT wMsgFilterMin,
+          UINT wMsgFilterMax
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
+        /// </summary>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern LRESULT DispatchMessage(ref MSG lpMsg);
     }
 }
