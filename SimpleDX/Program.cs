@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using Graphics;
+using SharpDX;
 using System;
 
 
@@ -19,13 +20,14 @@ namespace SimpleDX
             window.Show();
 
             using (var device = D3D11Device.Create())
+            using (var sc = device.CreateSwapchain(window.WindowHandle))
+            using (var bb = sc.CreateRenderTarget())
             {
-                var sc = device.CreateSwapchain(window.WindowHandle);
-
-                window.OnPaint+=() =>
-                {
-                    sc.Present();
-                };
+                window.OnPaint += () =>
+                  {
+                      bb.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
+                      sc.Present();
+                  };
 
                 while (window.MessageLoop())
                 {

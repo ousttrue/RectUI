@@ -38,8 +38,7 @@ namespace Graphics
                 desc.ModeDescription.Format, desc.Flags);
         }
 
-        /*
-        public D3D11RenderTarget CreateRenderTarget(D3D11Device device)
+        public D3D11RenderTarget CreateRenderTarget()
         {
             // New RenderTargetView from the backbuffer
             var backBuffer = Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0);
@@ -50,6 +49,5 @@ namespace Graphics
                 m_swapChain.Description.SampleDescription.Quality);
             return rt;
         }
-        */
     }
 }
