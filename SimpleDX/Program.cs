@@ -19,6 +19,8 @@ namespace SimpleDX
 
             using (var device = D3D11Device.Create())
             {
+                var sc = device.CreateSwapchain(window.WindowHandle);
+
                 while (window.MessageLoop())
                 {
 
