@@ -35,6 +35,11 @@ namespace SimpleDX
                     sc.Present();
                 };
 
+                window.OnMouseMove += (x, y) =>
+                {
+                    //Console.WriteLine($"{x}, {y}");
+                };
+
                 while (window.MessageLoop())
                 {
 

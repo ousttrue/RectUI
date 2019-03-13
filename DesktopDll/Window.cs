@@ -11,8 +11,10 @@ namespace DesktopDll
     public enum WM : uint
     {
         DESTROY = 0x0002,
+        MOVE = 0x0003,
         RESIZE = 0x0005,
         PAINT = 0x000F,
+        MOUSEMOVE = 0x0200,
         LBUTTONUP = 0x0202,
     }
 
@@ -74,6 +76,10 @@ namespace DesktopDll
                     User32.PostQuitMessage(0);
                     return 0;
 
+                case WM.MOUSEMOVE:
+                    OnMouseMove?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+
                 case WM.RESIZE:
                     OnResize?.Invoke(lParam.LowWord, lParam.HiWord);
                     return 0;
@@ -85,8 +91,9 @@ namespace DesktopDll
             return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
         }
 
-        public event Action OnPaint;
+        public event Action<int, int> OnMouseMove;
         public event Action<int, int> OnResize;
+        public event Action OnPaint;
 
         public void Show()
         {
