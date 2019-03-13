@@ -15,6 +15,10 @@ namespace SimpleDX
         const string WINDOW_NAME = "window";
 
         HWND _hwnd;
+        public IntPtr WindowHandle
+        {
+            get { return _hwnd.Value; }
+        }
 
         public static Window Create()
         {
