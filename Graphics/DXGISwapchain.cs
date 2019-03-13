@@ -40,14 +40,7 @@ namespace Graphics
 
         public D3D11RenderTarget CreateRenderTarget()
         {
-            // New RenderTargetView from the backbuffer
-            var backBuffer = Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0);
-            backBuffer.DebugName = "backBuffer";
-            var rt = new D3D11RenderTarget();
-            rt.CreateFromTexture(backBuffer, 
-                m_swapChain.Description.SampleDescription.Count,
-                m_swapChain.Description.SampleDescription.Quality);
-            return rt;
+            return new D3D11RenderTarget(() => Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0));
         }
     }
 }

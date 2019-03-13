@@ -5,6 +5,9 @@ using System;
 
 namespace Graphics
 {
+    /// <summary>
+    /// テクスチャサイズを変更する前に破棄されるべき
+    /// </summary>
     public class D3D11RenderTarget : IDisposable
     {
         Texture2D _texture;
@@ -16,10 +19,9 @@ namespace Graphics
         {
             get { return _texture.QueryInterface<SharpDX.DXGI.Surface>(); }
         }
-
         RenderTargetView _rtv;
-
         DepthStencilView _dsv;
+
         public void Dispose()
         {
             if (_rtv != null)
@@ -41,8 +43,11 @@ namespace Graphics
             }
         }
 
-        public D3D11RenderTarget()
-        { }
+        Func<Texture2D> _getTexture;
+        public D3D11RenderTarget(Func<Texture2D> GetTexture)
+        {
+            _getTexture = GetTexture;
+        }
 
         /// <summary>
         ///
@@ -50,56 +55,47 @@ namespace Graphics
         /// <param name="texture">take ownership</param>
         /// <param name="count">m_swapChain.Description.SampleDescription</param>
         /// <param name="quality">m_swapChain.Description.SampleDescription</param>
-        public void CreateFromTexture(Texture2D texture, int count, int quality)
+        void Create()
         {
             Dispose();
 
-            _texture = texture;
+            // _rtv
+            _texture = _getTexture();
+            var device = _texture.Device;
+            _rtv = new RenderTargetView(_texture.Device, _texture);
 
-            var device = texture.Device;
-            _rtv = new RenderTargetView(texture.Device, texture);
+            // _dsv
+            var desc = _texture.Description;
+            using (var depthBuffer = new Texture2D(device, new Texture2DDescription
             {
-                var desc = texture.Description;
-                using (var depthBuffer = new Texture2D(device, new Texture2DDescription
+                Format = SharpDX.DXGI.Format.D24_UNorm_S8_UInt,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = desc.Width,
+                Height = desc.Height,
+                SampleDescription = desc.SampleDescription,
+                BindFlags = BindFlags.DepthStencil
+            }))
+            {
+                var depthDesc = new DepthStencilViewDescription
                 {
-                    Format = SharpDX.DXGI.Format.D24_UNorm_S8_UInt,
-                    ArraySize = 1,
-                    MipLevels = 1,
-                    Width = desc.Width,
-                    Height = desc.Height,
-                    SampleDescription = new SharpDX.DXGI.SampleDescription
-                    {
-                        Count = count,
-                        Quality = quality
-                    },
-                    BindFlags = BindFlags.DepthStencil
-                }))
+                };
+                if (desc.SampleDescription.Count > 1 ||
+                    desc.SampleDescription.Quality > 0)
                 {
-                    var depthDesc = new DepthStencilViewDescription
-                    {
-                    };
-                    if (count > 1 ||
-                        quality > 0)
-                    {
-                        depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
-                    }
-                    else
-                    {
-                        depthDesc.Dimension = DepthStencilViewDimension.Texture2D;
-                    }
-                    _dsv = new DepthStencilView(device, depthBuffer, depthDesc);
+                    depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
                 }
+                else
+                {
+                    depthDesc.Dimension = DepthStencilViewDimension.Texture2D;
+                }
+                _dsv = new DepthStencilView(device, depthBuffer, depthDesc);
             }
         }
 
-        public void Create(D3D11Device device, int w, int h)
+        public static D3D11RenderTarget Create(D3D11Device device, int w, int h)
         {
-            if (device.Device == null)
-            {
-                return;
-            }
-
-            var texture = new Texture2D(device.Device, new Texture2DDescription
+            return new D3D11RenderTarget(() => new Texture2D(device.Device, new Texture2DDescription
             {
                 Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
                 ArraySize = 1,
@@ -112,12 +108,15 @@ namespace Graphics
                     Quality = 0
                 },
                 BindFlags = BindFlags.RenderTarget | BindFlags.ShaderResource
-            });
-            CreateFromTexture(texture, 1, 0);
+            }));
         }
 
         public void Setup(D3D11Device device, Color4 clear)
         {
+            if (_rtv == null)
+            {
+                Create();
+            }
             device.Context.ClearRenderTargetView(_rtv, clear);
             device.Context.ClearDepthStencilView(_dsv,
                 DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil,
