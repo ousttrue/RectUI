@@ -20,19 +20,19 @@ namespace SimpleDX
             window.Show();
 
             using (var device = D3D11Device.Create())
-            using (var sc = device.CreateSwapchain(window.WindowHandle))
-            using (var bb = sc.CreateRenderTarget())
+            using (var swapchain = device.CreateSwapchain(window.WindowHandle))
+            using (var backbuffer = swapchain.CreateRenderTarget())
             {
                 window.OnResize += (w, h) =>
                 {
-                    bb.Dispose();
-                    sc.Resize(w, h);
+                    backbuffer.Dispose();
+                    swapchain.Resize(w, h);
                 };
 
                 window.OnPaint += () =>
                 {
-                    bb.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
-                    sc.Present();
+                    backbuffer.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
+                    swapchain.Present();
                 };
 
                 window.OnMouseMove += (x, y) =>
