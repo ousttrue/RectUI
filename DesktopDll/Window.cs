@@ -11,6 +11,7 @@ namespace DesktopDll
     public enum WM : uint
     {
         DESTROY = 0x0002,
+        RESIZE = 0x0005,
         PAINT = 0x000F,
         LBUTTONUP = 0x0202,
     }
@@ -70,16 +71,22 @@ namespace DesktopDll
             switch (msg)
             {
                 case WM.DESTROY:
-                    //User32.MessageBoxW(hwnd, "メッセージ", "caption", MB.ICONINFORMATION);
                     User32.PostQuitMessage(0);
                     return 0;
 
+                case WM.RESIZE:
+                    OnResize?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+
                 case WM.PAINT:
-                    RaisePaint();
+                    OnPaint?.Invoke();
                     return 0;
             }
             return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
         }
+
+        public event Action OnPaint;
+        public event Action<int, int> OnResize;
 
         public void Show()
         {
@@ -96,16 +103,6 @@ namespace DesktopDll
             User32.TranslateMessage(ref _msg);
             User32.DispatchMessage(ref _msg);
             return true;
-        }
-
-        public event Action OnPaint;
-        void RaisePaint()
-        {
-            var handler = OnPaint;
-            if (handler != null)
-            {
-                handler();
-            }
         }
     }
 }

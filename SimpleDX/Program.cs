@@ -23,11 +23,17 @@ namespace SimpleDX
             using (var sc = device.CreateSwapchain(window.WindowHandle))
             using (var bb = sc.CreateRenderTarget())
             {
+                window.OnResize += (w, h) =>
+                {
+                    bb.Dispose();
+                    sc.Resize(w, h);
+                };
+
                 window.OnPaint += () =>
-                  {
-                      bb.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
-                      sc.Present();
-                  };
+                {
+                    bb.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
+                    sc.Present();
+                };
 
                 while (window.MessageLoop())
                 {

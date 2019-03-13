@@ -101,6 +101,22 @@ namespace DesktopDll
     public struct LPARAM
     {
         public IntPtr Value;
+
+        public int LowWord
+        {
+            get
+            {
+                return (int)(Value.ToInt64() & short.MaxValue);
+            }
+        }
+
+        public int HiWord
+        {
+            get
+            {
+                return (int)((Value.ToInt64() >> 16) & short.MaxValue);
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
