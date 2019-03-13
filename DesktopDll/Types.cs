@@ -23,6 +23,10 @@ namespace DesktopDll
         {
             return new BOOL { Value = value };
         }
+        public static implicit operator bool(BOOL value)
+        {
+            return value.Value != 0;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -208,6 +212,18 @@ namespace DesktopDll
     {
         public LONG x;
         public LONG y;
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/previous-versions//dd162897(v=vs.85)
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct RECT
+    {
+        public LONG left;
+        public LONG top;
+        public LONG right;
+        public LONG bottom;
     }
 
     /// <summary>

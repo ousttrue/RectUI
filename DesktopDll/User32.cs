@@ -35,14 +35,6 @@ namespace DesktopDll
     {
         const string DLLNAME = "User32.dll";
 
-        /// <summary>
-        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-registerclassexw
-        /// </summary>
-        /// <param name="Arg1"></param>
-        /// <returns></returns>
-        [DllImport(DLLNAME)]
-        public static extern uint RegisterClassExW(ref WNDCLASSEXW Arg1);
-
         public const int CW_USEDEFAULT = unchecked((int)0x80000000);
 
         /// <summary>
@@ -88,17 +80,23 @@ namespace DesktopDll
           LPARAM lParam
         );
 
-
         /// <summary>
-        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
         /// </summary>
-        /// <param name="hWnd"></param>
-        /// <param name="nCmdShow"></param>
         /// <returns></returns>
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
-        public static extern BOOL ShowWindow(
+        public static extern LRESULT DispatchMessage(ref MSG lpMsg);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getclientrect
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="lpRect"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL GetClientRect(
           HWND hWnd,
-          SW nCmdShow
+          out RECT lpRect
         );
 
         /// <summary>
@@ -116,21 +114,6 @@ namespace DesktopDll
           UINT wMsgFilterMin,
           UINT wMsgFilterMax
         );
-
-        /// <summary>
-        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-translatemessage
-        /// </summary>
-        /// <param name="lpMsg"></param>
-        /// <returns></returns>
-        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
-        public static extern BOOL TranslateMessage(ref MSG lpMsg);
-
-        /// <summary>
-        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-dispatchmessagew
-        /// </summary>
-        /// <returns></returns>
-        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
-        public static extern LRESULT DispatchMessage(ref MSG lpMsg);
 
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-messageboxw
@@ -154,5 +137,33 @@ namespace DesktopDll
         /// <param name="nExitCode"></param>
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
         public static extern void PostQuitMessage(int nExitCode);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-registerclassexw
+        /// </summary>
+        /// <param name="Arg1"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern uint RegisterClassExW(ref WNDCLASSEXW Arg1);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="nCmdShow"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL ShowWindow(
+          HWND hWnd,
+          SW nCmdShow
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-translatemessage
+        /// </summary>
+        /// <param name="lpMsg"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL TranslateMessage(ref MSG lpMsg);
     }
 }

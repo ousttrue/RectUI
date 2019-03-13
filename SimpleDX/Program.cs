@@ -29,21 +29,24 @@ namespace SimpleDX
                     swapchain.Resize(w, h);
                 };
 
+                var splitter = new HorizontalSplitter(window.Width, window.Height);
+
                 window.OnPaint += () =>
                 {
                     backbuffer.Setup(device, new Color4(0.1f, 0.2f, 0.1f, 0));
+
+                    // ToDo draw splitter
+
                     swapchain.Present();
                 };
 
                 window.OnMouseMove += (x, y) =>
                 {
                     //Console.WriteLine($"{x}, {y}");
+                    splitter.MouseMove(x, y);
                 };
 
-                while (window.MessageLoop())
-                {
-
-                }
+                window.MessageLoop();
             }
         }
     }

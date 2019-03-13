@@ -32,6 +32,33 @@ namespace DesktopDll
             get { return _hwnd.Value; }
         }
 
+        public RECT Rect
+        {
+            get
+            {
+                RECT rect;
+                User32.GetClientRect(_hwnd, out rect);
+                return rect;
+            }
+        }
+
+        public int Width
+        {
+            get
+            {
+                var rect = Rect;
+                return rect.right.Value - rect.left.Value;
+            }
+        }
+        public int Height
+        {
+            get
+            {
+                var rect = Rect;
+                return rect.bottom.Value - rect.top.Value;
+            }
+        }
+
         public static Window Create()
         {
             var ms = Assembly.GetEntryAssembly().GetModules();
@@ -101,15 +128,17 @@ namespace DesktopDll
         }
 
         MSG _msg;
-        public bool MessageLoop()
+        public void MessageLoop()
         {
-            if (!User32.GetMessageW(ref _msg, 0, 0, 0))
+            while (true)
             {
-                return false;
-            };
-            User32.TranslateMessage(ref _msg);
-            User32.DispatchMessage(ref _msg);
-            return true;
+                if (!User32.GetMessageW(ref _msg, 0, 0, 0))
+                {
+                    break;
+                };
+                User32.TranslateMessage(ref _msg);
+                User32.DispatchMessage(ref _msg);
+            }
         }
     }
 }
