@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDX", "SimpleDX\Simple
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopDll", "DesktopDll\DesktopDll.csproj", "{63011582-C45F-471A-ACD6-37361D521184}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics", "Graphics\Graphics.csproj", "{9F290B5A-890F-4445-B04B-C26F1D43CE13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{63011582-C45F-471A-ACD6-37361D521184}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63011582-C45F-471A-ACD6-37361D521184}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63011582-C45F-471A-ACD6-37361D521184}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F290B5A-890F-4445-B04B-C26F1D43CE13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F290B5A-890F-4445-B04B-C26F1D43CE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F290B5A-890F-4445-B04B-C26F1D43CE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F290B5A-890F-4445-B04B-C26F1D43CE13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
