@@ -1,15 +1,24 @@
-﻿using DesktopDll;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 
-namespace SimpleDX
+namespace DesktopDll
 {
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/inputdev/mouse-input-notifications
+    /// </summary>
+    public enum WM : uint
+    {
+        DESTROY = 0x0002,
+        PAINT = 0x000F,
+        LBUTTONUP = 0x0202,
+    }
+
     /// <summary>
     /// https://docs.microsoft.com/en-us/windows/desktop/learnwin32/creating-a-window
     /// </summary>
-    class Window
+    public class Window
     {
         const string CLASS_NAME = "class";
         const string WINDOW_NAME = "window";
@@ -64,6 +73,10 @@ namespace SimpleDX
                     //User32.MessageBoxW(hwnd, "メッセージ", "caption", MB.ICONINFORMATION);
                     User32.PostQuitMessage(0);
                     return 0;
+
+                case WM.PAINT:
+                    RaisePaint();
+                    return 0;
             }
             return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
         }
@@ -83,6 +96,16 @@ namespace SimpleDX
             User32.TranslateMessage(ref _msg);
             User32.DispatchMessage(ref _msg);
             return true;
+        }
+
+        public event Action OnPaint;
+        void RaisePaint()
+        {
+            var handler = OnPaint;
+            if (handler != null)
+            {
+                handler();
+            }
         }
     }
 }
