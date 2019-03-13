@@ -69,19 +69,16 @@ namespace SimpleDX
             User32.ShowWindow(_hwnd, SW.SHOW);
         }
 
-        public void MessageLoop()
+        MSG _msg;
+        public bool MessageLoop()
         {
-            var msg = default(MSG);
-
-            while (true)
+            if (!User32.GetMessageW(ref _msg, 0, 0, 0))
             {
-                if (!User32.GetMessageW(ref msg, 0, 0, 0))
-                {
-                    break;
-                };
-                User32.TranslateMessage(ref msg);
-                User32.DispatchMessage(ref msg);
-            }
+                return false;
+            };
+            User32.TranslateMessage(ref _msg);
+            User32.DispatchMessage(ref _msg);
+            return true;
         }
     }
 }

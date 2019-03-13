@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Graphics;
+using System;
 
 
 namespace SimpleDX
@@ -15,7 +16,14 @@ namespace SimpleDX
             }
 
             window.Show();
-            window.MessageLoop();
+
+            using (var device = D3D11Device.Create())
+            {
+                while (window.MessageLoop())
+                {
+
+                }
+            }
         }
     }
 }
