@@ -23,13 +23,15 @@ namespace SimpleDX
             using (var swapchain = device.CreateSwapchain(window.WindowHandle))
             using (var backbuffer = swapchain.CreateBitmap())
             {
+                var splitter = new HorizontalSplitter(window.Width, window.Height);
+
                 window.OnResize += (w, h) =>
                 {
+                    splitter.Rect = new Rect(0, 0, w, h);
                     backbuffer.Dispose();
                     swapchain.Resize(w, h);
                 };
 
-                var splitter = new HorizontalSplitter(window.Width, window.Height);
                 splitter.Add(new RectRegion());
                 splitter.Add(new RectRegion());
 

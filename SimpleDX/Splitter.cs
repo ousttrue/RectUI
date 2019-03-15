@@ -33,25 +33,25 @@ namespace SimpleDX
         {
             yield return new DrawInfo
             {
-                Rect = _rect,
+                Rect = Rect,
             };
         }
 
         #region Rect
-        protected Rect _rect;
+        public virtual Rect Rect
+        {
+            get;
+            set;
+        }
 
         public RectRegion()
         { }
 
         public RectRegion(int x, int y, int w, int h)
         {
-            SetRect(x, y, w, h);
+            Rect = new Rect(x, y, w, h);
         }
 
-        public void SetRect(int x, int y, int w, int h)
-        {
-            _rect = new Rect(x, y, w, h);
-        }
         #endregion
 
         #region Mouse
@@ -60,8 +60,8 @@ namespace SimpleDX
 
         public virtual void MouseMove(int parentX, int parentY)
         {
-            var x = parentX - _rect.X;
-            var y = parentY - _rect.Y;
+            var x = parentX - Rect.X;
+            var y = parentY - Rect.Y;
 
             _mouseX = x;
             _mouseY = y;
@@ -74,21 +74,71 @@ namespace SimpleDX
     /// </summary>
     class HorizontalSplitter : RectRegion
     {
-        List<RectRegion> _children = new List<RectRegion>();
+        const int _splitterWidth = 5;
+        List<RectRegion> _splitters = new List<RectRegion>();
+
+        List<RectRegion> _regions = new List<RectRegion>();
         public void Add(RectRegion region)
         {
-            var div = _children.Count + 1;
+            if (_regions.Count > 0)
+            {
+                // add _splitter
+                _splitters.Add(new RectRegion());
+            }
+            _regions.Add(region);
 
-            var w = _rect.Width / div;
+            Layout();
+        }
 
-            _children.Add(region);
+        public override Rect Rect
+        {
+            get { return base.Rect; }
+            set
+            {
+                base.Rect = value;
+                Layout();
+            }
+        }
 
+        void Layout()
+        {
+            if (_regions.Count == 0)
+            {
+                return;
+            }
+
+            if (_regions.Count == 1)
+            {
+                _regions[0].Rect = Rect;
+                return;
+            }
+
+            var w = (Rect.Width - _splitterWidth * _splitters.Count) / _regions.Count;
             int x = 0;
             int y = 0;
-            foreach (var child in _children)
+            for (int i = 0; i < _regions.Count; ++i)
             {
-                child.SetRect(x, y, w, _rect.Height);
+                if (i > 0)
+                {
+                    var splitter = _splitters[i - 1];
+                    splitter.Rect = new Rect(x, y, w, Rect.Height);
+                    x += _splitterWidth;
+                }
+
+                var child = _regions[i];
+                child.Rect = new Rect(x, y, w, Rect.Height);
                 x += w;
+            }
+        }
+
+        public override IEnumerable<DrawInfo> Traverse()
+        {
+            foreach (var child in _regions)
+            {
+                foreach (var d in child.Traverse())
+                {
+                    yield return d;
+                }
             }
         }
 
@@ -96,23 +146,12 @@ namespace SimpleDX
         {
         }
 
-        public override IEnumerable<DrawInfo> Traverse()
-        {
-            foreach(var child in _children)
-            {
-                foreach(var d in child.Traverse())
-                {
-                    yield return d;
-                }
-            }
-        }
-
         public override void MouseMove(int parentX, int parentY)
         {
-            var x = parentX - _rect.X;
-            var y = parentY - _rect.Y;
+            var x = parentX - Rect.X;
+            var y = parentY - Rect.Y;
 
-            foreach (var child in _children)
+            foreach (var child in _regions)
             {
                 child.MouseMove(x, y);
             }
