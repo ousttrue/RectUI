@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{85CB8459-2230-4E3B-94E0-5BF88EA39DBB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SimpleDX</RootNamespace>
-    <AssemblyName>SimpleDX</AssemblyName>
+    <RootNamespace>RectUISample</RootNamespace>
+    <AssemblyName>RectUISample</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
