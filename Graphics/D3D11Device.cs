@@ -26,7 +26,7 @@ namespace Graphics
             get;
             private set;
         }
-        
+
         public SharpDX.Direct2D1.Device D2DDevice
         {
             get;
@@ -113,7 +113,7 @@ namespace Graphics
         public DXGISwapChain CreateSwapchain(IntPtr hWnd)
         {
             // SwapChain description
-            var desc = new SwapChainDescription1()
+            var desc = new SwapChainDescription1
             {
                 Width = 0,
                 Height = 0,

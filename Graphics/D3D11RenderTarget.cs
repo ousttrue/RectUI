@@ -15,10 +15,6 @@ namespace Graphics
         {
             get { return _texture; }
         }
-        public SharpDX.DXGI.Surface Surface
-        {
-            get { return _texture.QueryInterface<SharpDX.DXGI.Surface>(); }
-        }
         RenderTargetView _rtv;
         DepthStencilView _dsv;
 

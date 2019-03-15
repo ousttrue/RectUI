@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="D2D1Bitmap.cs" />
     <Compile Include="D3D11Device.cs" />
     <Compile Include="D3D11RenderTarget.cs" />
     <Compile Include="DXGISwapchain.cs" />

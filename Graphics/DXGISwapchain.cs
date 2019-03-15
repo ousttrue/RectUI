@@ -7,10 +7,13 @@ namespace Graphics
 {
     public class DXGISwapChain : IDisposable
     {
-        SwapChain m_swapChain;
-        public DXGISwapChain(SwapChain swapChain)
+        SwapChain1 m_swapChain;
+
+        public DXGISwapChain(SwapChain1 swapChain)
         {
             m_swapChain = swapChain;
+
+            var desc = swapChain.Description;
         }
 
         public void Dispose()
@@ -38,9 +41,19 @@ namespace Graphics
                 desc.ModeDescription.Format, desc.Flags);
         }
 
+        Texture2D GetBackbuffer()
+        {
+            return Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0);
+        }
+
         public D3D11RenderTarget CreateRenderTarget()
         {
-            return new D3D11RenderTarget(() => Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0));
+            return new D3D11RenderTarget(GetBackbuffer);
+        }
+
+        public D2D1Bitmap CreateBitmap()
+        {
+            return new D2D1Bitmap(GetBackbuffer);
         }
     }
 }
