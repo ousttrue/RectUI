@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace SimpleDX
+namespace RectUI
 {
     public struct Rect
     {
@@ -100,7 +100,7 @@ namespace SimpleDX
         }
     }
 
-    class RectRegion
+    public class RectRegion
     {
         public virtual IEnumerable<DrawInfo> Traverse()
         {
@@ -165,7 +165,7 @@ namespace SimpleDX
     /// <summary>
     /// 水平に領域を分割する
     /// </summary>
-    class HorizontalSplitter : RectRegion
+    public class HorizontalSplitter : RectRegion
     {
         const int _splitterWidth = 8;
         List<RectRegion> _splitters = new List<RectRegion>();
