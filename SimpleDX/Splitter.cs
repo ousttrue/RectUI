@@ -1,14 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using SharpDX;
+using System.Collections.Generic;
 
 
 namespace SimpleDX
 {
-    struct Rect
+    public struct Rect
     {
         public int X;
         public int Y;
         public int Width;
         public int Height;
+
+        public bool Include(int x, int y)
+        {
+            if (x < X) return false;
+            if (x > X + Width) return false;
+            if (y < Y) return false;
+            if (y > Y + Height) return false;
+            return true;
+        }
 
         public Rect(int x, int y, int w, int h)
         {
@@ -19,29 +29,55 @@ namespace SimpleDX
         }
     }
 
-    struct DrawInfo
+    public class Thema
+    {
+        public Color4 FillColor;
+        public Color4 FillColorFocus;
+        public Color4 FillColorHover;
+        public Color4 FillColorActive;
+        public Color4 BorderColor;
+        public Color4 BorderColorFocus;
+        public Color4 BorderColorHover;
+        public Color4 BorderColorActive;
+
+        public Color4 GetBorderColor(DrawInfo d)
+        {
+            return d.IsHover ? BorderColorHover : BorderColorHover;
+        }
+
+        public Color4 GetFillColor(DrawInfo d)
+        {
+            return d.IsHover ? FillColorHover : FillColor;
+        }
+    }
+
+    public class DrawInfo
     {
         public Rect Rect;
-        public bool Focus;
-        public bool Hover;
-        public bool Active; // Drag
+        public bool HasFocus;
+        public bool IsHover;
+        public bool IsActive; // Drag
+
+        public void MouseMove(int x, int y)
+        {
+            IsHover = Rect.Include(x, y);
+        }
     }
 
     class RectRegion
     {
         public virtual IEnumerable<DrawInfo> Traverse()
         {
-            yield return new DrawInfo
-            {
-                Rect = Rect,
-            };
+            yield return _drawInfo;
         }
+
+        DrawInfo _drawInfo = new DrawInfo();
 
         #region Rect
         public virtual Rect Rect
         {
-            get;
-            set;
+            get { return _drawInfo.Rect; }
+            set { _drawInfo.Rect = value; }
         }
 
         public RectRegion()
@@ -60,11 +96,10 @@ namespace SimpleDX
 
         public virtual void MouseMove(int parentX, int parentY)
         {
-            var x = parentX - Rect.X;
-            var y = parentY - Rect.Y;
+            _drawInfo.MouseMove(parentX, parentY);
 
-            _mouseX = x;
-            _mouseY = y;
+            _mouseX = parentX - Rect.X;
+            _mouseY = parentY - Rect.Y; ;
         }
         #endregion
     }

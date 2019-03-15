@@ -19,6 +19,14 @@ namespace SimpleDX
 
             window.Show();
 
+            var thema = new Thema
+            {
+                BorderColor = new Color4(0.5f, 0.5f, 0.5f, 1),
+                BorderColorHover = new Color4(1, 0, 0, 1),
+                FillColor = new Color4(0.8f, 0.8f, 0.8f, 1),
+                FillColorHover = new Color4(1, 1, 1, 1),
+            };
+
             using (var device = D3D11Device.Create())
             using (var swapchain = device.CreateSwapchain(window.WindowHandle))
             using (var backbuffer = swapchain.CreateBitmap())
@@ -42,7 +50,9 @@ namespace SimpleDX
                     // ToDo draw splitter
                     foreach(var d in splitter.Traverse())
                     {
-                        backbuffer.DrawRect(device, d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, Color.White);
+                        backbuffer.DrawRect(device, d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, 
+                            thema.GetFillColor(d), 
+                            thema.GetBorderColor(d));
                     }
 
                     backbuffer.End(device);

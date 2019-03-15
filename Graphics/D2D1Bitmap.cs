@@ -66,16 +66,26 @@ namespace Graphics
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void DrawRect(D3D11Device device, int x, int y, int w, int h, Color4 color)
+        public void DrawRect(D3D11Device device, int x, int y, int w, int h, 
+            Color4 fill,
+            Color4 border)
         {
-            SolidColorBrush brush;
-            if (!_brushMap.TryGetValue(color, out brush))
+            SolidColorBrush fillBrush;
+            if (!_brushMap.TryGetValue(fill, out fillBrush))
             {
-                brush = new SolidColorBrush(device.D2DDeviceContext, color);
-                _brushMap.Add(color, brush);
+                fillBrush = new SolidColorBrush(device.D2DDeviceContext, fill);
+                _brushMap.Add(fill, fillBrush);
             }
 
-            device.D2DDeviceContext.DrawRectangle(new RectangleF(x, y, w, h), brush, 2.0f);
+            SolidColorBrush borderBrush;
+            if(!_brushMap.TryGetValue(border, out borderBrush))
+            {
+                borderBrush = new SolidColorBrush(device.D2DDeviceContext, border);
+                _brushMap.Add(border, borderBrush);
+            }
+
+            device.D2DDeviceContext.FillRectangle(new RectangleF(x, y, w, h), fillBrush);
+            device.D2DDeviceContext.DrawRectangle(new RectangleF(x, y, w, h), borderBrush, 2.0f);
         }
     }
 }
