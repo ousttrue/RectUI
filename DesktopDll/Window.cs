@@ -15,7 +15,12 @@ namespace DesktopDll
         RESIZE = 0x0005,
         PAINT = 0x000F,
         MOUSEMOVE = 0x0200,
+        LBUTTONDOWN = 0x0201,
         LBUTTONUP = 0x0202,
+        RBUTTONDOWN = 0x0204,
+        RBUTTONUP = 0x0205,
+        MBUTTONDOWN = 0x0207,
+        MBUTTONUP = 0x0208,
     }
 
     /// <summary>
@@ -121,6 +126,25 @@ namespace DesktopDll
                     OnMouseMove?.Invoke(lParam.LowWord, lParam.HiWord);
                     return 0;
 
+                case WM.LBUTTONDOWN:
+                    OnMouseLeftDown?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.LBUTTONUP:
+                    OnMouseLeftUp?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.RBUTTONDOWN:
+                    OnMouseRightDown?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.RBUTTONUP:
+                    OnMouseRightUp?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.MBUTTONDOWN:
+                    OnMouseMiddleDown?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.MBUTTONUP:
+                    OnMouseMiddleUp?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+
                 case WM.RESIZE:
                     OnResize?.Invoke(lParam.LowWord, lParam.HiWord);
                     return 0;
@@ -132,6 +156,12 @@ namespace DesktopDll
             return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
         }
 
+        public event Action<int, int> OnMouseLeftDown;
+        public event Action<int, int> OnMouseLeftUp;
+        public event Action<int, int> OnMouseRightDown;
+        public event Action<int, int> OnMouseRightUp;
+        public event Action<int, int> OnMouseMiddleDown;
+        public event Action<int, int> OnMouseMiddleUp;
         public event Action<int, int> OnMouseMove;
         public event Action<int, int> OnResize;
         public event Action OnPaint;

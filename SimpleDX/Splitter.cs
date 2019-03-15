@@ -32,22 +32,38 @@ namespace SimpleDX
     public class Thema
     {
         public Color4 FillColor;
-        public Color4 FillColorFocus;
-        public Color4 FillColorHover;
-        public Color4 FillColorActive;
+        public Color4? FillColorFocus;
+        public Color4? FillColorHover;
+        public Color4? FillColorActive;
         public Color4 BorderColor;
-        public Color4 BorderColorFocus;
-        public Color4 BorderColorHover;
-        public Color4 BorderColorActive;
+        public Color4? BorderColorFocus;
+        public Color4? BorderColorHover;
+        public Color4? BorderColorActive;
 
         public Color4 GetBorderColor(DrawInfo d)
         {
-            return d.IsHover ? BorderColorHover : BorderColorHover;
+            if(d.IsActive)
+            {
+                return BorderColorActive.HasValue ? BorderColorActive.Value : BorderColor;
+            }
+            else if (d.IsHover)
+            {
+                return BorderColorHover.HasValue ? BorderColorHover.Value : BorderColor;
+            }
+            return BorderColor;
         }
 
         public Color4 GetFillColor(DrawInfo d)
         {
-            return d.IsHover ? FillColorHover : FillColor;
+            if (d.IsActive)
+            {
+                return FillColorActive.HasValue ? FillColorActive.Value : FillColor;
+            }
+            else if (d.IsHover)
+            {
+                return FillColorHover.HasValue ? FillColorHover.Value : FillColor;
+            }
+            return FillColor;
         }
     }
 
@@ -56,11 +72,31 @@ namespace SimpleDX
         public Rect Rect;
         public bool HasFocus;
         public bool IsHover;
-        public bool IsActive; // Drag
+        public bool MouseLeftDown;
+        public bool MouseRightDown;
+        public bool MouseMiddleDown;
+        public bool IsActive
+        {
+            get
+            {
+                return MouseLeftDown || MouseRightDown || MouseMiddleDown;
+            }
+        }
+        public int MouseX;
+        public int MouseY;
+        public bool IsMouseInclude
+        {
+            get
+            {
+                return Rect.Include(MouseX, MouseY);
+            }
+        }
 
         public void MouseMove(int x, int y)
         {
             IsHover = Rect.Include(x, y);
+            MouseX = x;
+            MouseY = y;
         }
     }
 
@@ -91,15 +127,37 @@ namespace SimpleDX
         #endregion
 
         #region Mouse
-        int _mouseX;
-        int _mouseY;
-
-        public virtual void MouseMove(int parentX, int parentY)
+        public virtual void MouseLeftDown()
         {
-            _drawInfo.MouseMove(parentX, parentY);
+            if (_drawInfo.IsMouseInclude)
+            {
+                _drawInfo.MouseLeftDown = true;
+            }
+        }
+        public virtual void MouseLeftUp()
+        {
+            _drawInfo.MouseLeftDown = false;
+        }
+        public virtual void MouseRightDown()
+        {
+            _drawInfo.MouseRightDown = true;
+        }
+        public virtual void MouseRightUp()
+        {
+            _drawInfo.MouseRightDown = false;
+        }
+        public virtual void MouseMiddleDown()
+        {
+            _drawInfo.MouseMiddleDown = true;
+        }
+        public virtual void MouseMiddleUp()
+        {
+            _drawInfo.MouseMiddleDown = false;
+        }
 
-            _mouseX = parentX - Rect.X;
-            _mouseY = parentY - Rect.Y; ;
+        public virtual void MouseMove(int x, int y)
+        {
+            _drawInfo.MouseMove(x, y);
         }
         #endregion
     }
@@ -109,7 +167,7 @@ namespace SimpleDX
     /// </summary>
     class HorizontalSplitter : RectRegion
     {
-        const int _splitterWidth = 5;
+        const int _splitterWidth = 8;
         List<RectRegion> _splitters = new List<RectRegion>();
 
         List<RectRegion> _regions = new List<RectRegion>();
@@ -179,6 +237,49 @@ namespace SimpleDX
 
         public HorizontalSplitter(int w, int h) : base(0, 0, w, h)
         {
+        }
+
+        public override void MouseLeftDown()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseLeftDown();
+            }
+        }
+        public override void MouseLeftUp()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseLeftUp();
+            }
+        }
+        public override void MouseRightDown()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseRightDown();
+            }
+        }
+        public override void MouseRightUp()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseRightUp();
+            }
+        }
+        public override void MouseMiddleDown()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseMiddleDown();
+            }
+        }
+        public override void MouseMiddleUp()
+        {
+            foreach (var child in _regions)
+            {
+                child.MouseMiddleUp();
+            }
         }
 
         public override void MouseMove(int parentX, int parentY)

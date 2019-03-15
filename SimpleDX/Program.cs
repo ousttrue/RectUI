@@ -25,6 +25,7 @@ namespace SimpleDX
                 BorderColorHover = new Color4(1, 0, 0, 1),
                 FillColor = new Color4(0.8f, 0.8f, 0.8f, 1),
                 FillColorHover = new Color4(1, 1, 1, 1),
+                FillColorActive = new Color4(1, 1, 0, 1),
             };
 
             using (var device = D3D11Device.Create())
@@ -47,11 +48,10 @@ namespace SimpleDX
                 {
                     backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
 
-                    // ToDo draw splitter
-                    foreach(var d in splitter.Traverse())
+                    foreach (var d in splitter.Traverse())
                     {
-                        backbuffer.DrawRect(device, d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, 
-                            thema.GetFillColor(d), 
+                        backbuffer.DrawRect(device, d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height,
+                            thema.GetFillColor(d),
                             thema.GetBorderColor(d));
                     }
 
@@ -59,10 +59,13 @@ namespace SimpleDX
                     swapchain.Present();
                 };
 
-                window.OnMouseMove += (x, y) =>
-                {
-                    splitter.MouseMove(x, y);
-                };
+                window.OnMouseLeftDown += (x, y) => splitter.MouseLeftDown();
+                window.OnMouseLeftUp += (x, y) => splitter.MouseLeftUp();
+                window.OnMouseRightDown += (x, y) => splitter.MouseRightDown();
+                window.OnMouseRightUp += (x, y) => splitter.MouseRightUp();
+                window.OnMouseMiddleDown += (x, y) => splitter.MouseMiddleDown();
+                window.OnMouseMiddleUp += (x, y) => splitter.MouseMiddleUp();
+                window.OnMouseMove += splitter.MouseMove;
 
                 window.MessageLoop();
             }
