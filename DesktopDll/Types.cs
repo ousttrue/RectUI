@@ -192,7 +192,7 @@ namespace DesktopDll
     {
         public UINT cbSize;
         public CS style;
-        public WNDPROC lpfnWndProc;
+        public IntPtr lpfnWndProc;
         public int cbClsExtra;
         public int cbWndExtra;
         public HINSTANCE hInstance;

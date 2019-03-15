@@ -59,10 +59,18 @@ namespace DesktopDll
             }
         }
 
-        WNDPROC _proc;
+        WNDPROC _delegate;
+        IntPtr Callback
+        {
+            get
+            {
+                return Marshal.GetFunctionPointerForDelegate(_delegate);
+            }
+        }
+
         Window()
         {
-            _proc = new WNDPROC(WndProc);
+            _delegate = new WNDPROC(WndProc);
         }
 
         public static Window Create()
@@ -77,7 +85,7 @@ namespace DesktopDll
                 cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
                 style = CS.VREDRAW | CS.HREDRAW,
                 lpszClassName = CLASS_NAME,
-                lpfnWndProc = window.WndProc,
+                lpfnWndProc = window.Callback,
                 hInstance = hInstance,
             };
             var register = User32.RegisterClassExW(ref wc);
