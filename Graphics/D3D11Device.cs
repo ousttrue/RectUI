@@ -5,6 +5,9 @@ using System;
 
 namespace Graphics
 {
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/direct2d/devices-and-device-contexts
+    /// </summary>
     public class D3D11Device : IDisposable
     {
         IntPtr _hWnd;
@@ -103,33 +106,39 @@ namespace Graphics
                 | SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport
                 ;
             var device = new SharpDX.Direct3D11.Device(
-                SharpDX.Direct3D.DriverType.Hardware, flags, SharpDX.Direct3D.FeatureLevel.Level_11_1
-                )
-                ;
+                SharpDX.Direct3D.DriverType.Hardware, flags
+                , SharpDX.Direct3D.FeatureLevel.Level_11_1
+                , SharpDX.Direct3D.FeatureLevel.Level_11_0
+                , SharpDX.Direct3D.FeatureLevel.Level_10_1
+                , SharpDX.Direct3D.FeatureLevel.Level_10_0
+                , SharpDX.Direct3D.FeatureLevel.Level_9_3
+                , SharpDX.Direct3D.FeatureLevel.Level_9_2
+                , SharpDX.Direct3D.FeatureLevel.Level_9_1
+                );
 
             return new D3D11Device(device);
         }
 
         public DXGISwapChain CreateSwapchain(IntPtr hWnd)
         {
-            // SwapChain description
-            var desc = new SwapChainDescription1
+            using (var adapter = DXGIDevice.Adapter)
+            using (var factory2 = adapter.GetParent<Factory2>())
             {
-                Width = 0,
-                Height = 0,
-                Format = Format.R8G8B8A8_UNorm,
-                Stereo = false,
-                SampleDescription = new SampleDescription(1, 0),
-                Usage = Usage.BackBuffer | Usage.RenderTargetOutput,
-                BufferCount = 1,
-                Scaling = Scaling.Stretch,
-                SwapEffect = SwapEffect.Discard,
-                AlphaMode = AlphaMode.Unspecified,
-                Flags = SwapChainFlags.None,
-            };
-            using (var factory1 = new Factory1())
-            using (var factory2 = factory1.QueryInterface<Factory2>())
-            {
+                // SwapChain description
+                var desc = new SwapChainDescription1
+                {
+                    Width = 0,
+                    Height = 0,
+                    Format = Format.R8G8B8A8_UNorm,
+                    Stereo = false,
+                    SampleDescription = new SampleDescription(1, 0),
+                    Usage = Usage.BackBuffer | Usage.RenderTargetOutput,
+                    BufferCount = 1,
+                    Scaling = Scaling.Stretch,
+                    SwapEffect = SwapEffect.Discard,
+                    AlphaMode = AlphaMode.Unspecified,
+                    Flags = SwapChainFlags.None,
+                };
                 var swapchain = new SwapChain1(factory2, Device, hWnd, ref desc);
                 return new DXGISwapChain(swapchain);
             }

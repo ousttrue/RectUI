@@ -26,10 +26,10 @@ namespace Graphics
             }
         }
 
-        Func<SharpDX.Direct3D11.Texture2D> _getTexture;
-        public D2D1Bitmap(Func<SharpDX.Direct3D11.Texture2D> GetTexture)
+        Func<SharpDX.DXGI.Surface> _getSurface;
+        public D2D1Bitmap(Func<SharpDX.DXGI.Surface> getSurface)
         {
-            _getTexture = GetTexture;
+            _getSurface = getSurface;
         }
 
         void Create(D3D11Device device)
@@ -41,13 +41,9 @@ namespace Graphics
                 BitmapOptions.CannotDraw | BitmapOptions.Target)
                 ;
 
-            using (var texture = _getTexture())
+            using (var surface = _getSurface())
             {
-                using (var surface = texture.QueryInterface<SharpDX.DXGI.Surface>())
-                {
-                    var desc = surface.Description;
-                    _bitmap = new Bitmap1(device.D2DDeviceContext, surface);
-                }
+                _bitmap = new Bitmap1(device.D2DDeviceContext, surface);
             }
         }
 
@@ -66,6 +62,7 @@ namespace Graphics
 
         public void End(D3D11Device device)
         {
+            device.D2DDeviceContext.Target = null;
             device.D2DDeviceContext.EndDraw();
         }
 

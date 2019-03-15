@@ -46,6 +46,11 @@ namespace Graphics
             return Texture2D.FromSwapChain<Texture2D>(m_swapChain, 0);
         }
 
+        Surface GetSurface()
+        {
+            return Surface.FromSwapChain(m_swapChain, 0);
+        }
+
         public D3D11RenderTarget CreateRenderTarget()
         {
             return new D3D11RenderTarget(GetBackbuffer);
@@ -53,7 +58,7 @@ namespace Graphics
 
         public D2D1Bitmap CreateBitmap()
         {
-            return new D2D1Bitmap(GetBackbuffer);
+            return new D2D1Bitmap(GetSurface);
         }
     }
 }

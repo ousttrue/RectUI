@@ -31,11 +31,12 @@ namespace SimpleDX
 
                 var splitter = new HorizontalSplitter(window.Width, window.Height);
                 splitter.Add(new RectRegion());
+                splitter.Add(new RectRegion());
 
                 window.OnPaint += () =>
                 {
-                    backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 0));
-                    
+                    backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
+
                     // ToDo draw splitter
                     foreach(var d in splitter.Traverse())
                     {
@@ -44,8 +45,6 @@ namespace SimpleDX
 
                     backbuffer.End(device);
                     swapchain.Present();
-
-                    Console.WriteLine("Draw");
                 };
 
                 window.OnMouseMove += (x, y) =>

@@ -59,6 +59,12 @@ namespace DesktopDll
             }
         }
 
+        WNDPROC _proc;
+        Window()
+        {
+            _proc = new WNDPROC(WndProc);
+        }
+
         public static Window Create()
         {
             var ms = Assembly.GetEntryAssembly().GetModules();
