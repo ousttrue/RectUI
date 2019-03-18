@@ -56,7 +56,7 @@ namespace RectUI
                 if (i > 0)
                 {
                     var splitter = _splitters[i - 1];
-                    splitter.Rect = new Rect(x, y, w, Rect.Height);
+                    splitter.Rect = new Rect(x, y, _splitterWidth, Rect.Height);
                     x += _splitterWidth;
                 }
 
@@ -71,6 +71,14 @@ namespace RectUI
             foreach (var child in _regions)
             {
                 foreach (var d in child.Traverse())
+                {
+                    yield return d;
+                }
+            }
+
+            foreach(var splitter in _splitters)
+            {
+                foreach(var d in splitter.Traverse())
                 {
                     yield return d;
                 }

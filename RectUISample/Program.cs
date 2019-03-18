@@ -34,6 +34,9 @@ namespace SimpleDX
             using (var backbuffer = swapchain.CreateBitmap())
             {
                 var splitter = new HorizontalSplitter(window.Width, window.Height);
+                splitter.Add(new RectRegion());
+                splitter.Add(new RectRegion());
+                var uiContext = new UIContext();
 
                 window.OnResize += (w, h) =>
                 {
@@ -41,9 +44,6 @@ namespace SimpleDX
                     backbuffer.Dispose();
                     swapchain.Resize(w, h);
                 };
-
-                splitter.Add(new RectRegion());
-                splitter.Add(new RectRegion());
 
                 window.OnPaint += () =>
                 {
@@ -60,13 +60,13 @@ namespace SimpleDX
                     swapchain.Present();
                 };
 
-                window.OnMouseLeftDown += (x, y) => splitter.MouseLeftDown();
-                window.OnMouseLeftUp += (x, y) => splitter.MouseLeftUp();
-                window.OnMouseRightDown += (x, y) => splitter.MouseRightDown();
-                window.OnMouseRightUp += (x, y) => splitter.MouseRightUp();
-                window.OnMouseMiddleDown += (x, y) => splitter.MouseMiddleDown();
-                window.OnMouseMiddleUp += (x, y) => splitter.MouseMiddleUp();
-                window.OnMouseMove += splitter.MouseMove;
+                window.OnMouseLeftDown += (x, y) => uiContext.MouseLeftDown(splitter);
+                window.OnMouseLeftUp += (x, y) => uiContext.MouseLeftUp(splitter);
+                window.OnMouseRightDown += (x, y) => uiContext.MouseRightDown(splitter);
+                window.OnMouseRightUp += (x, y) => uiContext.MouseRightUp(splitter);
+                window.OnMouseMiddleDown += (x, y) => uiContext.MouseMiddleDown(splitter);
+                window.OnMouseMiddleUp += (x, y) => uiContext.MouseMiddleUp(splitter);
+                window.OnMouseMove += (x, y)=> uiContext.MouseMove(splitter, x, y);
 
                 window.MessageLoop();
             }
