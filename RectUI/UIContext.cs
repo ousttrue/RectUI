@@ -5,6 +5,16 @@
     /// </summary>
     public class UIContext
     {
+        public bool IsMouseLeftDown;
+        public bool IsMouseRightDown;
+        public bool IsMouseMiddleDown;
+        public bool IsAnyDown
+        {
+            get { return IsMouseLeftDown | IsMouseRightDown | IsMouseMiddleDown; }
+        }
+        public int MouseX;
+        public int MouseY;
+
         /// <summary>
         /// When Mouse over
         /// </summary>
@@ -25,86 +35,81 @@
 
         public void MouseLeftDown(RectRegion root)
         {
+            IsMouseLeftDown = true;
             if (Active != null)
             {
-                Active.MouseLeftDown();
             }
             else
             {
-                root.MouseLeftDown();
+                Active = Hover;
             }
         }
 
         public void MouseLeftUp(RectRegion root)
         {
+            IsMouseLeftDown = false;
             if (Active != null)
             {
-                Active.MouseLeftUp();
-            }
-            else
-            {
-                root.MouseLeftUp();
+                if (!IsAnyDown)
+                {
+                    Active = null;
+                }
             }
         }
 
         public void MouseRightDown(RectRegion root)
         {
+            IsMouseRightDown = true;
             if (Active != null)
             {
-                Active.MouseRightDown();
             }
             else
             {
-                root.MouseRightDown();
+                Active = Hover;
             }
         }
 
         public void MouseRightUp(RectRegion root)
         {
+            IsMouseRightDown = false;
             if (Active != null)
             {
-                Active.MouseRightUp();
-            }
-            else
-            {
-                root.MouseRightUp();
+                if (!IsAnyDown)
+                {
+                    Active = null;
+                }
             }
         }
 
         public void MouseMiddleDown(RectRegion root)
         {
+            IsMouseMiddleDown = true;
             if (Active != null)
             {
-                Active.MouseMiddleDown();
             }
             else
             {
-                root.MouseMiddleDown();
+                Active = Hover;
             }
         }
 
         public void MouseMiddleUp(RectRegion root)
         {
+            IsMouseMiddleDown = false;
             if (Active != null)
             {
-                Active.MouseMiddleUp();
-            }
-            else
-            {
-                root.MouseMiddleUp();
+                if (!IsAnyDown)
+                {
+                    Active = null;
+                }
             }
         }
 
         public void MouseMove(RectRegion root, int x, int y)
         {
-            if (Active != null)
-            {
-                Active.MouseMove(x, y);
-            }
-            else
-            {
-                root.MouseMove(x, y);
-            }
+            MouseX = x;
+            MouseY = y;
+            Hover = root.MouseMove(MouseX, MouseY);
         }
     }
 }

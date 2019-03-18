@@ -25,6 +25,25 @@ namespace RectUI
             Layout();
         }
 
+        public override IEnumerable<RectRegion> Traverse()
+        {
+            foreach (var r in _regions)
+            {
+                foreach(var x in r.Traverse())
+                {
+                    yield return x;
+                }
+            }
+
+            foreach(var s in _splitters)
+            {
+                foreach(var x in s.Traverse())
+                {
+                    yield return x;
+                }
+            }
+        }
+
         public override Rect Rect
         {
             get { return base.Rect; }
@@ -66,81 +85,34 @@ namespace RectUI
             }
         }
 
-        public override IEnumerable<DrawInfo> Traverse()
-        {
-            foreach (var child in _regions)
-            {
-                foreach (var d in child.Traverse())
-                {
-                    yield return d;
-                }
-            }
-
-            foreach(var splitter in _splitters)
-            {
-                foreach(var d in splitter.Traverse())
-                {
-                    yield return d;
-                }
-            }
-        }
-
         public HorizontalSplitter(int w, int h) : base(0, 0, w, h)
         {
         }
 
-        public override void MouseLeftDown()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseLeftDown();
-            }
-        }
-        public override void MouseLeftUp()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseLeftUp();
-            }
-        }
-        public override void MouseRightDown()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseRightDown();
-            }
-        }
-        public override void MouseRightUp()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseRightUp();
-            }
-        }
-        public override void MouseMiddleDown()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseMiddleDown();
-            }
-        }
-        public override void MouseMiddleUp()
-        {
-            foreach (var child in _regions)
-            {
-                child.MouseMiddleUp();
-            }
-        }
-
-        public override void MouseMove(int parentX, int parentY)
+        public override RectRegion MouseMove(int parentX, int parentY)
         {
             var x = parentX - Rect.X;
             var y = parentY - Rect.Y;
 
+            foreach(var s in _splitters)
+            {
+                var hover = s.MouseMove(x, y);
+                if (hover != null)
+                {
+                    return hover;
+                }
+            }
+
             foreach (var child in _regions)
             {
-                child.MouseMove(x, y);
+                var hover = child.MouseMove(x, y);
+                if (hover != null)
+                {
+                    return hover;
+                }
             }
+
+            return null;
         }
     }
 }

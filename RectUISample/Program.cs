@@ -49,11 +49,11 @@ namespace SimpleDX
                 {
                     backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
 
-                    foreach (var d in splitter.Traverse())
+                    foreach (var r in splitter.Traverse())
                     {
-                        backbuffer.DrawRect(device, d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height,
-                            thema.GetFillColor(d),
-                            thema.GetBorderColor(d));
+                        backbuffer.DrawRect(device, r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height,
+                            thema.GetFillColor(uiContext, r),
+                            thema.GetBorderColor(uiContext, r));
                     }
 
                     backbuffer.End(device);
