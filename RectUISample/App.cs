@@ -31,7 +31,8 @@ namespace RectUISample
             }
         }
 
-        HorizontalSplitter m_splitter;
+        RectRegion m_root;
+
         UIContext m_uiContext = new UIContext();
         Thema m_thema = new Thema
         {
@@ -42,15 +43,11 @@ namespace RectUISample
             FillColorActive = new Color4(1, 1, 0, 1),
         };
 
-        public App(Window window)
+        public App(Window window, RectRegion root)
         {
             m_device = D3D11Device.Create();
             m_swapchain = m_device.CreateSwapchain(window.WindowHandle);
             m_backbuffer = m_swapchain.CreateBitmap();
-
-            m_splitter = new HorizontalSplitter(window.Width, window.Height);
-            m_splitter.Add(new RectRegion());
-            m_splitter.Add(new RectRegion());
 
             window.OnResize += Window_OnResize;
             window.OnPaint += Window_OnPaint;
@@ -61,48 +58,50 @@ namespace RectUISample
             window.OnMouseMiddleDown += Window_OnMouseMiddleDown;
             window.OnMouseMiddleUp += Window_OnMouseMiddleUp;
             window.OnMouseMove += Window_OnMouseMove;
+
+            m_root = root;
         }
 
         private void Window_OnMouseMove(int x, int y)
         {
-            m_uiContext.MouseMove(m_splitter, x, y);
+            m_uiContext.MouseMove(m_root, x, y);
         }
 
         private void Window_OnMouseMiddleUp(int _x, int _y)
         {
-            m_uiContext.MouseMiddleUp(m_splitter);
+            m_uiContext.MouseMiddleUp(m_root);
         }
 
         private void Window_OnMouseMiddleDown(int _x, int _y)
         {
-            m_uiContext.MouseMiddleDown(m_splitter);
+            m_uiContext.MouseMiddleDown(m_root);
         }
 
         private void Window_OnMouseRightUp(int _x, int _y)
         {
-            m_uiContext.MouseRightUp(m_splitter);
+            m_uiContext.MouseRightUp(m_root);
         }
 
         private void Window_OnMouseRightDown(int arg1, int arg2)
         {
-            m_uiContext.MouseRightDown(m_splitter);
+            m_uiContext.MouseRightDown(m_root);
         }
 
         private void Window_OnMouseLeftUp(int _x, int _y)
         {
-            m_uiContext.MouseLeftUp(m_splitter);
+            m_uiContext.MouseLeftUp(m_root);
         }
 
         private void Window_OnMouseLeftDown(int _x, int _y)
         {
-            m_uiContext.MouseLeftDown(m_splitter);
+            m_uiContext.MouseLeftDown(m_root);
         }
 
         private void Window_OnPaint()
         {
             m_backbuffer.Begin(m_device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
 
-            foreach (var r in m_splitter.Traverse())
+            foreach (var r in m_root.Traverse())
             {
                 m_backbuffer.DrawRect(m_device, r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height,
                     m_thema.GetFillColor(m_uiContext, r),
@@ -115,7 +114,7 @@ namespace RectUISample
 
         private void Window_OnResize(int w, int h)
         {
-            m_splitter.Rect = new Rect(0, 0, w, h);
+            m_root.Rect = new Rect(0, 0, w, h);
             m_backbuffer.Dispose();
             m_swapchain.Resize(w, h);
         }
