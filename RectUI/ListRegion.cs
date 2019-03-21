@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Linq;
 
 namespace RectUI
 {
@@ -9,6 +10,7 @@ namespace RectUI
     {
         int Count { get; }
         T this[int index] { get; }
+        event Action Updated;
     }
 
     public class ListSource<T> : IListSource<T>, IEnumerable<T>
@@ -16,13 +18,9 @@ namespace RectUI
         List<T> m_items = new List<T>();
         public int Count => m_items.Count;
 
-        public T this[int index]
-        {
-            get
-            {
-                return m_items[index];
-            }
-        }
+        public T this[int index] { get { return m_items[index]; } }
+
+        public event Action Updated;
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -40,6 +38,42 @@ namespace RectUI
         }
     }
 
+    public class DirSource : IListSource<string>
+    {
+        List<string> m_files = new List<string>();
+
+        public string this[int index] => m_files[index];
+        public int Count => m_files.Count;
+        public event Action Updated;
+
+        string m_current;
+        public string Current
+        {
+            get { return m_current; }
+            set
+            {
+                if (m_current == value)
+                {
+                    return;
+                }
+                m_current = Path.GetFullPath(value);
+
+                m_files.Clear();
+                m_files.AddRange(
+                    Directory.GetFileSystemEntries(m_current)
+                    .Select(x => Path.GetFileName(x))
+                    );
+
+                Updated?.Invoke();
+            }
+        }
+
+        public DirSource(string path = ".")
+        {
+            Current = Path.GetFullPath(path);
+        }
+    }
+
     public class ListRegion : RectRegion
     {
         int m_height = 18;
@@ -51,11 +85,16 @@ namespace RectUI
         public ListRegion(IListSource<string> source)
         {
             m_source = source;
+
+            source.Updated += () =>
+            {
+                Layout();
+            };
         }
 
         IEnumerable<RectRegion> Layout()
         {
-            var count = Math.Min(m_source.Count, Rect.Height / m_height);
+            var count = Math.Min(m_source.Count, Rect.Height / m_height + 1);
             var y = Rect.Y;
             for (int i = 0; i < count; ++i)
             {

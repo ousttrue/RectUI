@@ -31,10 +31,7 @@ namespace RectUISample
                 Drawer = new RectDrawer(),
             });
 #else
-            var root = new ListRegion(new ListSource<string>
-            {
-                "a", "b", "c",
-            })
+            var root = new ListRegion(new DirSource())
             {
                 Rect = new Rect(window.Width, window.Height),
             };
