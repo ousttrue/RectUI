@@ -13,13 +13,33 @@ namespace RectUI
         public Color4? BorderColorHover;
         public Color4? BorderColorActive;
 
+        static Thema s_thema;
+        public static Thema Default
+        {
+            get
+            {
+                if (s_thema == null)
+                {
+                    s_thema = new Thema
+                    {
+                        BorderColor = new Color4(0.5f, 0.5f, 0.5f, 1),
+                        BorderColorHover = new Color4(1, 0, 0, 1),
+                        FillColor = new Color4(0.8f, 0.8f, 0.8f, 1),
+                        FillColorHover = new Color4(1, 1, 1, 1),
+                        FillColorActive = new Color4(1, 1, 0, 1),
+                    };
+                }
+                return s_thema;
+            }
+        }
+
         public Color4 GetBorderColor(UIContext context, RectRegion d)
         {
             if (d == context.Active)
             {
                 return BorderColorActive.HasValue ? BorderColorActive.Value : BorderColor;
             }
-            else if (context.Active==null && d == context.Hover)
+            else if (context.Active == null && d == context.Hover)
             {
                 return BorderColorHover.HasValue ? BorderColorHover.Value : BorderColor;
             }

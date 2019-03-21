@@ -3,9 +3,18 @@
 
 namespace RectUI
 {
+    /// <summary>
+    /// RectRegion + IRectDrawer => Widget
+    /// </summary>
     public class RectRegion
     {
         public virtual Rect Rect
+        {
+            get;
+            set;
+        }
+
+        public IRectDrawer Drawer
         {
             get;
             set;

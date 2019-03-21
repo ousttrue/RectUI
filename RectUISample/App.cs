@@ -1,6 +1,5 @@
 ﻿using DesktopDll;
 using RectUI;
-using RectUI;
 using SharpDX;
 using System;
 
@@ -34,14 +33,6 @@ namespace RectUISample
         RectRegion m_root;
 
         UIContext m_uiContext = new UIContext();
-        Thema m_thema = new Thema
-        {
-            BorderColor = new Color4(0.5f, 0.5f, 0.5f, 1),
-            BorderColorHover = new Color4(1, 0, 0, 1),
-            FillColor = new Color4(0.8f, 0.8f, 0.8f, 1),
-            FillColorHover = new Color4(1, 1, 1, 1),
-            FillColorActive = new Color4(1, 1, 0, 1),
-        };
 
         public App(Window window, RectRegion root)
         {
@@ -103,9 +94,10 @@ namespace RectUISample
 
             foreach (var r in m_root.Traverse())
             {
-                m_backbuffer.DrawRect(m_device, r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height,
-                    m_thema.GetFillColor(m_uiContext, r),
-                    m_thema.GetBorderColor(m_uiContext, r));
+                if (r.Drawer != null)
+                {
+                    r.Drawer.Draw(m_device, m_backbuffer, m_uiContext, r);
+                }
             }
 
             m_backbuffer.End(m_device);
