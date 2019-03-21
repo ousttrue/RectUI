@@ -65,7 +65,7 @@
     <Compile Include="Rect.cs" />
     <Compile Include="RectRegion.cs" />
     <Compile Include="Splitter.cs" />
-    <Compile Include="Thema.cs" />
+    <Compile Include="Style.cs" />
     <Compile Include="UIContext.cs" />
   </ItemGroup>
   <ItemGroup>

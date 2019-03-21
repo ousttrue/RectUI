@@ -1,23 +1,63 @@
 ﻿using DesktopDll;
 using RectUI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+
 
 namespace RectUISample
 {
-    class ListRegion<T>: RectRegion
+    public interface IListSource<T>
+    {
+        int Count { get; }
+        T this[int index] { get; }
+    }
+
+    public class ListSource<T>: IListSource<T>, IEnumerable<T>
+    {
+        List<T> m_items = new List<T>();
+        public int Count => m_items.Count;
+
+        public T this[int index]
+        {
+            get
+            {
+                return m_items[index];
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return m_items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Add(T value)
+        {
+            m_items.Add(value);
+        }
+    }
+
+    public class ListRegion: RectRegion
     {
         int m_height = 18;
-        List<T> m_items;
+
+        IListSource<string> m_source;
+
         List<RectRegion> m_regions = new List<RectRegion>();
-        public ListRegion(List<T> items)
+        List<TextLabelDrawer> m_drawers = new List<TextLabelDrawer>();
+        public ListRegion(IListSource<string> source)
         {
-            m_items = items;
+            m_source = source;
         }
 
         IEnumerable<RectRegion> Layout()
         {
-            var count = Math.Min(m_items.Count, Rect.Height / m_height);
+            var count = Math.Min(m_source.Count, Rect.Height / m_height);
             var y = Rect.Y;
             for (int i = 0; i < count; ++i)
             {
@@ -30,12 +70,15 @@ namespace RectUISample
                 {
                     r = new RectRegion
                     {
-                        Drawer = new RectDrawer()
                     };
                     m_regions.Add(r);
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, m_height);
+                r.Drawer = new TextLabelDrawer
+                {
+                    Label = m_source[i]
+                };
 
                 yield return r;
 
@@ -99,13 +142,12 @@ namespace RectUISample
                 Drawer = new RectDrawer(),
             });
 #else
-            var root = new ListRegion<string>(new List<string>
+            var root = new ListRegion(new ListSource<string>
             {
                 "a", "b", "c",
             })
             {
                 Rect = new Rect(window.Width, window.Height),
-                Drawer = new RectDrawer(),
             };
 #endif
 

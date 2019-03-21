@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct2D1;
+using SharpDX.DirectWrite;
 using System;
 using System.Collections.Generic;
 
@@ -10,9 +11,16 @@ namespace RectUI
     {
         Bitmap1 _bitmap;
         Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
+        TextFormat _textFormat;
 
         public void Dispose()
         {
+            if (_textFormat != null)
+            {
+                _textFormat.Dispose();
+                _textFormat = null;
+            }
+
             foreach (var kv in _brushMap)
             {
                 kv.Value.Dispose();
@@ -32,7 +40,7 @@ namespace RectUI
             _getSurface = getSurface;
         }
 
-        void Create(D3D11Device device)
+        void CreateBitmap(D3D11Device device)
         {
             Dispose();
 
@@ -51,7 +59,7 @@ namespace RectUI
         {
             if (_bitmap == null)
             {
-                Create(device);
+                CreateBitmap(device);
             }
 
             device.D2DDeviceContext.Target = _bitmap;
@@ -66,7 +74,8 @@ namespace RectUI
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void DrawRect(D3D11Device device, int x, int y, int w, int h, 
+        public void DrawRect(D3D11Device device,
+            Rect r,
             Color4 fill,
             Color4 border)
         {
@@ -78,14 +87,39 @@ namespace RectUI
             }
 
             SolidColorBrush borderBrush;
-            if(!_brushMap.TryGetValue(border, out borderBrush))
+            if (!_brushMap.TryGetValue(border, out borderBrush))
             {
                 borderBrush = new SolidColorBrush(device.D2DDeviceContext, border);
                 _brushMap.Add(border, borderBrush);
             }
 
-            device.D2DDeviceContext.FillRectangle(new RectangleF(x, y, w, h), fillBrush);
-            device.D2DDeviceContext.DrawRectangle(new RectangleF(x, y, w, h), borderBrush, 2.0f);
+            var rect = new RectangleF(r.X, r.Y, r.Width, r.Height);
+            device.D2DDeviceContext.FillRectangle(rect, fillBrush);
+            device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
+        }
+
+        public void DrawText(D3D11Device device,
+            Rect r,
+            Color4 fg,
+            string text)
+        {
+            SolidColorBrush brush;
+            if (!_brushMap.TryGetValue(fg, out brush))
+            {
+                brush = new SolidColorBrush(device.D2DDeviceContext, fg);
+                _brushMap.Add(fg, brush);
+            }
+
+            if (_textFormat == null)
+            {
+                using (var f = new SharpDX.DirectWrite.Factory())
+                {
+                    _textFormat = new TextFormat(f, "Arial", 18);
+                }
+            }
+
+            var rect = new RectangleF(r.X, r.Y, r.Width, r.Height);
+            device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace RectUI
 {
-    public class Thema
+    public class Style
     {
         public Color4 FillColor;
         public Color4? FillColorFocus;
@@ -13,14 +13,14 @@ namespace RectUI
         public Color4? BorderColorHover;
         public Color4? BorderColorActive;
 
-        static Thema s_thema;
-        public static Thema Default
+        static Style s_thema;
+        public static Style Default
         {
             get
             {
                 if (s_thema == null)
                 {
-                    s_thema = new Thema
+                    s_thema = new Style
                     {
                         BorderColor = new Color4(0.5f, 0.5f, 0.5f, 1),
                         BorderColorHover = new Color4(1, 0, 0, 1),
