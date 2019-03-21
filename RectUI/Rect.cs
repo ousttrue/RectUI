@@ -23,5 +23,8 @@
             Width = w;
             Height = h;
         }
+
+        public Rect(int w, int h) : this(0, 0, w, h)
+        { }
     }
 }

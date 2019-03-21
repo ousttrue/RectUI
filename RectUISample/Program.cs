@@ -15,7 +15,11 @@ namespace RectUISample
             window.Show();
 
             // build UI
-            var root = new HorizontalSplitter(window.Width, window.Height);
+#if false
+            var root = new HorizontalSplitter
+            {
+                Rect = new Rect(window.Width, window.Height)
+            };
             root.Add(new RectRegion
             {
                 Drawer = new RectDrawer(),
@@ -24,6 +28,13 @@ namespace RectUISample
             {
                 Drawer = new RectDrawer(),
             });
+#else
+            var root = new RectRegion
+            {
+                Rect = new Rect(window.Width, window.Height),
+                Drawer = new RectDrawer(),
+            };
+#endif
 
             // bind window with UI
             using (var app = new App(window, root))

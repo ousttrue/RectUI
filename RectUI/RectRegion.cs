@@ -25,14 +25,6 @@ namespace RectUI
             yield return this;
         }
 
-        public RectRegion()
-        { }
-
-        public RectRegion(int x, int y, int w, int h)
-        {
-            Rect = new Rect(x, y, w, h);
-        }
-
         public virtual RectRegion MouseMove(int x, int y)
         {
             if (Rect.Include(x, y))

@@ -85,10 +85,6 @@ namespace RectUI
             }
         }
 
-        public HorizontalSplitter(int w, int h) : base(0, 0, w, h)
-        {
-        }
-
         public override RectRegion MouseMove(int parentX, int parentY)
         {
             var x = parentX - Rect.X;
