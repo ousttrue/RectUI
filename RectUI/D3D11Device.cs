@@ -3,7 +3,7 @@ using SharpDX.DXGI;
 using System;
 
 
-namespace Graphics
+namespace RectUI
 {
     /// <summary>
     /// https://docs.microsoft.com/en-us/windows/desktop/direct2d/devices-and-device-contexts

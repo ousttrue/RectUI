@@ -65,10 +65,6 @@
       <Project>{63011582-c45f-471a-acd6-37361d521184}</Project>
       <Name>DesktopDll</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Graphics\Graphics.csproj">
-      <Project>{9f290b5a-890f-4445-b04b-c26f1d43ce13}</Project>
-      <Name>Graphics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RectUI\RectUI.csproj">
       <Project>{f07b7387-018c-4a7c-855c-af7967f3f0f9}</Project>
       <Name>RectUI</Name>

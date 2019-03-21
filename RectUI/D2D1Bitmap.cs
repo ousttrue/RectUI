@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace Graphics
+namespace RectUI
 {
     public class D2D1Bitmap : IDisposable
     {

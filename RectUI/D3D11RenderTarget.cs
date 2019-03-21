@@ -3,7 +3,7 @@ using SharpDX.Direct3D11;
 using System;
 
 
-namespace Graphics
+namespace RectUI
 {
     /// <summary>
     /// テクスチャサイズを変更する前に破棄されるべき
