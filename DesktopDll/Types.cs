@@ -23,6 +23,10 @@ namespace DesktopDll
         {
             return new BOOL { Value = value };
         }
+        public static implicit operator BOOL(bool value)
+        {
+            return new BOOL { Value = value ? 1: 0 };
+        }
         public static implicit operator bool(BOOL value)
         {
             return value.Value != 0;

@@ -1,4 +1,6 @@
-﻿namespace RectUI
+﻿using System;
+
+namespace RectUI
 {
     /// <summary>
     /// 
@@ -18,20 +20,34 @@
         /// <summary>
         /// When Mouse over
         /// </summary>
+        RectRegion _hover;
         public RectRegion Hover
         {
-            get;
-            set;
+            get { return _hover; }
+            set
+            {
+                if (_hover == value) return;
+                _hover = value;
+                Updated?.Invoke();
+            }
         }
 
         /// <summary>
         /// When Drag any
         /// </summary>
+        RectRegion _active;
         public RectRegion Active
         {
-            get;
-            set;
+            get { return _active; }
+            set
+            {
+                if (_active == value) return;
+                _active = value;
+                Updated?.Invoke();
+            }
         }
+
+        public event Action Updated;
 
         public void MouseLeftDown(RectRegion root)
         {

@@ -151,10 +151,10 @@ namespace DesktopDll
 
                 case WM.PAINT:
                     {
-                        //var ps = default(PAINTSTRUCT);
-                        //User32.BeginPaint(hwnd, ref ps);
+                        var ps = default(PAINTSTRUCT);
+                        User32.BeginPaint(hwnd, ref ps);
                         OnPaint?.Invoke();
-                        //User32.EndPaint(hwnd, ref ps);
+                        User32.EndPaint(hwnd, ref ps);
                     }
                     return 0;
             }
@@ -174,6 +174,11 @@ namespace DesktopDll
         public void Show()
         {
             User32.ShowWindow(_hwnd, SW.SHOW);
+        }
+
+        public void Invalidate()
+        {
+            User32.InvalidateRect(_hwnd, IntPtr.Zero, true);
         }
 
         MSG _msg;

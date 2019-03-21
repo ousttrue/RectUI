@@ -50,6 +50,8 @@ namespace RectUISample
             window.OnMouseMiddleUp += Window_OnMouseMiddleUp;
             window.OnMouseMove += Window_OnMouseMove;
 
+            m_uiContext.Updated += () => window.Invalidate();
+
             m_root = root;
         }
 

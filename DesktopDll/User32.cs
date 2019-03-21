@@ -189,5 +189,18 @@ namespace DesktopDll
           HWND hWnd,
           ref PAINTSTRUCT lpPaint
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-invalidaterect
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL InvalidateRect(
+          HWND hWnd,
+          IntPtr lpRect,
+          BOOL bErase
+        );
     }
 }
