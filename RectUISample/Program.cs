@@ -17,25 +17,18 @@ namespace RectUISample
             window.Show();
 
             // build UI
-#if false
             var root = new HorizontalSplitter
             {
                 Rect = new Rect(window.Width, window.Height)
             };
-            root.Add(new RectRegion
-            {
-                Drawer = new RectDrawer(),
-            });
-            root.Add(new RectRegion
-            {
-                Drawer = new RectDrawer(),
-            });
-#else
-            var root = new ListRegion(new DirSource())
+            root.Add(new ListRegion(new DirSource())
             {
                 Rect = new Rect(window.Width, window.Height),
-            };
-#endif
+            });
+            root.Add(new RectRegion
+            {
+                Drawer = new RectDrawer(),
+            });
 
             // bind window with UI
             using (var app = new App(window, root))
