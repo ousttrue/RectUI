@@ -9,13 +9,13 @@ namespace DesktopDll
     /// https://docs.microsoft.com/en-us/windows/desktop/WinProg/windows-data-types
     /// </summary>
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct ATOM
     {
         public uint Value;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct BOOL
     {
         public int Value;
@@ -29,7 +29,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct DWORD
     {
         public uint Value;
@@ -43,25 +43,31 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HBRUSH
     {
         public IntPtr Value;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HCURSOR
     {
         public IntPtr Value;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct HDC
+    {
+        public IntPtr Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HICON
     {
         public IntPtr Value;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HINSTANCE
     {
         public IntPtr Value;
@@ -71,7 +77,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HMENU
     {
         public IntPtr Value;
@@ -81,7 +87,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HWND
     {
         public IntPtr Value;
@@ -95,13 +101,13 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct LONG
     {
         public int Value;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct LPARAM
     {
         public IntPtr Value;
@@ -123,7 +129,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct LPVOID
     {
         public IntPtr Value;
@@ -133,7 +139,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct LRESULT
     {
         public IntPtr Value;
@@ -147,7 +153,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct UINT
     {
         public uint Value;
@@ -162,7 +168,7 @@ namespace DesktopDll
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct WPARAM
     {
         public IntPtr Value;
@@ -187,7 +193,7 @@ namespace DesktopDll
     /// <summary>
     /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagwndclassexw
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct WNDCLASSEXW
     {
         public UINT cbSize;
@@ -207,7 +213,7 @@ namespace DesktopDll
     /// <summary>
     /// https://docs.microsoft.com/en-us/previous-versions//dd162805(v=vs.85)
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct POINT
     {
         public LONG x;
@@ -217,7 +223,7 @@ namespace DesktopDll
     /// <summary>
     /// https://docs.microsoft.com/en-us/previous-versions//dd162897(v=vs.85)
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct RECT
     {
         public LONG left;
@@ -229,7 +235,7 @@ namespace DesktopDll
     /// <summary>
     /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagmsg
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct MSG
     {
         public HWND hwnd;
@@ -239,6 +245,21 @@ namespace DesktopDll
         public DWORD time;
         public POINT pt;
         public DWORD lPrivate;
+    }
+
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagpaintstruct
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct PAINTSTRUCT
+    {
+        HDC hdc;
+        BOOL fErase;
+        RECT rcPaint;
+        BOOL fRestore;
+        BOOL fIncUpdate;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        Byte[] rgbReserved;
     }
     #endregion
 }

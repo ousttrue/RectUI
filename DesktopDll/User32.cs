@@ -165,5 +165,29 @@ namespace DesktopDll
         /// <returns></returns>
         [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
         public static extern BOOL TranslateMessage(ref MSG lpMsg);
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-beginpaint
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="lpPaint"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern HDC BeginPaint(
+          HWND hWnd,
+          ref PAINTSTRUCT lpPaint
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-endpaint
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL EndPaint(
+          HWND hWnd,
+          ref PAINTSTRUCT lpPaint
+        );
     }
 }

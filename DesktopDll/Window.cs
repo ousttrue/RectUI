@@ -150,7 +150,12 @@ namespace DesktopDll
                     return 0;
 
                 case WM.PAINT:
-                    OnPaint?.Invoke();
+                    {
+                        //var ps = default(PAINTSTRUCT);
+                        //User32.BeginPaint(hwnd, ref ps);
+                        OnPaint?.Invoke();
+                        //User32.EndPaint(hwnd, ref ps);
+                    }
                     return 0;
             }
             return User32.DefWindowProcW(hwnd, msg, wParam, lParam);
