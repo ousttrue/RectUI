@@ -4,6 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace DesktopDll
 {
+    public enum DIB: uint
+    {
+        RGB_COLORS = 0x00,
+        PAL_COLORS = 0x01,
+        PAL_INDICES = 0x02
+    }
+
     public static class Gdi32
     {
         const string DLLNAME = "Gdi32.dll";
@@ -95,9 +102,9 @@ namespace DesktopDll
           HBITMAP hbm,
           UINT start,
           UINT cLines,
-          LPVOID lpvBits,
+          byte[] lpvBits,
           ref BITMAPINFOHEADER lpbmi,
-          UINT usage
+          DIB usage
         );
     }
 }

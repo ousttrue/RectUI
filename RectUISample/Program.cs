@@ -71,7 +71,12 @@ namespace RectUISample
             };
             left.ItemGetDrawCommands = (uiContext, i, r) =>
             {
-                var commands = DrawCommandFactory.DrawRectCommands(uiContext, r);
+                var rect = r.Rect.ToSharpDX();
+                rect.X += 16;
+                rect.Width -= 16;
+                var commands = DrawCommandFactory.DrawRectCommands(rect, 
+                    Style.Default.GetFillColor(uiContext, r),
+                    Style.Default.GetBorderColor(uiContext, r));
                 var label = r.Content.ToString();
                 if (dir.Current.Parent.FullName == r.Content.FullName)
                 {
@@ -84,7 +89,7 @@ namespace RectUISample
 
                 var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
                     left.ItemHeight, 
-                    5, 3, 5, 2,
+                    21, 3, 5, 2,
                     label);
                 commands = commands.Concat(text);
 
@@ -104,7 +109,9 @@ namespace RectUISample
             {
                 OnGetDrawCommands = (uiContext, r) =>
                 {
-                    return DrawCommandFactory.DrawRectCommands(uiContext, r);
+                    return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(), 
+                        Style.Default.GetFillColor(uiContext, r),
+                        Style.Default.GetBorderColor(uiContext, r));
                 },
             };
             root.Add(right);

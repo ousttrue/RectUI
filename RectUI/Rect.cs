@@ -26,5 +26,10 @@
 
         public Rect(int w, int h) : this(0, 0, w, h)
         { }
+
+        public SharpDX.RectangleF ToSharpDX()
+        {
+            return new SharpDX.RectangleF(X, Y, Width, Height);
+        }
     }
 }

@@ -38,20 +38,23 @@ namespace RectUI.Graphics
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/desktop/gdi/capturing-an-image
         /// </summary>
-        public void GetBitmap()
+        public byte[] GetBitmap()
         {
             var bmpScreen = default(BITMAP);
-            Gdi32.GetObject(DC.Value, Marshal.SizeOf<BITMAP>(), ref bmpScreen);
+            if(Gdi32.GetObject(m_bmp.Value, Marshal.SizeOf<BITMAP>(), ref bmpScreen) == 0)
+            {
+                return null;
+            }
 
-            var bmfHeader = default(BITMAPFILEHEADER);
+            //var bmfHeader = default(BITMAPFILEHEADER);
+
             var bi = default(BITMAPINFOHEADER);
-
             bi.biSize = Marshal.SizeOf<BITMAPINFOHEADER>();
             bi.biWidth = bmpScreen.bmWidth;
             bi.biHeight = bmpScreen.bmHeight;
             bi.biPlanes = 1;
             bi.biBitCount = 32;
-            //bi.biCompression = BI_RGB;
+            bi.biCompression = BI.RGB;
             bi.biSizeImage = 0;
             bi.biXPelsPerMeter = 0;
             bi.biYPelsPerMeter = 0;
@@ -64,16 +67,34 @@ namespace RectUI.Graphics
             // call HeapAlloc using a handle to the process's default heap. Therefore, GlobalAlloc and LocalAlloc 
             // have greater overhead than HeapAlloc.
             //HANDLE hDIB = GlobalAlloc(GHND, dwBmpSize);
-            //char* lpbitmap = (char*)GlobalLock(hDIB);
+            var lpbitmap = new byte[dwBmpSize.Value];
 
-            /*
             // Gets the "bits" from the bitmap and copies them into a buffer 
             // which is pointed to by lpbitmap.
-            Gdi32.GetDIBits(default(HWND), hbmScreen, 0,
-                (UINT)bmpScreen.bmHeight,
+            if(Gdi32.GetDIBits(DC, m_bmp, 
+                0, bmpScreen.bmHeight.Value,
                 lpbitmap,
-                (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+                ref bi, DIB.RGB_COLORS) == 0)
+            {
+                return null;
+            }
+
+            /*
+            // ARGB to BGRA
+            for(int i=0; i<lpbitmap.Length; i+=4)
+            {
+                var r = lpbitmap[i];
+                var g = lpbitmap[i+1];
+                var b = lpbitmap[i+2];
+                var a = lpbitmap[i+3];
+                lpbitmap[i] = a;
+                lpbitmap[i+1] = r;
+                lpbitmap[i+2] = g;
+                lpbitmap[i+3] = b;
+            }
             */
+
+            return lpbitmap;
         }
     }
 
@@ -223,24 +244,44 @@ namespace RectUI.Graphics
             {
                 return;
             }
+
+            int w = 0;
+            int h = 0;
+            if (!Comctl32.ImageList_GetIconSize(imageList, ref w, ref h))
+            {
+                return;
+            }
+
             Bitmap bitmap;
             if (!_imageListMap.TryGetValue(imageListIndex, out bitmap))
             {
-                // todo
-                int w = 0;
-                int h = 0;
-                if(!Comctl32.ImageList_GetIconSize(imageList, ref w, ref h))
-                {
-                    return;
-                }
                 using (var memoryBitmap = new MemoryBitmap(w, h))
                 {
                     Comctl32.ImageList_Draw(imageList, imageListIndex, memoryBitmap.DC, 0, 0, ILD.NORMAL);
 
-                    memoryBitmap.GetBitmap();
+                    var bytes = memoryBitmap.GetBitmap();
+                    if (bytes != null)
+                    {
+                        var bp = new BitmapProperties
+                        {
+                            PixelFormat=new PixelFormat
+                            {
+                                Format= SharpDX.DXGI.Format.B8G8R8A8_UNorm,
+                                AlphaMode = AlphaMode.Premultiplied
+                            }
+                        };
+                        using(var s = new DataStream(w * h * 4, true, true))
+                        {
+                            s.Write(bytes, 0, bytes.Length);
+                            s.Position = 0;
+                            bitmap = new Bitmap(device.D2DDeviceContext, new Size2(w, h), s, w * 4, bp);
+                            _imageListMap.Add(imageListIndex, bitmap);
+                        }
+                    }
                 }
             }
-            // todo
+
+            device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
         void DrawText(D3D11Device device,

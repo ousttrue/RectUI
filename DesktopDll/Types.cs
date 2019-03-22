@@ -321,6 +321,16 @@ namespace DesktopDll
         public DWORD bfOffBits;
     }
 
+    public enum BI: uint
+    {
+        RGB,
+        RLE8,
+        RLE4,
+        BITFIELDS,
+        JPEG,
+        PNG,
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct BITMAPINFOHEADER
     {
@@ -329,7 +339,7 @@ namespace DesktopDll
         public LONG biHeight;
         public WORD biPlanes;
         public WORD biBitCount;
-        public DWORD biCompression;
+        public BI biCompression;
         public DWORD biSizeImage;
         public LONG biXPelsPerMeter;
         public LONG biYPelsPerMeter;

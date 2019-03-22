@@ -1,4 +1,5 @@
 ﻿using RectUI.Graphics;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 
@@ -10,18 +11,14 @@ namespace RectUI
     /// </summary>
     public static class DrawCommandFactory
     {
-        public static IEnumerable<DrawCommand> DrawRectCommands(UIContext uiContext, RectRegion r, Style style=null)
+        public static IEnumerable<DrawCommand> DrawRectCommands(RectangleF rect, Color4 fill, Color4 border)
         {
-            if (style == null)
-            {
-                style = Style.Default;
-            }
             yield return new DrawCommand
             {
                 DrawType = DrawType.Rectangle,
-                Rectangle = new SharpDX.RectangleF(r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height),
-                FillColor = style.GetFillColor(uiContext, r),
-                BorderColor = style.GetBorderColor(uiContext, r),
+                Rectangle = rect,
+                FillColor = fill,
+                BorderColor = border,
             };
         }
 
