@@ -1,5 +1,6 @@
 # ToDo
 * [ ] scroll
+* [ ] propagate event to parent
 * [x] Cursor
 * [x] Click
 * Style

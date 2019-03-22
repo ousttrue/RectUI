@@ -23,7 +23,16 @@ namespace RectUI
             yield return this;
         }
 
-        public GetDrawCommandsFunc OnGetDrawCommands;
+        public GetDrawCommandsFunc OnGetDrawCommands = (uiContext, r) =>
+        {
+            return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(),
+                Style.Default.GetFillColor(uiContext, r),
+                Style.Default.GetBorderColor(uiContext, r));
+        };
+
+        public RectRegion()
+        {
+        }
 
         public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
         {

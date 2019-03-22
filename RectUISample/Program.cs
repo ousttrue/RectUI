@@ -105,16 +105,7 @@ namespace RectUISample
               };
             root.Add(left);
             // right
-            var right = new RectRegion
-            {
-                OnGetDrawCommands = (uiContext, r) =>
-                {
-                    return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(), 
-                        Style.Default.GetFillColor(uiContext, r),
-                        Style.Default.GetBorderColor(uiContext, r));
-                },
-            };
-            root.Add(right);
+            root.Add(new RectRegion());
 
             // bind window with UI
             using (var app = new App(window, root))
