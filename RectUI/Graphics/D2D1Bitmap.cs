@@ -51,7 +51,7 @@ namespace RectUI.Graphics
             var bi = default(BITMAPINFOHEADER);
             bi.biSize = Marshal.SizeOf<BITMAPINFOHEADER>();
             bi.biWidth = bmpScreen.bmWidth;
-            bi.biHeight = bmpScreen.bmHeight;
+            bi.biHeight = -bmpScreen.bmHeight.Value;
             bi.biPlanes = 1;
             bi.biBitCount = 32;
             bi.biCompression = BI.RGB;
