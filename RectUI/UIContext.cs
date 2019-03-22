@@ -66,6 +66,11 @@ namespace RectUI
             IsMouseLeftDown = false;
             if (Active != null)
             {
+                if (Active == Hover)
+                {
+                    Active.LeftClick();
+                }
+
                 if (!IsAnyDown)
                 {
                     Active = null;

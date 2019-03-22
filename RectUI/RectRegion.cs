@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace RectUI
@@ -35,6 +36,12 @@ namespace RectUI
             {
                 return null;
             }
+        }
+
+        public event Action LeftClicked;
+        public void LeftClick()
+        {
+            LeftClicked?.Invoke();
         }
     }
 }

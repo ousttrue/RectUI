@@ -32,10 +32,15 @@ namespace RectUISample
 
         RectRegion m_root;
 
-        UIContext m_uiContext = new UIContext();
+        public UIContext UIContext
+        {
+            get;
+            private set;
+        }
 
         public App(Window window, RectRegion root)
         {
+            UIContext = new UIContext();
             m_device = D3D11Device.Create();
             m_swapchain = m_device.CreateSwapchain(window.WindowHandle);
             m_backbuffer = m_swapchain.CreateBitmap();
@@ -50,44 +55,44 @@ namespace RectUISample
             window.OnMouseMiddleUp += Window_OnMouseMiddleUp;
             window.OnMouseMove += Window_OnMouseMove;
 
-            m_uiContext.Updated += () => window.Invalidate();
+            UIContext.Updated += () => window.Invalidate();
 
             m_root = root;
         }
 
         private void Window_OnMouseMove(int x, int y)
         {
-            m_uiContext.MouseMove(m_root, x, y);
+            UIContext.MouseMove(m_root, x, y);
         }
 
         private void Window_OnMouseMiddleUp(int _x, int _y)
         {
-            m_uiContext.MouseMiddleUp(m_root);
+            UIContext.MouseMiddleUp(m_root);
         }
 
         private void Window_OnMouseMiddleDown(int _x, int _y)
         {
-            m_uiContext.MouseMiddleDown(m_root);
+            UIContext.MouseMiddleDown(m_root);
         }
 
         private void Window_OnMouseRightUp(int _x, int _y)
         {
-            m_uiContext.MouseRightUp(m_root);
+            UIContext.MouseRightUp(m_root);
         }
 
         private void Window_OnMouseRightDown(int arg1, int arg2)
         {
-            m_uiContext.MouseRightDown(m_root);
+            UIContext.MouseRightDown(m_root);
         }
 
         private void Window_OnMouseLeftUp(int _x, int _y)
         {
-            m_uiContext.MouseLeftUp(m_root);
+            UIContext.MouseLeftUp(m_root);
         }
 
         private void Window_OnMouseLeftDown(int _x, int _y)
         {
-            m_uiContext.MouseLeftDown(m_root);
+            UIContext.MouseLeftDown(m_root);
         }
 
         private void Window_OnPaint()
@@ -98,7 +103,7 @@ namespace RectUISample
             {
                 if (r.Drawer != null)
                 {
-                    r.Drawer.Draw(m_device, m_backbuffer, m_uiContext, r);
+                    r.Drawer.Draw(m_device, m_backbuffer, UIContext, r);
                 }
             }
 

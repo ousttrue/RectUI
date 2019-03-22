@@ -21,10 +21,15 @@ namespace RectUISample
             {
                 Rect = new Rect(window.Width, window.Height)
             };
-            root.Add(new ListRegion(new DirSource())
+            var list = new ListRegion(new DirSource())
             {
                 Rect = new Rect(window.Width, window.Height),
-            });
+            };
+            list.LeftClicked += (i, content) =>
+              {
+                  Console.WriteLine($"{i}:{content}");
+              };
+            root.Add(list);
             root.Add(new RectRegion
             {
                 Drawer = new RectDrawer(),
