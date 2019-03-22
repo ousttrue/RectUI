@@ -3,7 +3,7 @@ using SharpDX.DXGI;
 using System;
 
 
-namespace RectUI
+namespace RectUI.Graphics
 {
     public class DXGISwapChain : IDisposable
     {

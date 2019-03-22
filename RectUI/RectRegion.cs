@@ -15,7 +15,7 @@ namespace RectUI
             set;
         }
 
-        public IRectDrawer Drawer
+        public Graphics.IRectDrawer Drawer
         {
             get;
             set;

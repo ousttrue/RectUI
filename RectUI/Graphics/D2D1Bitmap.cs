@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace RectUI
+namespace RectUI.Graphics
 {
     public class D2D1Bitmap : IDisposable
     {

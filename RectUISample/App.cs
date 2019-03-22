@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI;
+using RectUI.Graphics;
 using SharpDX;
 using System;
 

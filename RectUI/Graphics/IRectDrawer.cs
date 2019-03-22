@@ -1,4 +1,4 @@
-﻿namespace RectUI
+﻿namespace RectUI.Graphics
 {
     /// <summary>
     /// RectRegionの内部を描画する
