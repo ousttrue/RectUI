@@ -229,5 +229,27 @@ namespace DesktopDll
         public static extern BOOL DestroyIcon(
           HICON hIcon
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getdc
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern HDC GetDC(
+          HWND hWnd
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-releasedc
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="hDC"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern int ReleaseDC(
+          HWND hWnd,
+          HDC hDC
+        );
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SharpDX;
+using System;
 
 namespace RectUI.Graphics
 {
@@ -7,6 +8,7 @@ namespace RectUI.Graphics
         Rectangle,
         Text,
         Icon,
+        ImageList,
     }
 
     public struct DrawCommand
@@ -19,6 +21,7 @@ namespace RectUI.Graphics
         public string Text;
         public string Font;
         public float FontSize;
-        public DesktopDll.HICON Icon;
+        public IntPtr Icon;
+        public int ImageListIndex;
     }
 }

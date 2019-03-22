@@ -7,26 +7,18 @@ using System.Runtime.InteropServices;
 
 namespace RectUISample
 {
-    class SystemIcon: IDisposable
+    class SystemIcon
     {
-        public HICON Icon
+        public IntPtr ImageList
         {
             get;
             private set;
         }
 
-        public void Dispose()
+        public int ImageListIndex
         {
-            if (Icon.Value != IntPtr.Zero)
-            {
-                User32.DestroyIcon(Icon);
-                Icon = new HICON { Value = IntPtr.Zero };
-            }
-        }
-
-        SystemIcon(IntPtr himl, int i, IDL idl)
-        {
-            Icon = Comctl32.ImageList_GetIcon(himl, i, idl);
+            get;
+            private set;
         }
 
         public static SystemIcon Get(string path, bool isSmall)
@@ -45,7 +37,11 @@ namespace RectUISample
                 return null;
             }
 
-            return new SystemIcon(result, sfi.iIcon, IDL.NORMAL);
+            return new SystemIcon
+            {
+                ImageList = result,
+                ImageListIndex = sfi.iIcon,
+            };
         }
     }
 
@@ -82,10 +78,9 @@ namespace RectUISample
                     label = "..";
                 }
 
-                using (var icon = SystemIcon.Get(r.Content.FullName, true))
-                {
-                    commands.Concat(DrawCommandFactory.DrawIconCommands(uiContext, r, icon.Icon));
-                }
+                var icon = SystemIcon.Get(r.Content.FullName, true);
+                commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
+                    icon.ImageList, icon.ImageListIndex));
 
                 var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
                     left.ItemHeight, 

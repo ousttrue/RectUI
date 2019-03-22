@@ -1,4 +1,5 @@
 ﻿using RectUI.Graphics;
+using System;
 using System.Collections.Generic;
 
 
@@ -24,7 +25,8 @@ namespace RectUI
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawIconCommands(UIContext uiContext, RectRegion r, DesktopDll.HICON icon, Style style = null)
+        public static IEnumerable<DrawCommand> DrawIconCommands(UIContext uiContext, RectRegion r, 
+            IntPtr icon, Style style = null)
         {
             if (style == null)
             {
@@ -34,7 +36,23 @@ namespace RectUI
             {
                 DrawType = DrawType.Icon,
                 Rectangle = new SharpDX.RectangleF(r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height),
-                Icon = icon,
+                Icon = icon
+            };
+        }
+
+        public static IEnumerable<DrawCommand> DrawImageListCommands(UIContext uiContext, RectRegion r, 
+            IntPtr imageList, int imageListIndex, Style style = null)
+        {
+            if (style == null)
+            {
+                style = Style.Default;
+            }
+            yield return new DrawCommand
+            {
+                DrawType = DrawType.ImageList,
+                Rectangle = new SharpDX.RectangleF(r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height),
+                Icon = imageList,
+                ImageListIndex = imageListIndex
             };
         }
 

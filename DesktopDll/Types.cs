@@ -25,7 +25,7 @@ namespace DesktopDll
         }
         public static implicit operator BOOL(bool value)
         {
-            return new BOOL { Value = value ? 1: 0 };
+            return new BOOL { Value = value ? 1 : 0 };
         }
         public static implicit operator bool(BOOL value)
         {
@@ -55,6 +55,12 @@ namespace DesktopDll
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct HBITMAP
+    {
+        public IntPtr Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HBRUSH
     {
         public IntPtr Value;
@@ -68,6 +74,12 @@ namespace DesktopDll
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HDC
+    {
+        public IntPtr Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct HGDIOBJ
     {
         public IntPtr Value;
     }
@@ -116,6 +128,10 @@ namespace DesktopDll
     public struct LONG
     {
         public int Value;
+        public static implicit operator LONG(int value)
+        {
+            return new LONG { Value = value };
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
@@ -183,6 +199,16 @@ namespace DesktopDll
     public struct WPARAM
     {
         public IntPtr Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct WORD
+    {
+        public ushort Value;
+        public static implicit operator WORD(int value)
+        {
+            return new WORD { Value = (ushort)value };
+        }
     }
     #endregion
 
@@ -264,13 +290,51 @@ namespace DesktopDll
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct PAINTSTRUCT
     {
-        HDC hdc;
-        BOOL fErase;
-        RECT rcPaint;
-        BOOL fRestore;
-        BOOL fIncUpdate;
+        public HDC hdc;
+        public BOOL fErase;
+        public RECT rcPaint;
+        public BOOL fRestore;
+        public BOOL fIncUpdate;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        Byte[] rgbReserved;
+        public Byte[] rgbReserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct BITMAP
+    {
+        public LONG bmType;
+        public LONG bmWidth;
+        public LONG bmHeight;
+        public LONG bmWidthBytes;
+        public WORD bmPlanes;
+        public WORD bmBitsPixel;
+        public LPVOID bmBits;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct BITMAPFILEHEADER
+    {
+        public WORD bfType;
+        public DWORD bfSize;
+        public WORD bfReserved1;
+        public WORD bfReserved2;
+        public DWORD bfOffBits;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct BITMAPINFOHEADER
+    {
+        public DWORD biSize;
+        public LONG biWidth;
+        public LONG biHeight;
+        public WORD biPlanes;
+        public WORD biBitCount;
+        public DWORD biCompression;
+        public DWORD biSizeImage;
+        public LONG biXPelsPerMeter;
+        public LONG biYPelsPerMeter;
+        public DWORD biClrUsed;
+        public DWORD biClrImportant;
     }
     #endregion
 }
