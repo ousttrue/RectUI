@@ -1,6 +1,7 @@
 ﻿using DesktopDll;
 using RectUI;
 using System;
+using System.IO;
 using System.Linq;
 
 
@@ -23,22 +24,38 @@ namespace RectUISample
                 Rect = new Rect(window.Width, window.Height)
             };
             // left
-            var left = new ListRegion<string>(new DirSource())
+            var dir = new DirSource()
+            {
+            };
+            var left = new ListRegion<FileSystemInfo>(dir)
             {
                 Rect = new Rect(window.Width, window.Height),
             };
             left.ItemGetDrawCommands = (uiContext, i, r) =>
             {
                 var rect = DrawCommandFactory.DrawRectCommands(uiContext, r);
+                var label = r.Content.ToString();
+                if (dir.Current.Parent.FullName == r.Content.FullName)
+                {
+                    label = "..";
+                }
                 var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
                     left.ItemHeight, 
                     5, 3, 5, 2,
-                    r.Content);
+                    label);
                 return rect.Concat(text);
             };
             left.ItemLeftClicked += (i, content) =>
               {
-                  Console.WriteLine($"{i}:{content}");
+                  var d = content as DirectoryInfo;
+                  if(d!=null)
+                  {
+                      dir.ChangeDirectory(d);
+                  }
+                  else
+                  {
+                      Console.WriteLine($"{i}:{content}");
+                  }
               };
             root.Add(left);
             // right

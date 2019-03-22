@@ -38,16 +38,16 @@ namespace RectUI
         }
     }
 
-    public class DirSource : IListSource<string>
+    public class DirSource : IListSource<FileSystemInfo>
     {
-        List<string> m_files = new List<string>();
+        List<FileSystemInfo> m_files = new List<FileSystemInfo>();
 
-        public string this[int index] => m_files[index];
+        public FileSystemInfo this[int index] => m_files[index];
         public int Count => m_files.Count;
         public event Action Updated;
 
-        string m_current;
-        public string Current
+        DirectoryInfo m_current;
+        public DirectoryInfo Current
         {
             get { return m_current; }
             set
@@ -56,12 +56,13 @@ namespace RectUI
                 {
                     return;
                 }
-                m_current = Path.GetFullPath(value);
+                m_current = value;
 
                 m_files.Clear();
+                m_files.Add(m_current.Parent);
+                //m_files.Add(m_current);
                 m_files.AddRange(
-                    Directory.GetFileSystemEntries(m_current)
-                    .Select(x => Path.GetFileName(x))
+                    m_current.EnumerateFileSystemInfos()
                     );
 
                 Updated?.Invoke();
@@ -70,7 +71,12 @@ namespace RectUI
 
         public DirSource(string path = ".")
         {
-            Current = Path.GetFullPath(path);
+            Current = new DirectoryInfo(Path.GetFullPath(path));
+        }
+
+        public void ChangeDirectory(DirectoryInfo d)
+        {
+            Current = d;
         }
     }
 
