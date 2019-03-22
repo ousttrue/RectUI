@@ -81,7 +81,7 @@ namespace RectUI
         IListSource<string> m_source;
 
         List<RectRegion> m_regions = new List<RectRegion>();
-        List<Graphics.TextLabelDrawer> m_drawers = new List<Graphics.TextLabelDrawer>();
+        List<TextLabelDrawer> m_drawers = new List<TextLabelDrawer>();
         public ListRegion(IListSource<string> source)
         {
             m_source = source;
@@ -113,7 +113,7 @@ namespace RectUI
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, m_height);
-                r.Drawer = new Graphics.TextLabelDrawer
+                r.Drawer = new TextLabelDrawer
                 {
                     Label = m_source[i]
                 };
@@ -128,7 +128,7 @@ namespace RectUI
         private void R_LeftClicked(RectRegion r)
         {
             var index = m_regions.IndexOf(r);
-            ItemLeftClicked?.Invoke(index, (r.Drawer as Graphics.TextLabelDrawer).Label);
+            ItemLeftClicked?.Invoke(index, (r.Drawer as TextLabelDrawer).Label);
         }
 
         public override IEnumerable<RectRegion> Traverse()

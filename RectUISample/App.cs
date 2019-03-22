@@ -104,7 +104,10 @@ namespace RectUISample
             {
                 if (r.Drawer != null)
                 {
-                    r.Drawer.Draw(m_device, m_backbuffer, UIContext, r);
+                    foreach(var c in r.Drawer.GetCommands(UIContext, r))
+                    {
+                        m_backbuffer.Draw(m_device, c);
+                    }
                 }
             }
 

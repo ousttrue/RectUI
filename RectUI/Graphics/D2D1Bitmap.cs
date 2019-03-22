@@ -74,8 +74,28 @@ namespace RectUI.Graphics
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void DrawRect(D3D11Device device,
-            Rect r,
+        public void Draw(D3D11Device device, DrawCommand command)
+        {
+            switch(command.DrawType)
+            {
+                case DrawType.Rectangle:
+                    DrawRect(device, command.Rectangle, 
+                        command.FillColor, command.BorderColor);
+                    break;
+
+                case DrawType.Text:
+                    DrawText(device, command.Rectangle, 
+                        command.Font, command.FontSize,
+                        command.TextColor, command.Text);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        void DrawRect(D3D11Device device,
+            RectangleF rect,
             Color4 fill,
             Color4 border)
         {
@@ -93,32 +113,32 @@ namespace RectUI.Graphics
                 _brushMap.Add(border, borderBrush);
             }
 
-            var rect = new RectangleF(r.X, r.Y, r.Width, r.Height);
             device.D2DDeviceContext.FillRectangle(rect, fillBrush);
             device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
         }
 
-        public void DrawText(D3D11Device device,
-            Rect r,
-            Color4 fg,
+        void DrawText(D3D11Device device,
+            RectangleF rect,
+            string font,
+            float fontSize,
+            Color4 textColor,
             string text)
         {
             SolidColorBrush brush;
-            if (!_brushMap.TryGetValue(fg, out brush))
+            if (!_brushMap.TryGetValue(textColor, out brush))
             {
-                brush = new SolidColorBrush(device.D2DDeviceContext, fg);
-                _brushMap.Add(fg, brush);
+                brush = new SolidColorBrush(device.D2DDeviceContext, textColor);
+                _brushMap.Add(textColor, brush);
             }
 
             if (_textFormat == null)
             {
                 using (var f = new SharpDX.DirectWrite.Factory())
                 {
-                    _textFormat = new TextFormat(f, "Arial", 18);
+                    _textFormat = new TextFormat(f, font, fontSize);
                 }
             }
 
-            var rect = new RectangleF(r.X, r.Y, r.Width, r.Height);
             device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
         }
     }

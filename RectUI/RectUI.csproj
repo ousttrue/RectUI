@@ -56,11 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\DrawCommand.cs" />
     <Compile Include="Graphics\D2D1Bitmap.cs" />
     <Compile Include="Graphics\D3D11Device.cs" />
     <Compile Include="Graphics\D3D11RenderTarget.cs" />
     <Compile Include="Graphics\DXGISwapchain.cs" />
-    <Compile Include="Graphics\IRectDrawer.cs" />
+    <Compile Include="IDrawCommandFactory.cs" />
     <Compile Include="ListRegion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rect.cs" />
