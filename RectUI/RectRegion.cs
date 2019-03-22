@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using RectUI.Graphics;
 
 
 namespace RectUI
 {
+    public delegate IEnumerable<DrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
+
     /// <summary>
     /// RectRegion + IRectDrawer => Widget
     /// </summary>
@@ -15,15 +18,22 @@ namespace RectUI
             set;
         }
 
-        public IDrawCommandFactory Drawer
-        {
-            get;
-            set;
-        }
-
         public virtual IEnumerable<RectRegion> Traverse()
         {
             yield return this;
+        }
+
+        public GetDrawCommandsFunc OnGetDrawCommands;
+
+        public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
+        {
+            if (OnGetDrawCommands != null)
+            {
+                foreach(var c in OnGetDrawCommands(uiContext, this))
+                {
+                    yield return c;
+                }
+            }
         }
 
         public virtual RectRegion MouseMove(int x, int y)
@@ -42,6 +52,15 @@ namespace RectUI
         public void LeftClick(RectRegion sender)
         {
             LeftClicked?.Invoke(sender);
+        }
+    }
+
+    public class ContentRegion<T>: RectRegion
+    {
+        public T Content
+        {
+            get;
+            set;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using DesktopDll;
 using RectUI;
-using RectUI.Graphics;
 using System;
+using System.Linq;
 
 
 namespace RectUISample
@@ -22,19 +22,34 @@ namespace RectUISample
             {
                 Rect = new Rect(window.Width, window.Height)
             };
-            var list = new ListRegion(new DirSource())
+            // left
+            var left = new ListRegion<string>(new DirSource())
             {
                 Rect = new Rect(window.Width, window.Height),
             };
-            list.ItemLeftClicked += (i, content) =>
+            left.ItemGetDrawCommands = (uiContext, i, r) =>
+            {
+                var rect = DrawCommandFactory.DrawRectCommands(uiContext, r);
+                var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
+                    left.ItemHeight, 
+                    5, 3, 5, 2,
+                    r.Content);
+                return rect.Concat(text);
+            };
+            left.ItemLeftClicked += (i, content) =>
               {
                   Console.WriteLine($"{i}:{content}");
               };
-            root.Add(list);
-            root.Add(new RectRegion
+            root.Add(left);
+            // right
+            var right = new RectRegion
             {
-                Drawer = new RectDrawer(),
-            });
+                OnGetDrawCommands = (uiContext, r) =>
+                {
+                    return DrawCommandFactory.DrawRectCommands(uiContext, r);
+                },
+            };
+            root.Add(right);
 
             // bind window with UI
             using (var app = new App(window, root))

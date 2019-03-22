@@ -74,15 +74,29 @@ namespace RectUI
         }
     }
 
-    public class ListRegion : RectRegion
+    public class ListRegion<T> : RectRegion
     {
-        int m_height = 18;
+        int m_itemHeight = 18;
+        public int ItemHeight
+        {
+            get { return m_itemHeight = 18; }
+            set
+            {
+                if (m_itemHeight == value) return;
+                m_itemHeight = value;
+                if (m_itemHeight < 1)
+                {
+                    m_itemHeight = 1;
+                }
+            }
+        }
 
-        IListSource<string> m_source;
+        public Func<UIContext, int, ContentRegion<T>, IEnumerable<Graphics.DrawCommand>> ItemGetDrawCommands;
 
-        List<RectRegion> m_regions = new List<RectRegion>();
-        List<TextLabelDrawer> m_drawers = new List<TextLabelDrawer>();
-        public ListRegion(IListSource<string> source)
+        IListSource<T> m_source;
+
+        List<ContentRegion<T>> m_regions = new List<ContentRegion<T>>();
+        public ListRegion(IListSource<T> source)
         {
             m_source = source;
 
@@ -94,41 +108,42 @@ namespace RectUI
 
         IEnumerable<RectRegion> Layout()
         {
-            var count = Math.Min(m_source.Count, Rect.Height / m_height + 1);
+            var count = Math.Min(m_source.Count, Rect.Height / ItemHeight + 1);
             var y = Rect.Y;
             for (int i = 0; i < count; ++i)
             {
-                RectRegion r = null;
+                ContentRegion<T> r = null;
                 if (i < m_regions.Count)
                 {
                     r = m_regions[i];
                 }
                 else
                 {
-                    r = new RectRegion
+                    r = new ContentRegion<T>
                     {
+                        OnGetDrawCommands = (uiContext, rr) =>
+                        {
+                            return ItemGetDrawCommands(uiContext, i, rr as ContentRegion<T>);
+                        }
                     };
-                    r.LeftClicked += R_LeftClicked;
+                    r.LeftClicked += x => R_LeftClicked(x as ContentRegion<T>);
                     m_regions.Add(r);
                 }
 
-                r.Rect = new Rect(Rect.X, y, Rect.Width, m_height);
-                r.Drawer = new TextLabelDrawer
-                {
-                    Label = m_source[i]
-                };
+                r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
+                r.Content = m_source[i];
 
                 yield return r;
 
-                y += m_height;
+                y += ItemHeight;
             }
         }
 
-        public event Action<int, string> ItemLeftClicked;
-        private void R_LeftClicked(RectRegion r)
+        public event Action<int, T> ItemLeftClicked;
+        private void R_LeftClicked(ContentRegion<T> r)
         {
             var index = m_regions.IndexOf(r);
-            ItemLeftClicked?.Invoke(index, (r.Drawer as TextLabelDrawer).Label);
+            ItemLeftClicked?.Invoke(index, r.Content);
         }
 
         public override IEnumerable<RectRegion> Traverse()

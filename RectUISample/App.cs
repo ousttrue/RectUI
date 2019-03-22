@@ -102,12 +102,9 @@ namespace RectUISample
 
             foreach (var r in m_root.Traverse())
             {
-                if (r.Drawer != null)
+                foreach (var c in r.GetDrawCommands(UIContext))
                 {
-                    foreach(var c in r.Drawer.GetCommands(UIContext, r))
-                    {
-                        m_backbuffer.Draw(m_device, c);
-                    }
+                    m_backbuffer.Draw(m_device, c);
                 }
             }
 
