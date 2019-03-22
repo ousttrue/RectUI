@@ -25,7 +25,7 @@ namespace RectUISample
             {
                 Rect = new Rect(window.Width, window.Height),
             };
-            list.LeftClicked += (i, content) =>
+            list.ItemLeftClicked += (i, content) =>
               {
                   Console.WriteLine($"{i}:{content}");
               };

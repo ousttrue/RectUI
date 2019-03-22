@@ -38,10 +38,10 @@ namespace RectUI
             }
         }
 
-        public event Action LeftClicked;
-        public void LeftClick()
+        public event Action<RectRegion> LeftClicked;
+        public void LeftClick(RectRegion sender)
         {
-            LeftClicked?.Invoke();
+            LeftClicked?.Invoke(sender);
         }
     }
 }

@@ -108,7 +108,7 @@ namespace RectUI
                     r = new RectRegion
                     {
                     };
-                    r.LeftClicked += () => R_LeftClicked(r);
+                    r.LeftClicked += R_LeftClicked;
                     m_regions.Add(r);
                 }
 
@@ -124,11 +124,11 @@ namespace RectUI
             }
         }
 
-        public event Action<int, string> LeftClicked;
+        public event Action<int, string> ItemLeftClicked;
         private void R_LeftClicked(RectRegion r)
         {
             var index = m_regions.IndexOf(r);
-            LeftClicked?.Invoke(index, (r.Drawer as TextLabelDrawer).Label);
+            ItemLeftClicked?.Invoke(index, (r.Drawer as TextLabelDrawer).Label);
         }
 
         public override IEnumerable<RectRegion> Traverse()

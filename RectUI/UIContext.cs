@@ -68,7 +68,7 @@ namespace RectUI
             {
                 if (Active == Hover)
                 {
-                    Active.LeftClick();
+                    Active.LeftClick(Active);
                 }
 
                 if (!IsAnyDown)
