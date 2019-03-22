@@ -47,6 +47,13 @@ namespace DesktopDll
         }
     }
 
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
+    public struct HANDLE
+    {
+        public IntPtr Value;
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]
     public struct HBRUSH
     {

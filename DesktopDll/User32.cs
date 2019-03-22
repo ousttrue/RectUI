@@ -31,6 +31,11 @@ namespace DesktopDll
         ICONINFORMATION = 0x00000040,
     }
 
+    public enum IDC : uint
+    {
+        ARROW = 32512,
+    }
+
     public static class User32
     {
         const string DLLNAME = "User32.dll";
@@ -201,6 +206,18 @@ namespace DesktopDll
           HWND hWnd,
           IntPtr lpRect,
           BOOL bErase
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-loadcursorw
+        /// </summary>
+        /// <param name="hInstance"></param>
+        /// <param name="lpCursorName"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern HCURSOR LoadCursorW(
+          HINSTANCE hInstance,
+          IDC lpCursorName
         );
     }
 }

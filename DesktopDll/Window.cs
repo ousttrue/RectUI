@@ -92,6 +92,7 @@ namespace DesktopDll
                 lpszClassName = CLASS_NAME,
                 lpfnWndProc = window.Callback,
                 hInstance = hInstance,
+                hCursor = User32.LoadCursorW(default(HINSTANCE), IDC.ARROW),
             };
             var register = User32.RegisterClassExW(ref wc);
             if (register == 0)
