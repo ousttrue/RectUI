@@ -1,8 +1,9 @@
 # ToDo
-* [ ] Cursor
-* [ ] Click
+* [ ] scroll
+* [x] Cursor
+* [x] Click
 * Style
-    * [ ] fgColor
-    * [ ] font
-    * [ ] textSize
+    * [x] textColor
+    * [x] font
+    * [x] fontSize
 

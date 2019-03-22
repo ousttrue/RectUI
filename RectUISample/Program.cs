@@ -3,10 +3,47 @@ using RectUI;
 using System;
 using System.IO;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 
 namespace RectUISample
 {
+    class SystemIcon: IDisposable
+    {
+        HICON m_icon;
+        public void Dispose()
+        {
+            if (m_icon.Value != IntPtr.Zero)
+            {
+                User32.DestroyIcon(m_icon);
+                m_icon.Value = IntPtr.Zero;
+            }
+        }
+
+        SystemIcon(IntPtr himl, int i, IDL idl)
+        {
+            m_icon = Comctl32.ImageList_GetIcon(himl, i, idl);
+        }
+
+        public static SystemIcon Get(string path, bool isSmall)
+        {
+            var flags = SHGFI.SYSICONINDEX;
+            if (isSmall)
+            {
+                flags |= SHGFI.SMALLICON;
+            }
+            var sfi = default(SHFILEINFOW);
+            var result = Shell32.SHGetFileInfoW(path, -1,
+                ref sfi, Marshal.SizeOf<SHFILEINFOW>(),
+                flags);
+            if (result == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            return new SystemIcon(result, sfi.iIcon, IDL.NORMAL);
+        }
+    }
+
     class Program
     {
         [STAThread]
@@ -39,6 +76,12 @@ namespace RectUISample
                 {
                     label = "..";
                 }
+
+                using (var icon = SystemIcon.Get(r.Content.FullName, true))
+                {
+                    int a = 0;
+                }
+
                 var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
                     left.ItemHeight, 
                     5, 3, 5, 2,
@@ -51,10 +94,6 @@ namespace RectUISample
                   if(d!=null)
                   {
                       dir.ChangeDirectory(d);
-                  }
-                  else
-                  {
-                      Console.WriteLine($"{i}:{content}");
                   }
               };
             root.Add(left);

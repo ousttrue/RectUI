@@ -219,5 +219,15 @@ namespace DesktopDll
           HINSTANCE hInstance,
           IDC lpCursorName
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-destroyicon
+        /// </summary>
+        /// <param name="hIcon"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL DestroyIcon(
+          HICON hIcon
+        );
     }
 }
