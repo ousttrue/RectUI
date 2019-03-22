@@ -6,6 +6,7 @@ namespace RectUI.Graphics
     {
         Rectangle,
         Text,
+        Icon,
     }
 
     public struct DrawCommand
@@ -18,5 +19,6 @@ namespace RectUI.Graphics
         public string Text;
         public string Font;
         public float FontSize;
+        public DesktopDll.HICON Icon;
     }
 }

@@ -9,19 +9,24 @@ namespace RectUISample
 {
     class SystemIcon: IDisposable
     {
-        HICON m_icon;
+        public HICON Icon
+        {
+            get;
+            private set;
+        }
+
         public void Dispose()
         {
-            if (m_icon.Value != IntPtr.Zero)
+            if (Icon.Value != IntPtr.Zero)
             {
-                User32.DestroyIcon(m_icon);
-                m_icon.Value = IntPtr.Zero;
+                User32.DestroyIcon(Icon);
+                Icon = new HICON { Value = IntPtr.Zero };
             }
         }
 
         SystemIcon(IntPtr himl, int i, IDL idl)
         {
-            m_icon = Comctl32.ImageList_GetIcon(himl, i, idl);
+            Icon = Comctl32.ImageList_GetIcon(himl, i, idl);
         }
 
         public static SystemIcon Get(string path, bool isSmall)
@@ -70,7 +75,7 @@ namespace RectUISample
             };
             left.ItemGetDrawCommands = (uiContext, i, r) =>
             {
-                var rect = DrawCommandFactory.DrawRectCommands(uiContext, r);
+                var commands = DrawCommandFactory.DrawRectCommands(uiContext, r);
                 var label = r.Content.ToString();
                 if (dir.Current.Parent.FullName == r.Content.FullName)
                 {
@@ -79,14 +84,16 @@ namespace RectUISample
 
                 using (var icon = SystemIcon.Get(r.Content.FullName, true))
                 {
-                    int a = 0;
+                    commands.Concat(DrawCommandFactory.DrawIconCommands(uiContext, r, icon.Icon));
                 }
 
                 var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
                     left.ItemHeight, 
                     5, 3, 5, 2,
                     label);
-                return rect.Concat(text);
+                commands = commands.Concat(text);
+
+                return commands;
             };
             left.ItemLeftClicked += (i, content) =>
               {

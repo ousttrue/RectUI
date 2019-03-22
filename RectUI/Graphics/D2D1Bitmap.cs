@@ -12,6 +12,7 @@ namespace RectUI.Graphics
         Bitmap1 _bitmap;
         Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
         TextFormat _textFormat;
+        Dictionary<IntPtr, Bitmap> _bitmapMap = new Dictionary<IntPtr, Bitmap>();
 
         public void Dispose()
         {
@@ -89,6 +90,10 @@ namespace RectUI.Graphics
                         command.TextColor, command.Text);
                     break;
 
+                case DrawType.Icon:
+                    DrawIcon(device, command.Rectangle,
+                        command.Icon.Value);
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -115,6 +120,22 @@ namespace RectUI.Graphics
 
             device.D2DDeviceContext.FillRectangle(rect, fillBrush);
             device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
+        }
+
+        void DrawIcon(D3D11Device device, 
+            RectangleF rect,
+            IntPtr icon)
+        {
+            if (icon == IntPtr.Zero)
+            {
+                return;
+            }
+            Bitmap bitmap;
+            if(!_bitmapMap.TryGetValue(icon, out bitmap))
+            {
+                // todo
+            }
+            // todo
         }
 
         void DrawText(D3D11Device device,
