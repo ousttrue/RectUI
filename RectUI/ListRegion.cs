@@ -61,9 +61,16 @@ namespace RectUI
                 m_files.Clear();
                 m_files.Add(m_current.Parent);
                 //m_files.Add(m_current);
-                m_files.AddRange(
-                    m_current.EnumerateFileSystemInfos()
-                    );
+                try
+                {
+                    m_files.AddRange(
+                        m_current.EnumerateFileSystemInfos()
+                        );
+                }
+                catch(UnauthorizedAccessException)
+                {
+                    // do nothing
+                }
 
                 Updated?.Invoke();
             }

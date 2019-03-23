@@ -1,7 +1,7 @@
 # ToDo
 * [ ] save/restore state
 * [ ] middle drag list
-* [ ] left drag splitter
+* [x] left drag splitter
 * [x] scroll
 * [ ] fix, expand, shrink
 * [x] propagate event to parent

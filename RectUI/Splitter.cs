@@ -22,7 +22,27 @@ namespace RectUI
 
         public HorizontalSplitter()
         {
-            //Splitter.
+            Splitter.LeftDragged += Splitter_LeftDragged;
+        }
+
+        int m_dragX;
+        private void Splitter_LeftDragged(RectRegion r, DragEvent dragEvent, int x, int y)
+        {
+            switch (dragEvent)
+            {
+                case DragEvent.Begin:
+                    break;
+
+                case DragEvent.Drag:
+                    Splitter.Rect = new Rect(x, Splitter.Rect.Y, 
+                        Splitter.Rect.Width, Splitter.Rect.Height);
+                    Layout();
+                    break;
+
+                case DragEvent.End:
+                    break;
+            }
+
         }
 
         RectRegion _left;

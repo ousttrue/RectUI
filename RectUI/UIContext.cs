@@ -8,6 +8,7 @@ namespace RectUI
     /// </summary>
     public class UIContext
     {
+        RectRegion _mouseLeftDown;
         public bool IsMouseLeftDown;
         public bool IsMouseRightDown;
         public bool IsMouseMiddleDown;
@@ -58,9 +59,12 @@ namespace RectUI
 
             if (Active != null)
             {
-                if (IsMouseLeftDown)
+                if (_mouseLeftDown!=null)
                 {
-                    Active.LeftDrag(Active, DragEvent.Drag, x, y);
+                    if(_mouseLeftDown.LeftDrag(Active, DragEvent.Drag, x, y))
+                    {
+                        Updated?.Invoke();
+                    }
                 }
             }
         }
@@ -76,7 +80,7 @@ namespace RectUI
                 Active = Hover;
             }
 
-            Active.LeftDrag(Active, DragEvent.Begin, x, y);
+            _mouseLeftDown = Active.ParentPath.FirstOrDefault(r => r.LeftDrag(r, DragEvent.Begin, x, y));
         }
 
         public void MouseLeftUp(int x, int y)
@@ -89,7 +93,10 @@ namespace RectUI
                     Active.LeftClick(Active);
                 }
 
-                Active.LeftDrag(Active, DragEvent.End, x, y);
+                if(_mouseLeftDown != null){
+                    _mouseLeftDown.LeftDrag(Active, DragEvent.End, x, y);
+                    _mouseLeftDown = null;
+                }
 
                 if (!IsAnyDown)
                 {
