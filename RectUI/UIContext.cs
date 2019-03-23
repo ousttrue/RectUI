@@ -139,6 +139,7 @@ namespace RectUI
             {
                 if (target.Wheel(target, delta))
                 {
+                    Updated?.Invoke();
                     break;
                 }
             }

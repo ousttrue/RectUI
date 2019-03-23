@@ -112,11 +112,26 @@ namespace RectUI
             };
         }
 
+        int m_scrollY = 0;
+        public int ScrollY
+        {
+            get { return m_scrollY; }
+            set
+            {
+                if (m_scrollY == value) return;
+                m_scrollY = value;
+                Layout();
+            }
+        }
+
         IEnumerable<RectRegion> Layout()
         {
-            var count = Math.Min(m_source.Count, Rect.Height / ItemHeight + 1);
-            var y = Rect.Y;
-            for (int i = 0; i < count; ++i)
+            var count = Rect.Height / ItemHeight + 1;
+
+            var index = m_scrollY / ItemHeight;
+
+            var y = Rect.Y + (index * ItemHeight - m_scrollY);
+            for (int i = 0; i < count; ++i, ++index)
             {
                 ContentRegion<T> r = null;
                 if (i < m_regions.Count)
@@ -138,9 +153,21 @@ namespace RectUI
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
-                r.Content = m_source[i];
+                if (index >= m_source.Count)
+                {
+                    break;
+                }
 
-                yield return r;
+                if (index < 0)
+                {
+
+                }
+                else
+                {
+                    r.Content = m_source[index];
+
+                    yield return r;
+                }
 
                 y += ItemHeight;
             }
@@ -150,7 +177,8 @@ namespace RectUI
         private void R_LeftClicked(ContentRegion<T> r)
         {
             var index = m_regions.IndexOf(r);
-            ItemLeftClicked?.Invoke(index, r.Content);
+            var first = ScrollY / ItemHeight;
+            ItemLeftClicked?.Invoke(first+index, r.Content);
         }
 
         public override IEnumerable<RectRegion> Traverse()

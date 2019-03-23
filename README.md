@@ -1,5 +1,5 @@
 # ToDo
-* [ ] scroll
+* [x] scroll
 * [ ] fix, expand, shrink
 * [x] propagate event to parent
 * [x] Cursor

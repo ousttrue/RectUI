@@ -105,7 +105,15 @@ namespace RectUISample
               };
             left.OnWheel += (_, delta) =>
               {
-                  Console.WriteLine(delta);
+                  //Console.WriteLine(delta);
+                  if (delta < 0)
+                  {
+                      left.ScrollY += left.ItemHeight * 2;
+                  }
+                  else
+                  {
+                      left.ScrollY -= left.ItemHeight * 2;
+                  }
               };
             root.Add(left);
             // right
