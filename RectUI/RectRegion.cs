@@ -49,7 +49,7 @@ namespace RectUI
 
         public virtual RectRegion MouseMove(int x, int y)
         {
-            if (Rect.Include(x, y))
+            if (Rect.Contains(x, y))
             {
                 return this;
             }

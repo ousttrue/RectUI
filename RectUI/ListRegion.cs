@@ -164,11 +164,8 @@ namespace RectUI
             }
         }
 
-        public override RectRegion MouseMove(int parentX, int parentY)
+        public override RectRegion MouseMove(int x, int y)
         {
-            var x = parentX - Rect.X;
-            var y = parentY - Rect.Y;
-
             foreach (var r in Layout())
             {
                 var hover = r.MouseMove(x, y);
@@ -176,6 +173,11 @@ namespace RectUI
                 {
                     return hover;
                 }
+            }
+
+            if(Rect.Contains(x, y))
+            {
+                return this;
             }
 
             return null;

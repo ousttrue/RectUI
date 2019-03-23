@@ -88,11 +88,8 @@ namespace RectUI
             }
         }
 
-        public override RectRegion MouseMove(int parentX, int parentY)
+        public override RectRegion MouseMove(int x, int y)
         {
-            var x = parentX - Rect.X;
-            var y = parentY - Rect.Y;
-
             foreach(var s in _splitters)
             {
                 var hover = s.MouseMove(x, y);

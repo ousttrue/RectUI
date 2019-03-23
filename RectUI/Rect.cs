@@ -7,7 +7,7 @@
         public int Width;
         public int Height;
 
-        public bool Include(int x, int y)
+        public bool Contains(int x, int y)
         {
             if (x < X) return false;
             if (x > X + Width) return false;
