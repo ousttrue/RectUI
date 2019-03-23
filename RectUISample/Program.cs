@@ -103,6 +103,10 @@ namespace RectUISample
                       dir.ChangeDirectory(d);
                   }
               };
+            left.OnWheel += (_, delta) =>
+              {
+                  Console.WriteLine(delta);
+              };
             root.Add(left);
             // right
             root.Add(new RectRegion());

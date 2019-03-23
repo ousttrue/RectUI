@@ -10,6 +10,7 @@ namespace RectUI
     public class HorizontalSplitter : RectRegion
     {
         const int _splitterWidth = 8;
+
         List<RectRegion> _splitters = new List<RectRegion>();
 
         List<RectRegion> _regions = new List<RectRegion>();
@@ -18,8 +19,10 @@ namespace RectUI
             if (_regions.Count > 0)
             {
                 // add _splitter
-                _splitters.Add(new RectRegion());
+                _splitters.Add(new RectRegion { Parent = this });
             }
+
+            region.Parent = this;
             _regions.Add(region);
 
             Layout();

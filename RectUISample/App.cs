@@ -55,10 +55,16 @@ namespace RectUISample
             window.OnMouseMiddleDown += Window_OnMouseMiddleDown;
             window.OnMouseMiddleUp += Window_OnMouseMiddleUp;
             window.OnMouseMove += Window_OnMouseMove;
+            window.OnMouseWheel += Window_OnMouseWheel;
 
             UIContext.Updated += () => window.Invalidate();
 
             m_root = root;
+        }
+
+        private void Window_OnMouseWheel(int delta)
+        {
+            UIContext.MouseWheel(delta);
         }
 
         private void Window_OnMouseMove(int x, int y)

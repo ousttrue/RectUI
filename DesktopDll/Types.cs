@@ -143,7 +143,7 @@ namespace DesktopDll
         {
             get
             {
-                return (int)(Value.ToInt64() & short.MaxValue);
+                return (short)(Value.ToInt64() & ushort.MaxValue);
             }
         }
 
@@ -151,7 +151,7 @@ namespace DesktopDll
         {
             get
             {
-                return (int)((Value.ToInt64() >> 16) & short.MaxValue);
+                return (short)((Value.ToInt64() >> 16) & ushort.MaxValue);
             }
         }
     }
@@ -199,6 +199,23 @@ namespace DesktopDll
     public struct WPARAM
     {
         public IntPtr Value;
+
+        public int LowWord
+        {
+            get
+            {
+                return (short)(Value.ToInt64() & ushort.MaxValue);
+            }
+        }
+
+        public int HiWord
+        {
+            get
+            {
+                return (short)((Value.ToInt64() >> 16) & ushort.MaxValue);
+            }
+        }
+
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]

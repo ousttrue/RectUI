@@ -49,6 +49,13 @@ namespace RectUI
 
         public event Action Updated;
 
+        public void MouseMove(RectRegion root, int x, int y)
+        {
+            MouseX = x;
+            MouseY = y;
+            Hover = root.MouseMove(MouseX, MouseY);
+        }
+
         public void MouseLeftDown(RectRegion root)
         {
             IsMouseLeftDown = true;
@@ -126,11 +133,15 @@ namespace RectUI
             }
         }
 
-        public void MouseMove(RectRegion root, int x, int y)
+        public void MouseWheel(int delta)
         {
-            MouseX = x;
-            MouseY = y;
-            Hover = root.MouseMove(MouseX, MouseY);
+            for(var target = Active ?? Hover; target!=null; target=target.Parent)
+            {
+                if (target.Wheel(target, delta))
+                {
+                    break;
+                }
+            }
         }
     }
 }

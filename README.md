@@ -1,6 +1,7 @@
 # ToDo
 * [ ] scroll
-* [ ] propagate event to parent
+* [ ] fix, expand, shrink
+* [x] propagate event to parent
 * [x] Cursor
 * [x] Click
 * Style

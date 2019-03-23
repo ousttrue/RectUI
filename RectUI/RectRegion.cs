@@ -30,15 +30,17 @@ namespace RectUI
                 Style.Default.GetBorderColor(uiContext, r));
         };
 
-        public RectRegion()
+        public RectRegion Parent
         {
+            get;
+            set;
         }
 
         public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
         {
             if (OnGetDrawCommands != null)
             {
-                foreach(var c in OnGetDrawCommands(uiContext, this))
+                foreach (var c in OnGetDrawCommands(uiContext, this))
                 {
                     yield return c;
                 }
@@ -61,6 +63,14 @@ namespace RectUI
         public void LeftClick(RectRegion sender)
         {
             LeftClicked?.Invoke(sender);
+        }
+
+        public event Action<RectRegion, int> OnWheel;
+        public bool Wheel(RectRegion sender, int delta)
+        {
+            if (OnWheel == null) return false;
+            OnWheel(sender, delta);
+            return true;
         }
     }
 

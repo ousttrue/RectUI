@@ -127,6 +127,7 @@ namespace RectUI
                 {
                     r = new ContentRegion<T>
                     {
+                        Parent = this,
                         OnGetDrawCommands = (uiContext, rr) =>
                         {
                             return ItemGetDrawCommands(uiContext, i, rr as ContentRegion<T>);

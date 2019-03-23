@@ -21,6 +21,7 @@ namespace DesktopDll
         RBUTTONUP = 0x0205,
         MBUTTONDOWN = 0x0207,
         MBUTTONUP = 0x0208,
+        MOUSEWHEEL = 0x020A,
     }
 
     /// <summary>
@@ -145,6 +146,9 @@ namespace DesktopDll
                 case WM.MBUTTONUP:
                     OnMouseMiddleUp?.Invoke(lParam.LowWord, lParam.HiWord);
                     return 0;
+                case WM.MOUSEWHEEL:
+                    OnMouseWheel?.Invoke(wParam.HiWord);
+                    return 0;
 
                 case WM.RESIZE:
                     OnResize?.Invoke(lParam.LowWord, lParam.HiWord);
@@ -169,6 +173,7 @@ namespace DesktopDll
         public event Action<int, int> OnMouseMiddleDown;
         public event Action<int, int> OnMouseMiddleUp;
         public event Action<int, int> OnMouseMove;
+        public event Action<int> OnMouseWheel;
         public event Action<int, int> OnResize;
         public event Action OnPaint;
 
