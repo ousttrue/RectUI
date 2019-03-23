@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace RectUI
 {
@@ -54,9 +55,17 @@ namespace RectUI
             MouseX = x;
             MouseY = y;
             Hover = root.MouseMove(MouseX, MouseY);
+
+            if (Active != null)
+            {
+                if (IsMouseLeftDown)
+                {
+                    Active.LeftDrag(Active, DragEvent.Drag, x, y);
+                }
+            }
         }
 
-        public void MouseLeftDown(RectRegion root)
+        public void MouseLeftDown(int x, int y)
         {
             IsMouseLeftDown = true;
             if (Active != null)
@@ -66,9 +75,11 @@ namespace RectUI
             {
                 Active = Hover;
             }
+
+            Active.LeftDrag(Active, DragEvent.Begin, x, y);
         }
 
-        public void MouseLeftUp(RectRegion root)
+        public void MouseLeftUp(int x, int y)
         {
             IsMouseLeftDown = false;
             if (Active != null)
@@ -78,6 +89,8 @@ namespace RectUI
                     Active.LeftClick(Active);
                 }
 
+                Active.LeftDrag(Active, DragEvent.End, x, y);
+
                 if (!IsAnyDown)
                 {
                     Active = null;
@@ -85,7 +98,7 @@ namespace RectUI
             }
         }
 
-        public void MouseRightDown(RectRegion root)
+        public void MouseRightDown(int x, int y)
         {
             IsMouseRightDown = true;
             if (Active != null)
@@ -97,7 +110,7 @@ namespace RectUI
             }
         }
 
-        public void MouseRightUp(RectRegion root)
+        public void MouseRightUp(int x, int y)
         {
             IsMouseRightDown = false;
             if (Active != null)
@@ -109,7 +122,7 @@ namespace RectUI
             }
         }
 
-        public void MouseMiddleDown(RectRegion root)
+        public void MouseMiddleDown(int x, int y)
         {
             IsMouseMiddleDown = true;
             if (Active != null)
@@ -121,7 +134,7 @@ namespace RectUI
             }
         }
 
-        public void MouseMiddleUp(RectRegion root)
+        public void MouseMiddleUp(int x, int y)
         {
             IsMouseMiddleDown = false;
             if (Active != null)
@@ -135,13 +148,10 @@ namespace RectUI
 
         public void MouseWheel(int delta)
         {
-            for(var target = Active ?? Hover; target!=null; target=target.Parent)
+            var processed = (Active ?? Hover).ParentPath.FirstOrDefault(x => x.Wheel(x, delta));
+            if (processed != null)
             {
-                if (target.Wheel(target, delta))
-                {
-                    Updated?.Invoke();
-                    break;
-                }
+                Updated?.Invoke();
             }
         }
     }

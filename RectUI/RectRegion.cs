@@ -7,6 +7,13 @@ namespace RectUI
 {
     public delegate IEnumerable<DrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
 
+    public enum DragEvent
+    {
+        Begin,
+        Drag,
+        End,
+    }
+
     /// <summary>
     /// RectRegion + IRectDrawer => Widget
     /// </summary>
@@ -34,6 +41,17 @@ namespace RectUI
         {
             get;
             set;
+        }
+
+        public IEnumerable<RectRegion> ParentPath
+        {
+            get
+            {
+                for(var x = this; x!=null; x=x.Parent)
+                {
+                    yield return x;
+                }
+            }
         }
 
         public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
@@ -65,6 +83,14 @@ namespace RectUI
             LeftClicked?.Invoke(sender);
         }
 
+        public event Action<RectRegion, DragEvent, int, int> LeftDragged;
+        public bool LeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        {
+            if (LeftDragged == null) return false;
+            LeftDragged(sender, dragEvent, x, y);
+            return true;
+        }
+
         public event Action<RectRegion, int> OnWheel;
         public bool Wheel(RectRegion sender, int delta)
         {
@@ -74,7 +100,7 @@ namespace RectUI
         }
     }
 
-    public class ContentRegion<T>: RectRegion
+    public class ContentRegion<T> : RectRegion
     {
         public T Content
         {

@@ -77,21 +77,25 @@ namespace RectUISample
                 var commands = DrawCommandFactory.DrawRectCommands(rect, 
                     Style.Default.GetFillColor(uiContext, r),
                     Style.Default.GetBorderColor(uiContext, r));
-                var label = r.Content.ToString();
-                if (dir.Current.Parent.FullName == r.Content.FullName)
+
+                if (r.Content != null)
                 {
-                    label = "..";
+                    var label = r.Content.ToString();
+                    if (dir.Current.Parent.FullName == r.Content.FullName)
+                    {
+                        label = "..";
+                    }
+
+                    var icon = SystemIcon.Get(r.Content.FullName, true);
+                    commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
+                        icon.ImageList, icon.ImageListIndex));
+
+                    var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic",
+                        left.ItemHeight,
+                        21, 3, 5, 2,
+                        label);
+                    commands = commands.Concat(text);
                 }
-
-                var icon = SystemIcon.Get(r.Content.FullName, true);
-                commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
-                    icon.ImageList, icon.ImageListIndex));
-
-                var text = DrawCommandFactory.DrawTextCommands(uiContext, r, "MS Gothic", 
-                    left.ItemHeight, 
-                    21, 3, 5, 2,
-                    label);
-                commands = commands.Concat(text);
 
                 return commands;
             };
@@ -115,9 +119,9 @@ namespace RectUISample
                       left.ScrollY -= left.ItemHeight * 2;
                   }
               };
-            root.Add(left);
+            root.Left = left;
             // right
-            root.Add(new RectRegion());
+            root.Right = new RectRegion();
 
             // bind window with UI
             using (var app = new App(window, root))

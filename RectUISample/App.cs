@@ -72,34 +72,34 @@ namespace RectUISample
             UIContext.MouseMove(m_root, x, y);
         }
 
-        private void Window_OnMouseMiddleUp(int _x, int _y)
+        private void Window_OnMouseMiddleUp(int x, int y)
         {
-            UIContext.MouseMiddleUp(m_root);
+            UIContext.MouseMiddleUp(x, y);
         }
 
-        private void Window_OnMouseMiddleDown(int _x, int _y)
+        private void Window_OnMouseMiddleDown(int x, int y)
         {
-            UIContext.MouseMiddleDown(m_root);
+            UIContext.MouseMiddleDown(x, y);
         }
 
-        private void Window_OnMouseRightUp(int _x, int _y)
+        private void Window_OnMouseRightUp(int x, int y)
         {
-            UIContext.MouseRightUp(m_root);
+            UIContext.MouseRightUp(x, y);
         }
 
-        private void Window_OnMouseRightDown(int arg1, int arg2)
+        private void Window_OnMouseRightDown(int x, int y)
         {
-            UIContext.MouseRightDown(m_root);
+            UIContext.MouseRightDown(x, y);
         }
 
-        private void Window_OnMouseLeftUp(int _x, int _y)
+        private void Window_OnMouseLeftUp(int x, int y)
         {
-            UIContext.MouseLeftUp(m_root);
+            UIContext.MouseLeftUp(x, y);
         }
 
-        private void Window_OnMouseLeftDown(int _x, int _y)
+        private void Window_OnMouseLeftDown(int x, int y)
         {
-            UIContext.MouseLeftDown(m_root);
+            UIContext.MouseLeftDown(x, y);
         }
 
         private void Window_OnPaint()

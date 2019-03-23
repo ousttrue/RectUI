@@ -11,36 +11,63 @@ namespace RectUI
     {
         const int _splitterWidth = 8;
 
-        List<RectRegion> _splitters = new List<RectRegion>();
-
-        List<RectRegion> _regions = new List<RectRegion>();
-        public void Add(RectRegion region)
+        RectRegion _splitter = new RectRegion();
+        RectRegion Splitter
         {
-            if (_regions.Count > 0)
+            get
             {
-                // add _splitter
-                _splitters.Add(new RectRegion { Parent = this });
+                return _splitter;
             }
+        }
 
-            region.Parent = this;
-            _regions.Add(region);
+        public HorizontalSplitter()
+        {
+            //Splitter.
+        }
 
-            Layout();
+        RectRegion _left;
+        public RectRegion Left
+        {
+            get { return _left; }
+            set
+            {
+                if (_left == value) return;
+                _left = value;
+                Layout();
+            }
+        }
+
+        RectRegion _right;
+        public RectRegion Right
+        {
+            get { return _right; }
+            set
+            {
+                if (_right == value) return;
+                _right = value;
+                Layout();
+            }
         }
 
         public override IEnumerable<RectRegion> Traverse()
         {
-            foreach (var r in _regions)
+            if (Left != null)
             {
-                foreach(var x in r.Traverse())
+                foreach (var x in Left.Traverse())
+                {
+                    yield return x;
+                }
+            }
+            if (Right != null)
+            {
+                foreach (var x in Right.Traverse())
                 {
                     yield return x;
                 }
             }
 
-            foreach(var s in _splitters)
             {
-                foreach(var x in s.Traverse())
+                foreach(var x in Splitter.Traverse())
                 {
                     yield return x;
                 }
@@ -53,55 +80,55 @@ namespace RectUI
             set
             {
                 base.Rect = value;
+
+                if (Splitter.Rect.Height == 0)
+                {
+                    Splitter.Rect = new Rect(Rect.X + Rect.Width / 2, Rect.Y, _splitterWidth, Rect.Height);
+                }
+
                 Layout();
             }
         }
 
         void Layout()
         {
-            if (_regions.Count == 0)
+            Splitter.Rect = new Rect(Splitter.Rect.X, Splitter.Rect.Y, _splitterWidth, Rect.Height);
+
+            if (Left != null)
             {
-                return;
+                Left.Rect = new Rect(Rect.X, Rect.Y,
+                    Splitter.Rect.X, Rect.Height);
             }
 
-            if (_regions.Count == 1)
+            if (Right != null)
             {
-                _regions[0].Rect = Rect;
-                return;
-            }
-
-            var w = (Rect.Width - _splitterWidth * _splitters.Count) / _regions.Count;
-            int x = 0;
-            int y = 0;
-            for (int i = 0; i < _regions.Count; ++i)
-            {
-                if (i > 0)
-                {
-                    var splitter = _splitters[i - 1];
-                    splitter.Rect = new Rect(x, y, _splitterWidth, Rect.Height);
-                    x += _splitterWidth;
-                }
-
-                var child = _regions[i];
-                child.Rect = new Rect(x, y, w, Rect.Height);
-                x += w;
+                Right.Rect = new Rect(Splitter.Rect.X + Splitter.Rect.Width, Rect.Y,
+                    Rect.Width - Splitter.Rect.X - Splitter.Rect.Width, Rect.Height);
             }
         }
 
         public override RectRegion MouseMove(int x, int y)
         {
-            foreach(var s in _splitters)
             {
-                var hover = s.MouseMove(x, y);
+                var hover = Splitter.MouseMove(x, y);
                 if (hover != null)
                 {
                     return hover;
                 }
             }
 
-            foreach (var child in _regions)
+            if(Left!=null)
             {
-                var hover = child.MouseMove(x, y);
+                var hover = Left.MouseMove(x, y);
+                if (hover != null)
+                {
+                    return hover;
+                }
+            }
+
+            if (Right != null)
+            {
+                var hover = Right.MouseMove(x, y);
                 if (hover != null)
                 {
                     return hover;
