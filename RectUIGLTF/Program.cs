@@ -1,10 +1,6 @@
 ﻿using DesktopDll;
 using RectUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace RectUIGLTF
@@ -19,14 +15,9 @@ namespace RectUIGLTF
         [STAThread]
         static void Main(string[] args)
         {
-            // create window
-            var window = Window.Create();
-            window.Show();
-
-            // bind window with UI
             using (var app = new App())
             {
-                app.Bind(window, BuildUI());
+                app.Bind(Window.Create(), BuildUI());
                    
                 Window.MessageLoop();
             }

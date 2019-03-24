@@ -122,19 +122,9 @@ namespace RectUISample
         [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine($"IntPtr.Size = {IntPtr.Size} bytes");
-
-            // create window
-            var window = Window.Create();
-            window.Show();
-
-            var window2 = Window.Create();
-            window2.Show();
-
-            // bind window with UI
             using (var app = new App())
             {
-                app.Bind(window, BuildUI());
+                app.Bind(Window.Create(), BuildUI());
 
                 Window.MessageLoop();
             }

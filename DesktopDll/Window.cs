@@ -116,6 +116,9 @@ namespace DesktopDll
             }
 
             window.m_hwnd = hwnd;
+
+            window.Show();
+
             return window;
         }
 
