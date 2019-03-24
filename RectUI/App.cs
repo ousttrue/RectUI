@@ -5,14 +5,15 @@ using SharpDX;
 using System;
 
 
-namespace RectUISample
+namespace RectUI
 {
-    class App : IDisposable
+    public abstract class App : IDisposable
     {
         D3D11Device m_device;
         DXGISwapChain m_swapchain;
         D2D1Bitmap m_backbuffer;
-        public void Dispose()
+
+        public virtual void Dispose()
         {
             if (m_backbuffer != null)
             {
@@ -39,7 +40,7 @@ namespace RectUISample
             private set;
         }
 
-        public App(Window window, RectRegion root)
+        public App(Window window)
         {
             UIContext = new UIContext();
             m_device = D3D11Device.Create();
@@ -59,8 +60,10 @@ namespace RectUISample
 
             UIContext.Updated += () => window.Invalidate();
 
-            m_root = root;
+            m_root = BuildUI(window);
         }
+
+        protected abstract RectRegion BuildUI(Window window);
 
         private void Window_OnMouseWheel(int delta)
         {

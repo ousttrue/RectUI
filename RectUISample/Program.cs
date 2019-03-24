@@ -45,21 +45,18 @@ namespace RectUISample
         }
     }
 
-    class Program
+    public class SampleApp: App
     {
-        [STAThread]
-        static void Main(string[] args)
+        public SampleApp(Window window):base(window)
         {
-            Console.WriteLine($"IntPtr.Size = {IntPtr.Size} bytes");
+        }
 
-            // create window
-            var window = Window.Create();
-            window.Show();
-
+        protected override RectRegion BuildUI(Window window)
+        {
             // build UI
             var root = new HorizontalSplitter
             {
-                Rect = new Rect(window.Width, window.Height)
+                Rect = new Rect()
             };
             // left
             var dir = new DirSource()
@@ -67,14 +64,14 @@ namespace RectUISample
             };
             var left = new ListRegion<FileSystemInfo>(dir)
             {
-                Rect = new Rect(window.Width, window.Height),
+                Rect = new Rect(),
             };
             left.ItemGetDrawCommands = (uiContext, i, r) =>
             {
                 var rect = r.Rect.ToSharpDX();
                 rect.X += 16;
                 rect.Width -= 16;
-                var commands = DrawCommandFactory.DrawRectCommands(rect, 
+                var commands = DrawCommandFactory.DrawRectCommands(rect,
                     Style.Default.GetFillColor(uiContext, r),
                     Style.Default.GetBorderColor(uiContext, r));
 
@@ -100,31 +97,46 @@ namespace RectUISample
                 return commands;
             };
             left.ItemLeftClicked += (i, content) =>
-              {
-                  var d = content as DirectoryInfo;
-                  if(d!=null)
-                  {
-                      dir.ChangeDirectory(d);
-                  }
-              };
+            {
+                var d = content as DirectoryInfo;
+                if (d != null)
+                {
+                    dir.ChangeDirectory(d);
+                }
+            };
             left.OnWheel += (_, delta) =>
-              {
-                  //Console.WriteLine(delta);
-                  if (delta < 0)
-                  {
-                      left.ScrollY += left.ItemHeight * 2;
-                  }
-                  else
-                  {
-                      left.ScrollY -= left.ItemHeight * 2;
-                  }
-              };
+            {
+                //Console.WriteLine(delta);
+                if (delta < 0)
+                {
+                    left.ScrollY += left.ItemHeight * 2;
+                }
+                else
+                {
+                    left.ScrollY -= left.ItemHeight * 2;
+                }
+            };
             root.Left = left;
             // right
             root.Right = new RectRegion();
 
+            return root;
+        }
+    }
+
+    class Program
+    {
+        [STAThread]
+        static void Main(string[] args)
+        {
+            Console.WriteLine($"IntPtr.Size = {IntPtr.Size} bytes");
+
+            // create window
+            var window = Window.Create();
+            window.Show();
+
             // bind window with UI
-            using (var app = new App(window, root))
+            using (var app = new SampleApp(window))
             {
                 window.MessageLoop();
             }

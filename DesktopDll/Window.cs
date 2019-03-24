@@ -190,6 +190,8 @@ namespace DesktopDll
         MSG _msg;
         public void MessageLoop()
         {
+            OnResize?.Invoke(Width, Height);
+
             while (true)
             {
                 if (!User32.GetMessageW(ref _msg, 0, 0, 0))
