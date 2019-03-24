@@ -187,13 +187,11 @@ namespace DesktopDll
             User32.InvalidateRect(_hwnd, IntPtr.Zero, true);
         }
 
-        MSG _msg;
-        public void MessageLoop()
+        public static void MessageLoop()
         {
-            OnResize?.Invoke(Width, Height);
-
             while (true)
             {
+                var _msg = default(MSG);
                 if (!User32.GetMessageW(ref _msg, 0, 0, 0))
                 {
                     break;

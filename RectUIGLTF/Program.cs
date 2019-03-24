@@ -33,7 +33,7 @@ namespace RectUIGLTF
             // bind window with UI
             using (var app = new GLTFApp(window))
             {
-                window.MessageLoop();
+                Window.MessageLoop();
             }
         }
     }
