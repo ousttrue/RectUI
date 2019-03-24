@@ -32,10 +32,10 @@ namespace DesktopDll
         const string CLASS_NAME = "class";
         const string WINDOW_NAME = "window";
 
-        HWND _hwnd;
+        HWND m_hwnd;
         public IntPtr WindowHandle
         {
-            get { return _hwnd.Value; }
+            get { return m_hwnd.Value; }
         }
 
         public RECT Rect
@@ -43,7 +43,7 @@ namespace DesktopDll
             get
             {
                 RECT rect;
-                User32.GetClientRect(_hwnd, out rect);
+                User32.GetClientRect(m_hwnd, out rect);
                 return rect;
             }
         }
@@ -65,18 +65,21 @@ namespace DesktopDll
             }
         }
 
-        WNDPROC _delegate;
+        WNDPROC m_delegate;
         IntPtr Callback
         {
             get
             {
-                return Marshal.GetFunctionPointerForDelegate(_delegate);
+                return Marshal.GetFunctionPointerForDelegate(m_delegate);
             }
         }
 
-        Window()
+        static int s_count;
+        string m_className;
+        Window(int count)
         {
-            _delegate = new WNDPROC(WndProc);
+            m_delegate = new WNDPROC(WndProc);
+            m_className = $"{CLASS_NAME}{count}";
         }
 
         public static Window Create()
@@ -84,13 +87,13 @@ namespace DesktopDll
             var ms = Assembly.GetEntryAssembly().GetModules();
             var hInstance = Marshal.GetHINSTANCE(ms[0]);
 
-            var window = new Window();
+            var window = new Window(s_count++);
 
             var wc = new WNDCLASSEXW
             {
                 cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
                 style = CS.VREDRAW | CS.HREDRAW,
-                lpszClassName = CLASS_NAME,
+                lpszClassName = window.m_className,
                 lpfnWndProc = window.Callback,
                 hInstance = hInstance,
                 hCursor = User32.LoadCursorW(default(HINSTANCE), IDC.ARROW),
@@ -101,7 +104,7 @@ namespace DesktopDll
                 return null;
             }
 
-            var hwnd = User32.CreateWindowExW(0, CLASS_NAME, WINDOW_NAME, WS.OVERLAPPEDWINDOW,
+            var hwnd = User32.CreateWindowExW(0, window.m_className, WINDOW_NAME, WS.OVERLAPPEDWINDOW,
                 User32.CW_USEDEFAULT,
                 User32.CW_USEDEFAULT,
                 User32.CW_USEDEFAULT,
@@ -112,7 +115,7 @@ namespace DesktopDll
                 return null;
             }
 
-            window._hwnd = hwnd;
+            window.m_hwnd = hwnd;
             return window;
         }
 
@@ -121,7 +124,7 @@ namespace DesktopDll
             switch (msg)
             {
                 case WM.DESTROY:
-                    User32.PostQuitMessage(0);
+                    OnDestroy?.Invoke();
                     return 0;
 
                 case WM.MOUSEMOVE:
@@ -176,15 +179,16 @@ namespace DesktopDll
         public event Action<int> OnMouseWheel;
         public event Action<int, int> OnResize;
         public event Action OnPaint;
+        public event Action OnDestroy;
 
         public void Show()
         {
-            User32.ShowWindow(_hwnd, SW.SHOW);
+            User32.ShowWindow(m_hwnd, SW.SHOW);
         }
 
         public void Invalidate()
         {
-            User32.InvalidateRect(_hwnd, IntPtr.Zero, true);
+            User32.InvalidateRect(m_hwnd, IntPtr.Zero, true);
         }
 
         public static void MessageLoop()

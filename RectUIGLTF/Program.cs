@@ -9,20 +9,13 @@ using System.Threading.Tasks;
 
 namespace RectUIGLTF
 {
-    class GLTFApp : App
+    class Program
     {
-        public GLTFApp(Window window) : base(window)
-        {
-        }
-
-        protected override RectRegion BuildUI(Window window)
+        static RectRegion BuildUI()
         {
             return new RectRegion();
         }
-    }
 
-    class Program
-    {
         [STAThread]
         static void Main(string[] args)
         {
@@ -31,8 +24,10 @@ namespace RectUIGLTF
             window.Show();
 
             // bind window with UI
-            using (var app = new GLTFApp(window))
+            using (var app = new App())
             {
+                app.Bind(window, BuildUI());
+                   
                 Window.MessageLoop();
             }
         }

@@ -45,13 +45,9 @@ namespace RectUISample
         }
     }
 
-    public class SampleApp: App
+    class Program
     {
-        public SampleApp(Window window):base(window)
-        {
-        }
-
-        protected override RectRegion BuildUI(Window window)
+        static RectRegion BuildUI()
         {
             // build UI
             var root = new HorizontalSplitter
@@ -122,10 +118,7 @@ namespace RectUISample
 
             return root;
         }
-    }
 
-    class Program
-    {
         [STAThread]
         static void Main(string[] args)
         {
@@ -135,10 +128,15 @@ namespace RectUISample
             var window = Window.Create();
             window.Show();
 
+            var window2 = Window.Create();
+            window2.Show();
+
             // bind window with UI
-            using (var app = new SampleApp(window))
+            using (var app = new App())
             {
-                window.MessageLoop();
+                app.Bind(window, BuildUI());
+
+                Window.MessageLoop();
             }
         }
     }

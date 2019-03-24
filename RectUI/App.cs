@@ -1,19 +1,20 @@
 ﻿using DesktopDll;
-using RectUI;
 using RectUI.Graphics;
 using SharpDX;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RectUI
 {
-    public abstract class App : IDisposable
+    public class WindowState : IDisposable
     {
-        D3D11Device m_device;
         DXGISwapChain m_swapchain;
         D2D1Bitmap m_backbuffer;
+        RectRegion m_root;
+        D3D11Device m_device;
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             if (m_backbuffer != null)
             {
@@ -25,14 +26,7 @@ namespace RectUI
                 m_swapchain.Dispose();
                 m_swapchain = null;
             }
-            if (m_device != null)
-            {
-                m_device.Dispose();
-                m_device = null;
-            }
         }
-
-        RectRegion m_root;
 
         public UIContext UIContext
         {
@@ -40,12 +34,11 @@ namespace RectUI
             private set;
         }
 
-        public App(Window window)
+        public WindowState(D3D11Device device, Window window, RectRegion root)
         {
+            m_device = device;
+
             UIContext = new UIContext();
-            m_device = D3D11Device.Create();
-            m_swapchain = m_device.CreateSwapchain(window.WindowHandle);
-            m_backbuffer = m_swapchain.CreateBitmap();
 
             window.OnResize += Window_OnResize;
             window.OnPaint += Window_OnPaint;
@@ -60,10 +53,13 @@ namespace RectUI
 
             UIContext.Updated += () => window.Invalidate();
 
-            m_root = BuildUI(window);
-        }
+            m_swapchain = device.CreateSwapchain(window.WindowHandle);
+            m_backbuffer = m_swapchain.CreateBitmap();
+            m_root = root;
 
-        protected abstract RectRegion BuildUI(Window window);
+            Window_OnResize(window.Width, window.Height);
+
+        }
 
         private void Window_OnMouseWheel(int delta)
         {
@@ -126,6 +122,50 @@ namespace RectUI
             m_root.Rect = new Rect(0, 0, w, h);
             m_backbuffer.Dispose();
             m_swapchain.Resize(w, h);
+        }
+    }
+
+
+    public class App : IDisposable
+    {
+        D3D11Device m_device;
+
+        Dictionary<Window, WindowState> m_windowStateMap = new Dictionary<Window, WindowState>();
+
+        public virtual void Dispose()
+        {
+            foreach (var kv in m_windowStateMap)
+            {
+                kv.Value.Dispose();
+            }
+            m_windowStateMap.Clear();
+
+            if (m_device != null)
+            {
+                m_device.Dispose();
+                m_device = null;
+            }
+        }
+
+        public App()
+        {
+            m_device = D3D11Device.Create();
+        }
+
+        public void Bind(Window window, RectRegion root)
+        {
+            m_windowStateMap.Add(window, new WindowState(m_device, window, root));
+
+            window.OnDestroy += () => Window_OnDestroy(window);
+        }
+
+        private void Window_OnDestroy(Window window)
+        {
+            m_windowStateMap.Remove(window);
+            if (!m_windowStateMap.Any())
+            {
+                User32.PostQuitMessage(0);
+            }
         }
     }
 }
