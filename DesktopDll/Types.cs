@@ -216,6 +216,10 @@ namespace DesktopDll
             }
         }
 
+        public static implicit operator bool(WPARAM value)
+        {
+            return value.Value != IntPtr.Zero;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Unicode)]

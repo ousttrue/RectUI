@@ -7,11 +7,19 @@ namespace RectUIGLTF
 {
     class Program
     {
-        static RectRegion BuildUI()
+        static RectRegion BuildFileDialog()
+        {
+            return new RectRegion();
+        }
+
+        static RectRegion BuildUI(Window dialog)
         {
             return new PanelRegion
             {
-                new ButtonRegion((_)=>Console.WriteLine("clicked"))
+                new ButtonRegion((_)=>{
+                    Console.WriteLine("clicked");
+                    dialog.Show(SW.SHOW);
+                })
                 {
                     Rect = new Rect(5, 5, 200, 100),
                     Content = "open",
@@ -24,7 +32,11 @@ namespace RectUIGLTF
         {
             using (var app = new App())
             {
-                app.Bind(Window.Create(), BuildUI());
+                var main = Window.Create(SW.SHOW);
+                var dialog = main.CreateModal(400, 300);
+
+                app.Bind(dialog, BuildFileDialog());
+                app.Bind(main, BuildUI(dialog));
                    
                 Window.MessageLoop();
             }

@@ -13,7 +13,10 @@ namespace DesktopDll
         DESTROY = 0x0002,
         MOVE = 0x0003,
         RESIZE = 0x0005,
+        ENABLE = 0x000A,
         PAINT = 0x000F,
+        CLOSE = 0x0010,
+        SHOWWINDOW = 0x0018,
         MOUSEMOVE = 0x0200,
         LBUTTONDOWN = 0x0201,
         LBUTTONUP = 0x0202,
@@ -82,7 +85,7 @@ namespace DesktopDll
             m_className = $"{CLASS_NAME}{count}";
         }
 
-        public static Window Create()
+        public static Window Create(SW show = SW.SHOW, HWND parent = default(HWND))
         {
             var ms = Assembly.GetEntryAssembly().GetModules();
             var hInstance = Marshal.GetHINSTANCE(ms[0]);
@@ -109,7 +112,8 @@ namespace DesktopDll
                 User32.CW_USEDEFAULT,
                 User32.CW_USEDEFAULT,
                 User32.CW_USEDEFAULT,
-                IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
+                parent,
+                IntPtr.Zero, hInstance, IntPtr.Zero);
             if (hwnd == IntPtr.Zero)
             {
                 return null;
@@ -117,7 +121,7 @@ namespace DesktopDll
 
             window.m_hwnd = hwnd;
 
-            window.Show();
+            window.Show(show);
 
             return window;
         }
@@ -126,6 +130,26 @@ namespace DesktopDll
         {
             switch (msg)
             {
+                case WM.CLOSE:
+                    if (DestroyWhenClose != null)
+                    {
+                        if (!DestroyWhenClose())
+                        {
+                            // not destroy
+                            return 0;
+                        }
+                    }
+                    // destroy
+                    break;
+
+                case WM.ENABLE:
+                    OnEnable?.Invoke(wParam);
+                    break;
+
+                case WM.SHOWWINDOW:
+                    OnShow?.Invoke(wParam);
+                    break;
+
                 case WM.DESTROY:
                     OnDestroy?.Invoke();
                     return 0;
@@ -183,10 +207,13 @@ namespace DesktopDll
         public event Action<int, int> OnResize;
         public event Action OnPaint;
         public event Action OnDestroy;
+        public event Action<bool> OnShow;
+        public event Action<bool> OnEnable;
+        public Func<bool> DestroyWhenClose; // return false if not destroy
 
-        public void Show()
+        public void Show(SW sw)
         {
-            User32.ShowWindow(m_hwnd, SW.SHOW);
+            User32.ShowWindow(m_hwnd, sw);
         }
 
         public void Invalidate()
@@ -206,6 +233,38 @@ namespace DesktopDll
                 User32.TranslateMessage(ref _msg);
                 User32.DispatchMessage(ref _msg);
             }
+        }
+
+        public Window CreateModal(int w, int h)
+        {
+            var window = Window.Create(SW.HIDE, this.WindowHandle);
+
+            var sw = User32.GetSystemMetrics(SM.CXSCREEN);
+            var sh = User32.GetSystemMetrics(SM.CYSCREEN);
+            User32.SetWindowPos(window.WindowHandle, default(HWND),
+                 (sw - w) / 2,
+                 (sh - h) / 2,
+                w, h, SWP.NONE);
+
+            window.OnShow = show =>
+            {
+                // disable parent
+                if (show)
+                {
+                    var result = User32.EnableWindow(this.WindowHandle, false);
+                }
+            };
+
+            window.DestroyWhenClose = () =>
+            {
+                // enable parent
+                var result = User32.EnableWindow(this.WindowHandle, true);
+                // hide dialog
+                window.Show(SW.HIDE);
+                return false;
+            };
+
+            return window;
         }
     }
 }

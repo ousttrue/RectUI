@@ -21,7 +21,19 @@ namespace DesktopDll
 
     public enum SW : int
     {
+        HIDE = 0,
+        SHOWNORMAL = 1,
+        SHOWMINIMIZED = 2,
+        MAXIMIZE = 3,
+        SHOWNOACTIVATE = 4,
         SHOW = 5,
+    }
+
+    [Flags]
+    public enum SWP : uint
+    {
+        NONE = 0x0000,
+        NOMOVE = 0x0002,
     }
 
     [Flags]
@@ -35,6 +47,13 @@ namespace DesktopDll
     {
         ARROW = 32512,
     }
+
+    public enum SM : int
+    {
+        CXSCREEN = 0,
+        CYSCREEN = 1,
+    }
+
 
     public static class User32
     {
@@ -250,6 +269,50 @@ namespace DesktopDll
         public static extern int ReleaseDC(
           HWND hWnd,
           HDC hDC
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enablewindow
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="bEnable"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL EnableWindow(
+          HWND hWnd,
+          BOOL bEnable
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowpos
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="hWndInsertAfter"></param>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="cx"></param>
+        /// <param name="cy"></param>
+        /// <param name="uFlags"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL SetWindowPos(
+          HWND hWnd,
+          HWND hWndInsertAfter,
+          int X,
+          int Y,
+          int cx,
+          int cy,
+          SWP uFlags
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getsystemmetrics
+        /// </summary>
+        /// <param name="nIndex"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern int GetSystemMetrics(
+          SM nIndex
         );
     }
 }
