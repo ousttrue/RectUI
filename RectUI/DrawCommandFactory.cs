@@ -71,7 +71,7 @@ namespace RectUI
                     r.Rect.Width - leftPadding - rightPadding, 
                     r.Rect.Height),
                 Text = text,
-                TextColor = style.GetBorderColor(uiContext, r),
+                TextColor = r.GetBorderColor(uiContext),
                 Font = font,
                 FontSize = fontSize - topPadding - bottomPadding,
             };

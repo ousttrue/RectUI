@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RectUI.Graphics;
-
+using SharpDX;
 
 namespace RectUI
 {
@@ -30,11 +30,66 @@ namespace RectUI
             yield return this;
         }
 
+        Style m_style = new Style();
+        public Style Style
+        {
+            get { return m_style; }
+            set { m_style = value; }
+        }
+
+        public Color4 GetFillColor(UIContext uiContext)
+        {
+            if(uiContext.Active == this)
+            {
+                return Style.GetColor(StyleColorKey.FillActive);
+            }
+            else if(uiContext.Hover == this)
+            {
+                return Style.GetColor(StyleColorKey.FillHover);
+            }
+            else
+            {
+                return Style.GetColor(StyleColorKey.Fill);
+            }
+        }
+
+        public Color4 GetBorderColor(UIContext uiContext)
+        {
+            if (uiContext.Active == this)
+            {
+                return Style.GetColor(StyleColorKey.BorderActive);
+            }
+            else if (uiContext.Hover == this)
+            {
+                return Style.GetColor(StyleColorKey.BorderHover);
+            }
+            else
+            {
+                return Style.GetColor(StyleColorKey.Border);
+            }
+        }
+
+        public Color4 GetTextColor(UIContext uiContext)
+        {
+            if (uiContext.Active == this)
+            {
+                return Style.GetColor(StyleColorKey.TextActive);
+            }
+            else if (uiContext.Hover == this)
+            {
+                return Style.GetColor(StyleColorKey.TextHover);
+            }
+            else
+            {
+                return Style.GetColor(StyleColorKey.Text);
+            }
+        }
+
         public GetDrawCommandsFunc OnGetDrawCommands = (uiContext, r) =>
         {
             return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(),
-                Style.Default.GetFillColor(uiContext, r),
-                Style.Default.GetBorderColor(uiContext, r));
+                r.GetFillColor(uiContext),
+                r.GetBorderColor(uiContext));
         };
 
         public RectRegion Parent

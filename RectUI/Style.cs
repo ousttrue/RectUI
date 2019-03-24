@@ -1,62 +1,60 @@
 ﻿using SharpDX;
+using System.Collections.Generic;
 
 namespace RectUI
 {
+    public enum StyleColorKey
+    {
+        Fill,
+        FillHover,
+        FillActive,
+        Border,
+        BorderHover,
+        BorderActive,
+        Text,
+        TextHover,
+        TextActive,
+    }
+
     public class Style
     {
-        public Color4 FillColor;
-        public Color4? FillColorFocus;
-        public Color4? FillColorHover;
-        public Color4? FillColorActive;
-        public Color4 BorderColor;
-        public Color4? BorderColorFocus;
-        public Color4? BorderColorHover;
-        public Color4? BorderColorActive;
+        public Dictionary<StyleColorKey, Color4> m_colorMap = new Dictionary<StyleColorKey, Color4>();
 
-        static Style s_thema;
+        public Style Fallback;
+        public Style(Style fallback = null)
+        {
+            Fallback = fallback ?? Default;
+        }
+
+        public Color4 GetColor(StyleColorKey key)
+        {
+            Color4 color;
+            if (m_colorMap.TryGetValue(key, out color))
+            {
+                return color;
+            }
+            return Fallback.GetColor(key);
+        }
+
+        static Style s_default = new Style(null)
+        {
+            m_colorMap = new Dictionary<StyleColorKey, Color4>
+            {
+                {StyleColorKey.Border, new Color4(0.5f, 0.5f, 0.5f, 1) },
+                {StyleColorKey.BorderHover, new Color4(1, 0, 0, 1) },
+                {StyleColorKey.BorderActive, new Color4(1, 0, 0, 1) },
+                {StyleColorKey.Fill, new Color4(0.8f, 0.8f, 0.8f, 1) },
+                {StyleColorKey.FillHover, new Color4(1, 1, 1, 1) },
+                {StyleColorKey.FillActive, new Color4(1, 1, 0, 1) },
+                {StyleColorKey.Text, new Color4(0, 0, 0, 1) },
+            }
+        };
         public static Style Default
         {
             get
             {
-                if (s_thema == null)
-                {
-                    s_thema = new Style
-                    {
-                        BorderColor = new Color4(0.5f, 0.5f, 0.5f, 1),
-                        BorderColorHover = new Color4(1, 0, 0, 1),
-                        FillColor = new Color4(0.8f, 0.8f, 0.8f, 1),
-                        FillColorHover = new Color4(1, 1, 1, 1),
-                        FillColorActive = new Color4(1, 1, 0, 1),
-                    };
-                }
-                return s_thema;
+                return s_default;
             }
-        }
-
-        public Color4 GetBorderColor(UIContext context, RectRegion d)
-        {
-            if (d == context.Active)
-            {
-                return BorderColorActive.HasValue ? BorderColorActive.Value : BorderColor;
-            }
-            else if (context.Active == null && d == context.Hover)
-            {
-                return BorderColorHover.HasValue ? BorderColorHover.Value : BorderColor;
-            }
-            return BorderColor;
-        }
-
-        public Color4 GetFillColor(UIContext context, RectRegion d)
-        {
-            if (d == context.Active)
-            {
-                return FillColorActive.HasValue ? FillColorActive.Value : FillColor;
-            }
-            else if (context.Active == null && d == context.Hover)
-            {
-                return FillColorHover.HasValue ? FillColorHover.Value : FillColor;
-            }
-            return FillColor;
         }
     }
 }

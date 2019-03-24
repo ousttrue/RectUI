@@ -72,8 +72,8 @@ namespace RectUISample
                 rect.X += 16;
                 rect.Width -= 16;
                 var commands = DrawCommandFactory.DrawRectCommands(rect,
-                    Style.Default.GetFillColor(uiContext, r),
-                    Style.Default.GetBorderColor(uiContext, r));
+                    r.GetFillColor(uiContext),
+                    r.GetBorderColor(uiContext));
 
                 if (r.Content != null)
                 {

@@ -1,4 +1,5 @@
 # ToDo
+* [ ] style each reagion
 * [ ] save/restore state
 * [ ] middle drag list
 * [x] left drag splitter
