@@ -15,9 +15,9 @@ namespace RectUI.Graphics
     {
         public DrawType DrawType;
         public RectangleF Rectangle;
-        public Color4 FillColor;
-        public Color4 BorderColor;
-        public Color4 TextColor;
+        public Color4? FillColor;
+        public Color4? BorderColor;
+        public Color4? TextColor;
         public string Text;
         public string Font;
         public float FontSize;

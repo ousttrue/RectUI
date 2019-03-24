@@ -1,11 +1,51 @@
-﻿using System;
+﻿using DesktopDll;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace RectUI
 {
+    class SystemIcon
+    {
+        public IntPtr ImageList
+        {
+            get;
+            private set;
+        }
+
+        public int ImageListIndex
+        {
+            get;
+            private set;
+        }
+
+        public static SystemIcon Get(string path, bool isSmall)
+        {
+            var flags = SHGFI.SYSICONINDEX;
+            if (isSmall)
+            {
+                flags |= SHGFI.SMALLICON;
+            }
+            var sfi = default(SHFILEINFOW);
+            var result = Shell32.SHGetFileInfoW(path, -1,
+                ref sfi, Marshal.SizeOf<SHFILEINFOW>(),
+                flags);
+            if (result == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            return new SystemIcon
+            {
+                ImageList = result,
+                ImageListIndex = sfi.iIcon,
+            };
+        }
+    }
+
     public interface IListSource<T>
     {
         int Count { get; }
@@ -89,6 +129,16 @@ namespace RectUI
 
     public class ListRegion<T> : RectRegion
     {
+        public override Rect Rect
+        {
+            get => base.Rect;
+            set
+            {
+                base.Rect = value;
+                Layout();
+            }
+        }
+
         int m_itemHeight = 18;
         public int ItemHeight
         {
@@ -104,11 +154,10 @@ namespace RectUI
             }
         }
 
-        public Func<UIContext, int, ContentRegion<T>, IEnumerable<Graphics.DrawCommand>> ItemGetDrawCommands;
+        public Func<UIContext, int, RectRegion, IEnumerable<Graphics.DrawCommand>> ItemGetDrawCommands;
 
         IListSource<T> m_source;
 
-        List<ContentRegion<T>> m_regions = new List<ContentRegion<T>>();
         public ListRegion(IListSource<T> source)
         {
             m_source = source;
@@ -117,6 +166,45 @@ namespace RectUI
             {
                 Layout();
             };
+
+            ItemGetDrawCommands = OnItemGetDrawCommands;
+        }
+
+        IEnumerable<Graphics.DrawCommand> OnItemGetDrawCommands(UIContext uiContext, int i, RectRegion r)
+        {
+            if (r.Content == null)
+            {
+                return Enumerable.Empty<Graphics.DrawCommand>();
+            }
+
+            var rect = r.Rect.ToSharpDX();
+            rect.X += 16;
+            rect.Width -= 16;
+            var commands = DrawCommandFactory.DrawRectCommands(rect,
+                r.GetFillColor(uiContext),
+                r.GetBorderColor(uiContext));
+
+            var label = r.Content.ToString();
+            /*
+            if (dir.Current.Parent.FullName == r.Content.FullName)
+            {
+                label = "..";
+            }
+            */
+
+            /*
+            var icon = SystemIcon.Get(r.Content.FullName, true);
+            commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
+                icon.ImageList, icon.ImageListIndex));
+            */
+
+            var text = DrawCommandFactory.DrawTextCommands(r,
+                GetTextColor(uiContext), "MS Gothic", ItemHeight,
+                21, 3, 5, 2,
+                label);
+            commands = commands.Concat(text);
+
+            return commands;
         }
 
         int m_scrollY = 0;
@@ -131,91 +219,55 @@ namespace RectUI
             }
         }
 
-        IEnumerable<RectRegion> Layout()
+        void Layout()
         {
             var count = Rect.Height / ItemHeight + 1;
 
             var index = m_scrollY / ItemHeight;
 
             var y = Rect.Y + (index * ItemHeight - m_scrollY);
-            for (int i = 0; i < count; ++i, ++index)
+            int i = 0;
+            for (; i < count; ++i, ++index)
             {
-                ContentRegion<T> r = null;
-                if (i < m_regions.Count)
+                RectRegion r = null;
+                if (i < m_children.Count)
                 {
-                    r = m_regions[i];
+                    r = m_children[i];
                 }
                 else
                 {
-                    r = new ContentRegion<T>
+                    r = new RectRegion
                     {
                         Parent = this,
                         OnGetDrawCommands = (uiContext, rr) =>
                         {
-                            return ItemGetDrawCommands(uiContext, i, rr as ContentRegion<T>);
+                            return ItemGetDrawCommands(uiContext, i, rr);
                         }
                     };
-                    r.LeftClicked += x => R_LeftClicked(x as ContentRegion<T>);
-                    m_regions.Add(r);
+                    r.LeftClicked += x => R_LeftClicked(x);
+                    m_children.Add(r);
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
-                if (index >= m_source.Count)
+                if (index < 0 || index >= m_source.Count)
                 {
-                    break;
-                }
-
-                if (index < 0)
-                {
-
+                    r.Content = null;
                 }
                 else
                 {
                     r.Content = m_source[index];
-
-                    yield return r;
                 }
 
                 y += ItemHeight;
             }
         }
 
-        public event Action<int, T> ItemLeftClicked;
-        private void R_LeftClicked(ContentRegion<T> r)
+        public event Action<int, object> ItemLeftClicked;
+        private void R_LeftClicked(RectRegion r)
         {
-            var index = m_regions.IndexOf(r);
+            var index = m_children.IndexOf(r);
             var first = ScrollY / ItemHeight;
             ItemLeftClicked?.Invoke(first+index, r.Content);
-        }
-
-        public override IEnumerable<RectRegion> Traverse()
-        {
-            foreach (var r in Layout())
-            {
-                foreach (var x in r.Traverse())
-                {
-                    yield return x;
-                }
-            }
-        }
-
-        public override RectRegion MouseMove(int x, int y)
-        {
-            foreach (var r in Layout())
-            {
-                var hover = r.MouseMove(x, y);
-                if (hover != null)
-                {
-                    return hover;
-                }
-            }
-
-            if(Rect.Contains(x, y))
-            {
-                return this;
-            }
-
-            return null;
         }
     }
 }

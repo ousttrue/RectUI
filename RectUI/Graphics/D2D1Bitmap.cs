@@ -199,25 +199,30 @@ namespace RectUI.Graphics
 
         void DrawRect(D3D11Device device,
             RectangleF rect,
-            Color4 fill,
-            Color4 border)
+            Color4? fill,
+            Color4? border)
         {
-            SolidColorBrush fillBrush;
-            if (!_brushMap.TryGetValue(fill, out fillBrush))
+            SolidColorBrush fillBrush = null;
+            if (fill.HasValue)
             {
-                fillBrush = new SolidColorBrush(device.D2DDeviceContext, fill);
-                _brushMap.Add(fill, fillBrush);
+                if (!_brushMap.TryGetValue(fill.Value, out fillBrush))
+                {
+                    fillBrush = new SolidColorBrush(device.D2DDeviceContext, fill.Value);
+                    _brushMap.Add(fill.Value, fillBrush);
+                }
+                device.D2DDeviceContext.FillRectangle(rect, fillBrush);
             }
 
-            SolidColorBrush borderBrush;
-            if (!_brushMap.TryGetValue(border, out borderBrush))
+            SolidColorBrush borderBrush = null;
+            if (border.HasValue)
             {
-                borderBrush = new SolidColorBrush(device.D2DDeviceContext, border);
-                _brushMap.Add(border, borderBrush);
+                if (!_brushMap.TryGetValue(border.Value, out borderBrush))
+                {
+                    borderBrush = new SolidColorBrush(device.D2DDeviceContext, border.Value);
+                    _brushMap.Add(border.Value, borderBrush);
+                }
+                device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
             }
-
-            device.D2DDeviceContext.FillRectangle(rect, fillBrush);
-            device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
         }
 
         void DrawIcon(D3D11Device device, 
@@ -288,25 +293,28 @@ namespace RectUI.Graphics
             RectangleF rect,
             string font,
             float fontSize,
-            Color4 textColor,
+            Color4? textColor,
             string text)
         {
-            SolidColorBrush brush;
-            if (!_brushMap.TryGetValue(textColor, out brush))
+            if (textColor.HasValue && !string.IsNullOrEmpty(text))
             {
-                brush = new SolidColorBrush(device.D2DDeviceContext, textColor);
-                _brushMap.Add(textColor, brush);
-            }
-
-            if (_textFormat == null)
-            {
-                using (var f = new SharpDX.DirectWrite.Factory())
+                SolidColorBrush brush;
+                if (!_brushMap.TryGetValue(textColor.Value, out brush))
                 {
-                    _textFormat = new TextFormat(f, font, fontSize);
+                    brush = new SolidColorBrush(device.D2DDeviceContext, textColor.Value);
+                    _brushMap.Add(textColor.Value, brush);
                 }
-            }
 
-            device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
+                if (_textFormat == null)
+                {
+                    using (var f = new SharpDX.DirectWrite.Factory())
+                    {
+                        _textFormat = new TextFormat(f, font, fontSize);
+                    }
+                }
+
+                device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
+            }
         }
     }
 }

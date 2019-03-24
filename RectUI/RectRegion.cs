@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using RectUI.Graphics;
 using SharpDX;
+
 
 namespace RectUI
 {
@@ -17,80 +19,50 @@ namespace RectUI
     /// <summary>
     /// RectRegion + IRectDrawer => Widget
     /// </summary>
-    public class RectRegion
+    public class RectRegion : IEnumerable<RectRegion>, IDisposable
     {
-        public virtual Rect Rect
+        public object Content
         {
             get;
             set;
         }
 
-        public virtual IEnumerable<RectRegion> Traverse()
+        #region IEnumerable<RectRegion>
+        public virtual void Dispose()
+        {
+            foreach (var child in m_children)
+            {
+                child.Dispose();
+            }
+        }
+
+        protected List<RectRegion> m_children = new List<RectRegion>();
+
+        public IEnumerator<RectRegion> GetEnumerator()
+        {
+            return m_children.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerable<RectRegion> Traverse()
         {
             yield return this;
-        }
 
-        Style m_style = new Style();
-        public Style Style
-        {
-            get { return m_style; }
-            set { m_style = value; }
-        }
-
-        public Color4 GetFillColor(UIContext uiContext)
-        {
-            if(uiContext.Active == this)
+            foreach (var child in m_children)
             {
-                return Style.GetColor(StyleColorKey.FillActive);
-            }
-            else if(uiContext.Hover == this)
-            {
-                return Style.GetColor(StyleColorKey.FillHover);
-            }
-            else
-            {
-                return Style.GetColor(StyleColorKey.Fill);
+                foreach (var x in child.Traverse())
+                {
+                    if (x != null)
+                    {
+                        yield return x;
+                    }
+                }
             }
         }
-
-        public Color4 GetBorderColor(UIContext uiContext)
-        {
-            if (uiContext.Active == this)
-            {
-                return Style.GetColor(StyleColorKey.BorderActive);
-            }
-            else if (uiContext.Hover == this)
-            {
-                return Style.GetColor(StyleColorKey.BorderHover);
-            }
-            else
-            {
-                return Style.GetColor(StyleColorKey.Border);
-            }
-        }
-
-        public Color4 GetTextColor(UIContext uiContext)
-        {
-            if (uiContext.Active == this)
-            {
-                return Style.GetColor(StyleColorKey.TextActive);
-            }
-            else if (uiContext.Hover == this)
-            {
-                return Style.GetColor(StyleColorKey.TextHover);
-            }
-            else
-            {
-                return Style.GetColor(StyleColorKey.Text);
-            }
-        }
-
-        public GetDrawCommandsFunc OnGetDrawCommands = (uiContext, r) =>
-        {
-            return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(),
-                r.GetFillColor(uiContext),
-                r.GetBorderColor(uiContext));
-        };
 
         public RectRegion Parent
         {
@@ -102,12 +74,49 @@ namespace RectUI
         {
             get
             {
-                for(var x = this; x!=null; x=x.Parent)
+                for (var x = this; x != null; x = x.Parent)
                 {
                     yield return x;
                 }
             }
         }
+        #endregion
+
+        public virtual Rect Rect
+        {
+            get;
+            set;
+        }
+
+        #region Style & DrawCommands
+        Style m_style = new Style();
+        public Style Style
+        {
+            get { return m_style; }
+            set { m_style = value; }
+        }
+
+        public virtual Color4? GetFillColor(UIContext uiContext)
+        {
+            return Style.GetColor(StyleColorKey.PanelFill);
+        }
+
+        public virtual Color4? GetBorderColor(UIContext uIContext)
+        {
+            return Style.GetColor(StyleColorKey.PanelBorder);
+        }
+
+        public virtual Color4? GetTextColor(UIContext uIContext)
+        {
+            return Style.GetColor(StyleColorKey.Text);
+        }
+
+        public GetDrawCommandsFunc OnGetDrawCommands = (uiContext, r) =>
+        {
+            return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(),
+                r.GetFillColor(uiContext),
+                r.GetBorderColor(uiContext));
+        };
 
         public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
         {
@@ -119,17 +128,29 @@ namespace RectUI
                 }
             }
         }
+        #endregion
 
-        public virtual RectRegion MouseMove(int x, int y)
+        #region MouseEvents
+        public RectRegion MouseMove(int x, int y)
         {
+            // children
+            foreach (var r in m_children)
+            {
+                var hover = r.MouseMove(x, y);
+                if (hover != null)
+                {
+                    return hover;
+                }
+            }
+
+            // this
             if (Rect.Contains(x, y))
             {
                 return this;
             }
-            else
-            {
-                return null;
-            }
+
+            // else
+            return null;
         }
 
         public event Action<RectRegion> LeftClicked;
@@ -153,14 +174,74 @@ namespace RectUI
             OnWheel(sender, delta);
             return true;
         }
+        #endregion
     }
 
-    public class ContentRegion<T> : RectRegion
+    public class PanelRegion: RectRegion
     {
-        public T Content
+        public void Add(RectRegion child)
         {
-            get;
-            set;
+            child.Parent = this;
+            m_children.Add(child);
+        }
+    }
+
+    public class ButtonRegion : RectRegion
+    {
+        Action<RectRegion> m_action;
+
+        public ButtonRegion(Action<RectRegion> action)
+        {
+            m_action = action;
+            LeftClicked += m_action;
+
+            OnGetDrawCommands = GetDrawCommands;
+        }
+
+        public override Color4? GetFillColor(UIContext uiContext)
+        {
+            if (uiContext.Active == this)
+            {
+                return Style.GetColor(StyleColorKey.ButtonFillActive);
+            }
+            else if (uiContext.Hover == this)
+            {
+                return Style.GetColor(StyleColorKey.ButtonFillHover);
+            }
+            else
+            {
+                return Style.GetColor(StyleColorKey.ButtonFill);
+            }
+        }
+
+        public override Color4? GetBorderColor(UIContext uiContext)
+        {
+            if (uiContext.Active == this)
+            {
+                return this.Style.GetColor(StyleColorKey.ButtonBorderActive);
+            }
+            else if (uiContext.Hover == this)
+            {
+                return this.Style.GetColor(StyleColorKey.ButtonBorderHover);
+            }
+            else
+            {
+                return this.Style.GetColor(StyleColorKey.ButtonBorder);
+            }
+        }
+
+        IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext, RectRegion _)
+        {
+            return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+                GetFillColor(uiContext),
+                GetBorderColor(uiContext)
+                );
+        }
+
+        public override void Dispose()
+        {
+            LeftClicked -= m_action;
+            base.Dispose();
         }
     }
 }

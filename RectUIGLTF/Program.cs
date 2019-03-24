@@ -9,7 +9,14 @@ namespace RectUIGLTF
     {
         static RectRegion BuildUI()
         {
-            return new RectRegion();
+            return new PanelRegion
+            {
+                new ButtonRegion((_)=>Console.WriteLine("clicked"))
+                {
+                    Rect = new Rect(5, 5, 200, 100),
+                    Content = "open",
+                }
+            };
         }
 
         [STAThread]

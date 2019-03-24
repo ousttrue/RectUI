@@ -11,7 +11,7 @@ namespace RectUI
     /// </summary>
     public static class DrawCommandFactory
     {
-        public static IEnumerable<DrawCommand> DrawRectCommands(RectangleF rect, Color4 fill, Color4 border)
+        public static IEnumerable<DrawCommand> DrawRectCommands(RectangleF rect, Color4? fill, Color4? border)
         {
             yield return new DrawCommand
             {
@@ -53,7 +53,8 @@ namespace RectUI
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawTextCommands(UIContext uiContext, RectRegion r, 
+        public static IEnumerable<DrawCommand> DrawTextCommands(RectRegion r, 
+            Color4? textColor,
             string font, float fontSize, 
             float leftPadding, float topPadding, float rightPadding, float bottomPadding,
             string text, Style style=null)
@@ -71,7 +72,7 @@ namespace RectUI
                     r.Rect.Width - leftPadding - rightPadding, 
                     r.Rect.Height),
                 Text = text,
-                TextColor = r.GetBorderColor(uiContext),
+                TextColor = textColor,
                 Font = font,
                 FontSize = fontSize - topPadding - bottomPadding,
             };
