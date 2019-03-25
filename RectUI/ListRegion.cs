@@ -230,9 +230,9 @@ namespace RectUI
             for (; i < count; ++i, ++index)
             {
                 RectRegion r = null;
-                if (i < m_children.Count)
+                if (i < Children.Count)
                 {
-                    r = m_children[i];
+                    r = Children[i];
                 }
                 else
                 {
@@ -245,7 +245,7 @@ namespace RectUI
                         }
                     };
                     r.LeftClicked += x => R_LeftClicked(x);
-                    m_children.Add(r);
+                    Children.Add(r);
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
@@ -265,7 +265,7 @@ namespace RectUI
         public event Action<int, object> ItemLeftClicked;
         private void R_LeftClicked(RectRegion r)
         {
-            var index = m_children.IndexOf(r);
+            var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
             ItemLeftClicked?.Invoke(first+index, r.Content);
         }

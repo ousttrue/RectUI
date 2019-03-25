@@ -11,22 +11,22 @@ namespace RectUI
     {
         public RectRegion Left
         {
-            get { return m_children[1]; }
+            get { return Children[1]; }
             set
             {
-                if (m_children[1] == value) return;
-                m_children[1] = value;
+                if (Children[1] == value) return;
+                Children[1] = value;
                 Layout();
             }
         }
 
         public RectRegion Right
         {
-            get { return m_children[2]; }
+            get { return Children[2]; }
             set
             {
-                if (m_children[2] == value) return;
-                m_children[2] = value;
+                if (Children[2] == value) return;
+                Children[2] = value;
                 Layout();
             }
         }
@@ -35,14 +35,14 @@ namespace RectUI
 
         RectRegion Splitter
         {
-            get { return m_children[0]; }
+            get { return Children[0]; }
         }
 
         public HorizontalSplitter()
         {
-            m_children.Add(new RectRegion()); // splitter
-            m_children.Add(null); // left
-            m_children.Add(null); // right
+            Children.Add(new RectRegion()); // splitter
+            Children.Add(null); // left
+            Children.Add(null); // right
             Splitter.LeftDragged += Splitter_LeftDragged;
         }
 

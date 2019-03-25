@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using RectUI.Graphics;
 using SharpDX;
 
@@ -36,10 +37,26 @@ namespace RectUI
             }
         }
 
-        protected List<RectRegion> m_children = new List<RectRegion>();
+        List<RectRegion> m_children;
+
+        protected List<RectRegion> Children
+        {
+            get
+            {
+                if (m_children == null)
+                {
+                    m_children = new List<RectRegion>();
+                }
+                return m_children;
+            }
+        }
 
         public IEnumerator<RectRegion> GetEnumerator()
         {
+            if (m_children == null)
+            {
+                return Enumerable.Empty<RectRegion>().GetEnumerator();
+            }
             return m_children.GetEnumerator();
         }
 
@@ -52,13 +69,16 @@ namespace RectUI
         {
             yield return this;
 
-            foreach (var child in m_children)
+            if (m_children != null)
             {
-                foreach (var x in child.Traverse())
+                foreach (var child in m_children)
                 {
-                    if (x != null)
+                    foreach (var x in child.Traverse())
                     {
-                        yield return x;
+                        if (x != null)
+                        {
+                            yield return x;
+                        }
                     }
                 }
             }
@@ -134,12 +154,15 @@ namespace RectUI
         public RectRegion MouseMove(int x, int y)
         {
             // children
-            foreach (var r in m_children)
+            if (m_children != null)
             {
-                var hover = r.MouseMove(x, y);
-                if (hover != null)
+                foreach (var r in m_children)
                 {
-                    return hover;
+                    var hover = r.MouseMove(x, y);
+                    if (hover != null)
+                    {
+                        return hover;
+                    }
                 }
             }
 
@@ -182,7 +205,7 @@ namespace RectUI
         public void Add(RectRegion child)
         {
             child.Parent = this;
-            m_children.Add(child);
+            Children.Add(child);
         }
     }
 
