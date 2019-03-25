@@ -17,6 +17,14 @@ namespace RectUI
         End,
     }
 
+    public struct Anchor
+    {
+        public int? Left;
+        public int? Top;
+        public int? Right;
+        public int? Bottom;
+    }
+
     /// <summary>
     /// RectRegion + IRectDrawer => Widget
     /// </summary>
@@ -103,6 +111,12 @@ namespace RectUI
         #endregion
 
         public virtual Rect Rect
+        {
+            get;
+            set;
+        }
+
+        public Anchor Anchor
         {
             get;
             set;
@@ -206,6 +220,49 @@ namespace RectUI
         {
             child.Parent = this;
             Children.Add(child);
+        }
+
+        public override Rect Rect
+        {
+            get { return base.Rect; }
+            set
+            {
+                base.Rect = value;
+
+                Layout();
+            }
+        }
+
+        void Layout()
+        {
+            foreach(var child in Children)
+            {
+                var x = child.Rect.X;
+                if (child.Anchor.Left.HasValue)
+                {
+                    x = child.Anchor.Left.Value;
+                }
+
+                var y = child.Rect.Y;
+                if(child.Anchor.Top.HasValue)
+                {
+                    y = child.Anchor.Top.Value;
+                }
+
+                var w = child.Rect.Width;
+                if(child.Anchor.Right.HasValue)
+                {
+                    w = Rect.Width - child.Anchor.Right.Value - x;
+                }
+
+                var h = child.Rect.Height;
+                if(child.Anchor.Bottom.HasValue)
+                {
+                    h = Rect.Height - child.Anchor.Bottom.Value - y;
+                }
+
+                child.Rect = new Rect(x, y, w, h);
+            }
         }
     }
 

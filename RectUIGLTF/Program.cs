@@ -9,7 +9,9 @@ namespace RectUIGLTF
     {
         static RectRegion BuildFileDialog()
         {
-            return new RectRegion();
+            return new PanelRegion
+            {
+            };
         }
 
         static RectRegion BuildUI(Window dialog)
@@ -21,7 +23,12 @@ namespace RectUIGLTF
                     dialog.Show(SW.SHOW);
                 })
                 {
-                    Rect = new Rect(5, 5, 200, 100),
+                    Anchor=new Anchor{
+                        Left = 5,
+                        Top = 5,
+                        Right = 5,
+                        Bottom = 5,
+                    },
                     Content = "open",
                 }
             };
