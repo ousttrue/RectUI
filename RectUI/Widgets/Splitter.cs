@@ -40,7 +40,7 @@ namespace RectUI.Widgets
 
         public HorizontalSplitter()
         {
-            Children.Add(new RectRegion()); // splitter
+            Children.Add(new ButtonRegion(_=> { })); // splitter
             Children.Add(null); // left
             Children.Add(null); // right
             Splitter.LeftDragged += Splitter_LeftDragged;

@@ -1,4 +1,5 @@
 ﻿using DesktopDll;
+using RectUI.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace RectUI.Widgets
                         m_current.EnumerateFileSystemInfos()
                         );
                 }
-                catch(UnauthorizedAccessException)
+                catch (UnauthorizedAccessException)
                 {
                     // do nothing
                 }
@@ -126,6 +127,54 @@ namespace RectUI.Widgets
             Current = d;
         }
     }
+
+    public class ListItemRegion : RectRegion
+    {
+        public ListItemRegion()
+        {
+            NormalColor = ColorKeys.ListItemNormal;
+            HoverColor = ColorKeys.ListItemHover;
+            ActiveColor = ColorKeys.ListItemActive;
+        }
+
+        public override IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        {
+            if (Content == null)
+            {
+                return Enumerable.Empty<Graphics.DrawCommand>();
+            }
+
+            var rect = Rect.ToSharpDX();
+            rect.X += 16;
+            rect.Width -= 16;
+            var commands = DrawCommandFactory.DrawRectCommands(rect,
+                GetFillColor(isActive, isHover),
+                GetBorderColor(isActive, isHover));
+
+            /*
+            if (dir.Current.Parent.FullName == r.Content.FullName)
+            {
+                label = "..";
+            }
+            */
+
+            /*
+            var icon = SystemIcon.Get(r.Content.FullName, true);
+            commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
+                icon.ImageList, icon.ImageListIndex));
+            */
+
+            var color = GetTextColor(isActive, isHover);
+            var text = DrawCommandFactory.DrawTextCommands(this,
+                color, "MS Gothic", Rect.Height,
+                21, 3, 5, 2,
+                Content.ToString());
+            commands = commands.Concat(text);
+
+            return commands;
+        }
+    }
+
 
     public class ListRegion<T> : RectRegion
     {
@@ -154,57 +203,15 @@ namespace RectUI.Widgets
             }
         }
 
-        public Func<UIContext, int, RectRegion, IEnumerable<Graphics.DrawCommand>> ItemGetDrawCommands;
-
         IListSource<T> m_source;
 
         public ListRegion(IListSource<T> source)
         {
             m_source = source;
-
             source.Updated += () =>
             {
                 Layout();
             };
-
-            ItemGetDrawCommands = OnItemGetDrawCommands;
-        }
-
-        IEnumerable<Graphics.DrawCommand> OnItemGetDrawCommands(UIContext uiContext, int i, RectRegion r)
-        {
-            if (r.Content == null)
-            {
-                return Enumerable.Empty<Graphics.DrawCommand>();
-            }
-
-            var rect = r.Rect.ToSharpDX();
-            rect.X += 16;
-            rect.Width -= 16;
-            var commands = DrawCommandFactory.DrawRectCommands(rect,
-                r.GetFillColor(uiContext),
-                r.GetBorderColor(uiContext));
-
-            var label = r.Content.ToString();
-            /*
-            if (dir.Current.Parent.FullName == r.Content.FullName)
-            {
-                label = "..";
-            }
-            */
-
-            /*
-            var icon = SystemIcon.Get(r.Content.FullName, true);
-            commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
-                icon.ImageList, icon.ImageListIndex));
-            */
-
-            var text = DrawCommandFactory.DrawTextCommands(r,
-                GetTextColor(uiContext), "MS Gothic", ItemHeight,
-                21, 3, 5, 2,
-                label);
-            commands = commands.Concat(text);
-
-            return commands;
         }
 
         int m_scrollY = 0;
@@ -236,13 +243,9 @@ namespace RectUI.Widgets
                 }
                 else
                 {
-                    r = new RectRegion
+                    r = new ListItemRegion
                     {
                         Parent = this,
-                        OnGetDrawCommands = (uiContext, rr) =>
-                        {
-                            return ItemGetDrawCommands(uiContext, i, rr);
-                        }
                     };
                     r.LeftClicked += x => R_LeftClicked(x);
                     Children.Add(r);

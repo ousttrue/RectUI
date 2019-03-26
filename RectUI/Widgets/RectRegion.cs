@@ -25,6 +25,63 @@ namespace RectUI.Widgets
         public int? Bottom;
     }
 
+    public struct ColorKeys
+    {
+        public StyleColorKey FillColorKey;
+        public StyleColorKey BorderColorKey;
+        public StyleColorKey TextColorKey;
+
+        public static ColorKeys PanelNormal =>new ColorKeys
+        {
+            FillColorKey = StyleColorKey.PanelFill,
+            BorderColorKey = StyleColorKey.PanelBorder,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ButtonNormal => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ButtonFill,
+            BorderColorKey = StyleColorKey.ButtonBorder,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ButtonHover => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ButtonFillHover,
+            BorderColorKey = StyleColorKey.ButtonBorderHover,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ButtonActive => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ButtonFillActive,
+            BorderColorKey = StyleColorKey.ButtonBorderActive,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ListItemNormal => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ListItemFill,
+            BorderColorKey = StyleColorKey.ListItemBorder,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ListItemHover => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ListItemFillHover,
+            BorderColorKey = StyleColorKey.ListItemBorderHover,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+        public static ColorKeys ListItemActive => new ColorKeys
+        {
+            FillColorKey = StyleColorKey.ListItemFillActive,
+            BorderColorKey = StyleColorKey.ListItemBorderActive,
+            TextColorKey = StyleColorKey.Text,
+        };
+
+    }
+
     /// <summary>
     /// RectRegion + IRectDrawer => Widget
     /// </summary>
@@ -130,37 +187,81 @@ namespace RectUI.Widgets
             set { m_style = value; }
         }
 
-        public virtual Color4? GetFillColor(UIContext uiContext)
-        {
-            return Style.GetColor(StyleColorKey.PanelFill);
-        }
+        protected ColorKeys NormalColor = ColorKeys.PanelNormal;
+        protected ColorKeys? HoverColor;
+        protected ColorKeys? ActiveColor;
 
-        public virtual Color4? GetBorderColor(UIContext uIContext)
+        protected Color4? GetFillColor(bool isActive, bool isHover)
         {
-            return Style.GetColor(StyleColorKey.PanelBorder);
-        }
-
-        public virtual Color4? GetTextColor(UIContext uIContext)
-        {
-            return Style.GetColor(StyleColorKey.Text);
-        }
-
-        public GetDrawCommandsFunc OnGetDrawCommands = (uiContext, r) =>
-        {
-            return DrawCommandFactory.DrawRectCommands(r.Rect.ToSharpDX(),
-                r.GetFillColor(uiContext),
-                r.GetBorderColor(uiContext));
-        };
-
-        public IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext)
-        {
-            if (OnGetDrawCommands != null)
+            if(isActive && ActiveColor.HasValue)
             {
-                foreach (var c in OnGetDrawCommands(uiContext, this))
+                var color = Style.GetColor(ActiveColor.Value.FillColorKey);
+                if (color.HasValue)
                 {
-                    yield return c;
+                    return color;
                 }
             }
+
+            if((isActive||isHover) && HoverColor.HasValue){
+                var color = Style.GetColor(HoverColor.Value.FillColorKey);
+                if (color.HasValue)
+                {
+                    return color;
+                }
+            }
+
+            return Style.GetColor(NormalColor.FillColorKey);
+        }
+        protected Color4? GetBorderColor(bool isActive, bool isHover)
+        {
+            if (isActive && ActiveColor.HasValue)
+            {
+                var color = Style.GetColor(ActiveColor.Value.BorderColorKey);
+                if (color.HasValue)
+                {
+                    return color;
+                }
+            }
+
+            if ((isActive || isHover) && HoverColor.HasValue)
+            {
+                var color = Style.GetColor(HoverColor.Value.BorderColorKey);
+                if (color.HasValue)
+                {
+                    return color;
+                }
+            }
+
+            return Style.GetColor(NormalColor.BorderColorKey);
+        }
+        protected Color4? GetTextColor(bool isActive, bool isHover)
+        {
+            if (isActive && ActiveColor.HasValue)
+            {
+                var color = Style.GetColor(ActiveColor.Value.TextColorKey);
+                if (color.HasValue)
+                {
+                    return color;
+                }
+            }
+
+            if ((isActive || isHover) && HoverColor.HasValue)
+            {
+                var color = Style.GetColor(HoverColor.Value.TextColorKey);
+                if (color.HasValue)
+                {
+                    return color;
+                }
+            }
+
+            return Style.GetColor(NormalColor.TextColorKey);
+        }
+
+        public virtual IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        {
+            return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+                GetFillColor(isActive, isHover),
+                GetBorderColor(isActive, isHover));
         }
         #endregion
 
@@ -275,46 +376,16 @@ namespace RectUI.Widgets
             m_action = action;
             LeftClicked += m_action;
 
-            OnGetDrawCommands = GetDrawCommands;
+            NormalColor = ColorKeys.ButtonNormal;
+            HoverColor = ColorKeys.ButtonHover;
+            ActiveColor = ColorKeys.ButtonActive;
         }
 
-        public override Color4? GetFillColor(UIContext uiContext)
-        {
-            if (uiContext.Active == this)
-            {
-                return Style.GetColor(StyleColorKey.ButtonFillActive);
-            }
-            else if (uiContext.Hover == this)
-            {
-                return Style.GetColor(StyleColorKey.ButtonFillHover);
-            }
-            else
-            {
-                return Style.GetColor(StyleColorKey.ButtonFill);
-            }
-        }
-
-        public override Color4? GetBorderColor(UIContext uiContext)
-        {
-            if (uiContext.Active == this)
-            {
-                return this.Style.GetColor(StyleColorKey.ButtonBorderActive);
-            }
-            else if (uiContext.Hover == this)
-            {
-                return this.Style.GetColor(StyleColorKey.ButtonBorderHover);
-            }
-            else
-            {
-                return this.Style.GetColor(StyleColorKey.ButtonBorder);
-            }
-        }
-
-        IEnumerable<DrawCommand> GetDrawCommands(UIContext uiContext, RectRegion _)
+        public override IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
         {
             return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
-                GetFillColor(uiContext),
-                GetBorderColor(uiContext)
+                GetFillColor(isActive, isHover),
+                GetBorderColor(isActive, isHover)
                 );
         }
 
