@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI.Graphics;
+using RectUI.Widgets;
 using SharpDX;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,10 @@ namespace RectUI
 {
     public class WindowState : IDisposable
     {
+        D3D11Device m_device;
         DXGISwapChain m_swapchain;
         D2D1Bitmap m_backbuffer;
         RectRegion m_root;
-        D3D11Device m_device;
 
         public void Dispose()
         {

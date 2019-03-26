@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace RectUI
+namespace RectUI.Widgets
 {
     class SystemIcon
     {

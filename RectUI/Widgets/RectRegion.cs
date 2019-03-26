@@ -6,7 +6,7 @@ using RectUI.Graphics;
 using SharpDX;
 
 
-namespace RectUI
+namespace RectUI.Widgets
 {
     public delegate IEnumerable<DrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
 

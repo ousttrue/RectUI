@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace RectUI
+namespace RectUI.Widgets
 {
     /// <summary>
     /// 水平に領域を分割する

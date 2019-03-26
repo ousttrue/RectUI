@@ -1,9 +1,9 @@
 ﻿using DesktopDll;
 using RectUI;
+using RectUI.Widgets;
 using System;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+
 
 namespace RectUISample
 {
