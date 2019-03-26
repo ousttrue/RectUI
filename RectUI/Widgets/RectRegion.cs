@@ -271,7 +271,7 @@ namespace RectUI.Widgets
             // children
             if (m_children != null)
             {
-                foreach (var r in m_children)
+                foreach (var r in Enumerable.Reverse(m_children))
                 {
                     var hover = r.MouseMove(x, y);
                     if (hover != null)
@@ -334,65 +334,34 @@ namespace RectUI.Widgets
             }
         }
 
+        (int, int) GetPosLen(int total, int pos, int value, int? head, int? tail)
+        {
+            if (head.HasValue && tail.HasValue)
+            {
+                return (head.Value, total - head.Value - tail.Value);
+            }
+            else if (head.HasValue)
+            {
+                return (head.Value, value);
+            }
+            else if(tail.HasValue)
+            {
+                return (total - tail.Value - value, value);
+            }
+            else
+            {
+                return (pos, value);
+            }
+        }
+
         void Layout()
         {
             foreach(var child in Children)
             {
-                var x = child.Rect.X;
-                if (child.Anchor.Left.HasValue)
-                {
-                    x = child.Anchor.Left.Value;
-                }
-
-                var y = child.Rect.Y;
-                if(child.Anchor.Top.HasValue)
-                {
-                    y = child.Anchor.Top.Value;
-                }
-
-                var w = child.Rect.Width;
-                if(child.Anchor.Right.HasValue)
-                {
-                    w = Rect.Width - child.Anchor.Right.Value - x;
-                }
-
-                var h = child.Rect.Height;
-                if(child.Anchor.Bottom.HasValue)
-                {
-                    h = Rect.Height - child.Anchor.Bottom.Value - y;
-                }
-
+                var (x, w) = GetPosLen(Rect.Width, child.Rect.X, child.Rect.Width, child.Anchor.Left, child.Anchor.Right);
+                var (y, h) = GetPosLen(Rect.Height, child.Rect.Y, child.Rect.Height, child.Anchor.Top, child.Anchor.Bottom);
                 child.Rect = new Rect(x, y, w, h);
             }
-        }
-    }
-
-    public class ButtonRegion : RectRegion
-    {
-        Action<RectRegion> m_action;
-
-        public ButtonRegion(Action<RectRegion> action)
-        {
-            m_action = action;
-            LeftClicked += m_action;
-
-            NormalColor = ColorKeys.ButtonNormal;
-            HoverColor = ColorKeys.ButtonHover;
-            ActiveColor = ColorKeys.ButtonActive;
-        }
-
-        public override IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
-        {
-            return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
-                GetFillColor(isActive, isHover),
-                GetBorderColor(isActive, isHover)
-                );
-        }
-
-        public override void Dispose()
-        {
-            LeftClicked -= m_action;
-            base.Dispose();
         }
     }
 }

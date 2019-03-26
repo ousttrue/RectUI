@@ -11,6 +11,17 @@ namespace RectUI.Widgets
     {
         public RectRegion Left
         {
+            get { return Children[0]; }
+            set
+            {
+                if (Children[0] == value) return;
+                Children[0] = value;
+                Layout();
+            }
+        }
+
+        public RectRegion Right
+        {
             get { return Children[1]; }
             set
             {
@@ -20,29 +31,18 @@ namespace RectUI.Widgets
             }
         }
 
-        public RectRegion Right
+        RectRegion Splitter
         {
             get { return Children[2]; }
-            set
-            {
-                if (Children[2] == value) return;
-                Children[2] = value;
-                Layout();
-            }
         }
 
         const int _splitterWidth = 8;
 
-        RectRegion Splitter
-        {
-            get { return Children[0]; }
-        }
-
         public HorizontalSplitter()
         {
-            Children.Add(new ButtonRegion(_=> { })); // splitter
             Children.Add(null); // left
             Children.Add(null); // right
+            Children.Add(new ButtonRegion(_ => { })); // splitter
             Splitter.LeftDragged += Splitter_LeftDragged;
         }
 
