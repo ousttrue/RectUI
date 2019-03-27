@@ -97,6 +97,19 @@ namespace RectUI.Widgets
         {
             return new DirItemRegion(this);
         }
+
+        public void LeftClicked(int index)
+        {
+            if(index<0 || index>= m_files.Count)
+            {
+                return;
+            }
+            var d = m_files[index] as DirectoryInfo;
+            if (d != null)
+            {
+                ChangeDirectory(d);
+            }
+        }
     }
 
     public class DirItemRegion : ListItemRegion<FileSystemInfo>

@@ -11,31 +11,11 @@ namespace RectUISample
     {
         static RectRegion BuildUI()
         {
-            // build UI
             var root = new HorizontalSplitter
             {
-                Rect = new Rect()
+                Left = new ListRegion<FileSystemInfo>(new DirSource()),
+                Right = new RectRegion(),
             };
-            // left
-            var dir = new DirSource()
-            {
-            };
-            var left = new ListRegion<FileSystemInfo>(dir)
-            {
-                Rect = new Rect(),
-            };
-            left.ItemLeftClicked += (i, content) =>
-            {
-                var d = content as DirectoryInfo;
-                if (d != null)
-                {
-                    dir.ChangeDirectory(d);
-                }
-            };
-            root.Left = left;
-            // right
-            root.Right = new RectRegion();
-
             return root;
         }
 

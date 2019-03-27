@@ -12,6 +12,7 @@ namespace RectUI.Widgets
         T this[int index] { get; }
         event Action Updated;
         ListItemRegion<T> CreateItem();
+        void LeftClicked(int index);
     }
 
     public class ListSource<T> : IListSource<T>, IEnumerable<T>
@@ -43,6 +44,11 @@ namespace RectUI.Widgets
             return new ListItemRegion<T>(this)
             {
             };
+        }
+
+        public void LeftClicked(int index)
+        {
+            //throw new NotImplementedException();
         }
     }
 
@@ -164,6 +170,11 @@ namespace RectUI.Widgets
                 {
                     ScrollY = MaxScrollY;
                 }
+            };
+
+            ItemLeftClicked += (i, content) =>
+            {
+                source.LeftClicked(i);
             };
         }
 
