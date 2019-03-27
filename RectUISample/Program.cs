@@ -32,18 +32,6 @@ namespace RectUISample
                     dir.ChangeDirectory(d);
                 }
             };
-            left.OnWheel += (_, delta) =>
-            {
-                //Console.WriteLine(delta);
-                if (delta < 0)
-                {
-                    left.ScrollY += left.ItemHeight * 2;
-                }
-                else
-                {
-                    left.ScrollY -= left.ItemHeight * 2;
-                }
-            };
             root.Left = left;
             // right
             root.Right = new RectRegion();

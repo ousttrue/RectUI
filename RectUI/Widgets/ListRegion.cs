@@ -125,12 +125,45 @@ namespace RectUI.Widgets
 
         IListSource<T> m_source;
 
+        int MaxScrollY
+        {
+            get
+            {
+                var len = m_source.Count * m_itemHeight - Rect.Height;
+                if (len < 0)
+                {
+                    len = 0;
+                }
+                return len;
+            }
+        }
+
         public ListRegion(IListSource<T> source)
         {
             m_source = source;
             source.Updated += () =>
             {
                 Layout();
+            };
+
+            OnWheel += (_, delta) =>
+            {
+                if (delta < 0)
+                {
+                    ScrollY += ItemHeight * 2;
+                }
+                else
+                {
+                    ScrollY -= ItemHeight * 2;
+                }
+                if (ScrollY < 0)
+                {
+                    ScrollY = 0;
+                }
+                else if (ScrollY > MaxScrollY)
+                {
+                    ScrollY = MaxScrollY;
+                }
             };
         }
 
