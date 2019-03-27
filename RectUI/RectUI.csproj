@@ -64,6 +64,7 @@
     <Compile Include="Graphics\DXGISwapchain.cs" />
     <Compile Include="DrawCommandFactory.cs" />
     <Compile Include="Widgets\ButtonRegion.cs" />
+    <Compile Include="Widgets\Dir.cs" />
     <Compile Include="Widgets\ListRegion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rect.cs" />

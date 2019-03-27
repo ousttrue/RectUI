@@ -1,57 +1,17 @@
-﻿using DesktopDll;
-using RectUI.Graphics;
+﻿using RectUI.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+
 
 namespace RectUI.Widgets
 {
-    class SystemIcon
-    {
-        public IntPtr ImageList
-        {
-            get;
-            private set;
-        }
-
-        public int ImageListIndex
-        {
-            get;
-            private set;
-        }
-
-        public static SystemIcon Get(string path, bool isSmall)
-        {
-            var flags = SHGFI.SYSICONINDEX;
-            if (isSmall)
-            {
-                flags |= SHGFI.SMALLICON;
-            }
-            var sfi = default(SHFILEINFOW);
-            var result = Shell32.SHGetFileInfoW(path, -1,
-                ref sfi, Marshal.SizeOf<SHFILEINFOW>(),
-                flags);
-            if (result == IntPtr.Zero)
-            {
-                return null;
-            }
-
-            return new SystemIcon
-            {
-                ImageList = result,
-                ImageListIndex = sfi.iIcon,
-            };
-        }
-    }
-
     public interface IListSource<T>
     {
         int Count { get; }
         T this[int index] { get; }
         event Action Updated;
+        ListItemRegion<T> CreateItem();
     }
 
     public class ListSource<T> : IListSource<T>, IEnumerable<T>
@@ -77,64 +37,31 @@ namespace RectUI.Widgets
         {
             m_items.Add(value);
         }
-    }
 
-    public class DirSource : IListSource<FileSystemInfo>
-    {
-        List<FileSystemInfo> m_files = new List<FileSystemInfo>();
-
-        public FileSystemInfo this[int index] => m_files[index];
-        public int Count => m_files.Count;
-        public event Action Updated;
-
-        DirectoryInfo m_current;
-        public DirectoryInfo Current
+        public ListItemRegion<T> CreateItem()
         {
-            get { return m_current; }
-            set
+            return new ListItemRegion<T>(this)
             {
-                if (m_current == value)
-                {
-                    return;
-                }
-                m_current = value;
-
-                m_files.Clear();
-                m_files.Add(m_current.Parent);
-                //m_files.Add(m_current);
-                try
-                {
-                    m_files.AddRange(
-                        m_current.EnumerateFileSystemInfos()
-                        );
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    // do nothing
-                }
-
-                Updated?.Invoke();
-            }
-        }
-
-        public DirSource(string path = ".")
-        {
-            Current = new DirectoryInfo(Path.GetFullPath(path));
-        }
-
-        public void ChangeDirectory(DirectoryInfo d)
-        {
-            Current = d;
+            };
         }
     }
 
-    public class ListItemRegion : RectRegion
+    public class ListItemRegion<T> : RectRegion
     {
-        public ListItemRegion()
+        IListSource<T> m_source;
+
+        public ListItemRegion(IListSource<T> source)
         {
+            m_source = source;
+
             NormalColor = ColorKeys.ListItemNormal;
             HoverColor = ColorKeys.ListItemHover;
             ActiveColor = ColorKeys.ListItemActive;
+        }
+
+        public virtual IEnumerable<DrawCommand> GetIconCommands()
+        {
+            yield break;
         }
 
         public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
@@ -158,11 +85,7 @@ namespace RectUI.Widgets
             }
             */
 
-            /*
-            var icon = SystemIcon.Get(r.Content.FullName, true);
-            commands = commands.Concat(DrawCommandFactory.DrawImageListCommands(uiContext, r,
-                icon.ImageList, icon.ImageListIndex));
-            */
+            yield return GetIconCommands();
 
             var color = GetTextColor(isActive, isHover);
             yield return DrawCommandFactory.DrawTextCommands(this,
@@ -240,10 +163,8 @@ namespace RectUI.Widgets
                 }
                 else
                 {
-                    r = new ListItemRegion
-                    {
-                        Parent = this,
-                    };
+                    r = m_source.CreateItem();
+                    r.Parent = this;
                     r.LeftClicked += x => R_LeftClicked(x);
                     Children.Add(r);
                 }

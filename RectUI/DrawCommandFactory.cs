@@ -38,7 +38,7 @@ namespace RectUI
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawImageListCommands(UIContext uiContext, RectRegion r, 
+        public static IEnumerable<DrawCommand> DrawImageListCommands(RectRegion r, 
             IntPtr imageList, int imageListIndex, Style style = null)
         {
             if (style == null)
