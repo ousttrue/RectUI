@@ -132,6 +132,7 @@ namespace DesktopDll
             switch (msg)
             {
                 case WM.CLOSE:
+                    OnClose?.Invoke();
                     if (DestroyWhenClose == null || DestroyWhenClose())
                     {
                         User32.DestroyWindow(hwnd);
@@ -208,6 +209,7 @@ namespace DesktopDll
         public event Action<int, int> OnResize;
         public event Action OnPaint;
         public event Action OnDestroy;
+        public event Action OnClose;
         public event Action<bool> OnShow;
         public event Action<bool> OnEnable;
         public Func<bool> DestroyWhenClose; // return false if not destroy
@@ -229,7 +231,9 @@ namespace DesktopDll
 
         public void Close()
         {
-            User32.ShowWindow(m_hwnd, SW.HIDE);
+            //User32.ShowWindow(m_hwnd, SW.HIDE);
+            //User32.CloseWindow(m_hwnd);
+            User32.PostMessageW(m_hwnd, WM.CLOSE, 0, 0);
         }
 
         public static void MessageLoop()

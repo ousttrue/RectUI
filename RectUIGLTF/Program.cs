@@ -3,23 +3,57 @@ using RectUI;
 using RectUI.Widgets;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace RectUIGLTF
 {
     class FileDialog
     {
-        public RectRegion Root;
-        public DirSource Source;
+        public RectRegion UI;
+        public Window Window;
 
-        public FileDialog()
+        event Action<FileInfo> m_fileSelected;
+
+        public class AwaiterContext
         {
-            Source = new DirSource();
+            public Awaiter Awaiter;
+            public Action Complete;
+            public Action<FileSystemInfo> SetResult;
+        }
+        AwaiterContext m_context;
 
-            Source.Entered += Source_Entered;
-
-            Root = new PanelRegion
+        public FileDialog(Window parent)
+        {
+            Window = parent.CreateModal(400, 300);
+            Window.OnClose += () =>
             {
-                new ListRegion<FileSystemInfo>(Source)
+                var context = m_context;
+                m_context = null;
+                context.Complete();
+            };
+
+            m_fileSelected += (f) =>
+            {
+                m_context.SetResult(f);
+                parent.Enable();
+                Window.Close();
+            };
+
+            var source = new DirSource();
+            source.Entered += obj =>
+            {
+                var f = obj as FileInfo;
+                if (f == null)
+                {
+                    // dir...
+                    return;
+                }
+                m_fileSelected?.Invoke(f);
+            };
+
+            UI = new PanelRegion
+            {
+                new ListRegion<FileSystemInfo>(source)
                 {
                     Anchor= new Anchor
                     {
@@ -58,31 +92,78 @@ namespace RectUIGLTF
             };
         }
 
-        public event Action<FileInfo> FileSelected;
-
-        private void Source_Entered(FileSystemInfo obj)
+        public Awaitable OpenAsync()
         {
-            var f = obj as FileInfo;
-            if (f == null)
+            Window.Show(SW.SHOW);
+
+            if (m_context != null)
             {
-                // dir...
-                return;
+                throw new Exception();
             }
 
-            FileSelected?.Invoke(f);            
+            m_context = Awaiter.Create();
+
+            return new Awaitable(m_context.Awaiter);
+        }
+
+        public class Awaitable
+        {
+            Awaiter m_awaiter;
+
+            public Awaitable(Awaiter awaiter)
+            {
+                m_awaiter = awaiter;
+            }
+
+            public Awaiter GetAwaiter()
+            {
+                return m_awaiter;
+            }
+        }
+
+        public class Awaiter : INotifyCompletion
+        {
+            FileSystemInfo m_result;
+            bool m_isCompleted;
+
+            Awaiter() { }
+
+            public static AwaiterContext Create()
+            {
+                var awaiter = new Awaiter();
+                return new AwaiterContext
+                {
+                    Awaiter = awaiter,
+                    Complete = () =>
+                    {
+                        awaiter.m_isCompleted = true;
+                        awaiter.m_continuation();
+                    },
+                    SetResult = f => awaiter.m_result = f,
+                };
+            }
+
+            public bool IsCompleted => m_isCompleted;
+
+            Action m_continuation;
+            public void OnCompleted(Action continuation) {
+                m_continuation = continuation;
+            }
+
+            public FileSystemInfo GetResult()
+            {
+                return m_result;
+            }
         }
     }
 
     class Program
     {
-        static RectRegion BuildUI(Window dialog, FileDialog open)
+        static RectRegion BuildUI(Window dialog, Action onOpen)
         {
             return new PanelRegion
             {
-                new ButtonRegion((_)=>{
-                    //open.Chdir(".");
-                    dialog.Show(SW.SHOW);
-                })
+                new ButtonRegion(_ => onOpen())
                 {
                     Rect = new Rect(200, 40),
                     Anchor=new Anchor{
@@ -97,21 +178,20 @@ namespace RectUIGLTF
         [STAThread]
         static void Main(string[] args)
         {
-            var open = new FileDialog();
-
             using (var app = new App())
             {
-                var main = Window.Create(SW.SHOW);
-                var dialog = main.CreateModal(400, 300);
-                open.FileSelected += (f) =>
-                {
-                    Console.WriteLine($"open: {f.FullName}");
-                    main.Enable();
-                    dialog.Close();
-                };
+                var window = Window.Create(SW.SHOW);
+                var dialog = new FileDialog(window);
 
-                app.Bind(main, BuildUI(dialog, open));
-                app.Bind(dialog, open.Root);
+                app.Bind(dialog.Window, dialog.UI);
+
+                app.Bind(window, BuildUI(dialog.Window, async () => {
+                    var f = await dialog.OpenAsync();
+                    if (f != null)
+                    {
+                        Console.WriteLine($"open: {f.FullName}");
+                    }
+                }));
 
                 Window.MessageLoop();
             }

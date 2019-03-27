@@ -139,6 +139,11 @@ namespace DesktopDll
     {
         public IntPtr Value;
 
+        public static implicit operator LPARAM(int value)
+        {
+            return new LPARAM { Value = new IntPtr(value) };
+        }
+
         public int LowWord
         {
             get
@@ -199,6 +204,11 @@ namespace DesktopDll
     public struct WPARAM
     {
         public IntPtr Value;
+
+        public static implicit operator WPARAM(int value)
+        {
+            return new WPARAM { Value = new IntPtr(value) };
+        }
 
         public int LowWord
         {

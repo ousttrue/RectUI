@@ -334,5 +334,21 @@ namespace DesktopDll
         public static extern BOOL DestroyWindow(
           HWND hWnd
         );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-postmessagew
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <param name="Msg"></param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL PostMessageW(
+          HWND hWnd,
+          WM Msg,
+          WPARAM wParam,
+          LPARAM lParam
+        );
     }
 }
