@@ -257,9 +257,9 @@ namespace RectUI.Widgets
             return Style.GetColor(NormalColor.TextColorKey);
         }
 
-        public virtual IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public virtual IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
-            return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+            yield return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
         }

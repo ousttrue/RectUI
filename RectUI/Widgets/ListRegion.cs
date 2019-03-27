@@ -137,17 +137,17 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        public override IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
             if (Content == null)
             {
-                return Enumerable.Empty<Graphics.DrawCommand>();
+                yield break;
             }
 
             var rect = Rect.ToSharpDX();
             rect.X += 16;
             rect.Width -= 16;
-            var commands = DrawCommandFactory.DrawRectCommands(rect,
+            yield return DrawCommandFactory.DrawRectCommands(rect,
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
@@ -165,13 +165,10 @@ namespace RectUI.Widgets
             */
 
             var color = GetTextColor(isActive, isHover);
-            var text = DrawCommandFactory.DrawTextCommands(this,
+            yield return DrawCommandFactory.DrawTextCommands(this,
                 color, "MS Gothic", Rect.Height,
                 21, 3, 5, 2,
                 Content.ToString());
-            commands = commands.Concat(text);
-
-            return commands;
         }
     }
 

@@ -25,14 +25,14 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ButtonActive;
         }
 
-        public override IEnumerable<DrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
-            return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+            yield return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
-                GetBorderColor(isActive, isHover)
-                ).Concat(
-                DrawCommandFactory.DrawTextCommands(this, GetTextColor(isActive, isHover), "MSGothic", 18, 2, 2, 2, 2, Content as string)
-                );
+                GetBorderColor(isActive, isHover));
+
+            yield return DrawCommandFactory.DrawTextCommands(this, 
+                GetTextColor(isActive, isHover), "MSGothic", 18, 2, 2, 2, 2, Content as string);
         }
 
         public override void Dispose()
