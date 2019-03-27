@@ -15,6 +15,8 @@ namespace RectUIGLTF
         {
             Source = new DirSource();
 
+            Source.Entered += Source_Entered;
+
             Root = new PanelRegion
             {
                 new ListRegion<FileSystemInfo>(Source)
@@ -56,9 +58,18 @@ namespace RectUIGLTF
             };
         }
 
-        public void Chdir(string path)
-        {
+        public event Action<FileInfo> FileSelected;
 
+        private void Source_Entered(FileSystemInfo obj)
+        {
+            var f = obj as FileInfo;
+            if (f == null)
+            {
+                // dir...
+                return;
+            }
+
+            FileSelected?.Invoke(f);            
         }
     }
 
@@ -69,8 +80,7 @@ namespace RectUIGLTF
             return new PanelRegion
             {
                 new ButtonRegion((_)=>{
-                    Console.WriteLine("clicked");
-                    open.Chdir(".");
+                    //open.Chdir(".");
                     dialog.Show(SW.SHOW);
                 })
                 {
@@ -93,6 +103,12 @@ namespace RectUIGLTF
             {
                 var main = Window.Create(SW.SHOW);
                 var dialog = main.CreateModal(400, 300);
+                open.FileSelected += (f) =>
+                {
+                    Console.WriteLine($"open: {f.FullName}");
+                    main.Enable();
+                    dialog.Close();
+                };
 
                 app.Bind(main, BuildUI(dialog, open));
                 app.Bind(dialog, open.Root);

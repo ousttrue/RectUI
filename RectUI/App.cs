@@ -51,6 +51,7 @@ namespace RectUI
             window.OnMouseMiddleUp += Window_OnMouseMiddleUp;
             window.OnMouseMove += Window_OnMouseMove;
             window.OnMouseWheel += Window_OnMouseWheel;
+            window.OnMouseLeftDoubleClicked += Window_OnMouseLeftDoubleClicked;
 
             UIContext.Updated += () => window.Invalidate();
 
@@ -60,6 +61,11 @@ namespace RectUI
 
             Window_OnResize(window.Width, window.Height);
 
+        }
+
+        private void Window_OnMouseLeftDoubleClicked()
+        {
+            UIContext.MouseLeftDoubleClicked();
         }
 
         private void Window_OnMouseWheel(int delta)

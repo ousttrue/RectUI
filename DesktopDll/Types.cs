@@ -246,6 +246,8 @@ namespace DesktopDll
     {
         VREDRAW = 0x0001,
         HREDRAW = 0x0002,
+
+        DBLCLKS = 0x0008,
     }
 
     /// <summary>

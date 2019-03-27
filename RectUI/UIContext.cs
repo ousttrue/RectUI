@@ -61,9 +61,9 @@ namespace RectUI
 
             if (Active != null)
             {
-                if (_mouseLeftDown!=null)
+                if (_mouseLeftDown != null)
                 {
-                    if(_mouseLeftDown.LeftDrag(Active, DragEvent.Drag, x, y))
+                    if (_mouseLeftDown.LeftDrag(Active, DragEvent.Drag, x, y))
                     {
                         Updated?.Invoke();
                     }
@@ -95,7 +95,8 @@ namespace RectUI
                     Active.LeftClick(Active);
                 }
 
-                if(_mouseLeftDown != null){
+                if (_mouseLeftDown != null)
+                {
                     _mouseLeftDown.LeftDrag(Active, DragEvent.End, x, y);
                     _mouseLeftDown = null;
                 }
@@ -158,6 +159,15 @@ namespace RectUI
         public void MouseWheel(int delta)
         {
             var processed = (Active ?? Hover).ParentPath.FirstOrDefault(x => x.Wheel(x, delta));
+            if (processed != null)
+            {
+                Updated?.Invoke();
+            }
+        }
+
+        public void MouseLeftDoubleClicked()
+        {
+            var processed = (Active ?? Hover).ParentPath.FirstOrDefault(x => x.LeftDoubleClick(x));
             if (processed != null)
             {
                 Updated?.Invoke();

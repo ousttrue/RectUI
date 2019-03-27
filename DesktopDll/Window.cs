@@ -20,6 +20,7 @@ namespace DesktopDll
         MOUSEMOVE = 0x0200,
         LBUTTONDOWN = 0x0201,
         LBUTTONUP = 0x0202,
+        LBUTTONDBLCLK = 0x0203,
         RBUTTONDOWN = 0x0204,
         RBUTTONUP = 0x0205,
         MBUTTONDOWN = 0x0207,
@@ -95,7 +96,7 @@ namespace DesktopDll
             var wc = new WNDCLASSEXW
             {
                 cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEXW)),
-                style = CS.VREDRAW | CS.HREDRAW,
+                style = CS.VREDRAW | CS.HREDRAW | CS.DBLCLKS,
                 lpszClassName = window.m_className,
                 lpfnWndProc = window.Callback,
                 hInstance = hInstance,
@@ -131,16 +132,11 @@ namespace DesktopDll
             switch (msg)
             {
                 case WM.CLOSE:
-                    if (DestroyWhenClose != null)
+                    if (DestroyWhenClose == null || DestroyWhenClose())
                     {
-                        if (!DestroyWhenClose())
-                        {
-                            // not destroy
-                            return 0;
-                        }
+                        User32.DestroyWindow(hwnd);
                     }
-                    // destroy
-                    break;
+                    return 0;
 
                 case WM.ENABLE:
                     OnEnable?.Invoke(wParam);
@@ -163,6 +159,9 @@ namespace DesktopDll
                     return 0;
                 case WM.LBUTTONUP:
                     OnMouseLeftUp?.Invoke(lParam.LowWord, lParam.HiWord);
+                    return 0;
+                case WM.LBUTTONDBLCLK:
+                    OnMouseLeftDoubleClicked?.Invoke();
                     return 0;
                 case WM.RBUTTONDOWN:
                     OnMouseRightDown?.Invoke(lParam.LowWord, lParam.HiWord);
@@ -204,6 +203,8 @@ namespace DesktopDll
         public event Action<int, int> OnMouseMiddleUp;
         public event Action<int, int> OnMouseMove;
         public event Action<int> OnMouseWheel;
+        public event Action OnMouseLeftDoubleClicked;
+
         public event Action<int, int> OnResize;
         public event Action OnPaint;
         public event Action OnDestroy;
@@ -219,6 +220,16 @@ namespace DesktopDll
         public void Invalidate()
         {
             User32.InvalidateRect(m_hwnd, IntPtr.Zero, true);
+        }
+
+        public void Enable()
+        {
+            User32.EnableWindow(m_hwnd, true);
+        }
+
+        public void Close()
+        {
+            User32.ShowWindow(m_hwnd, SW.HIDE);
         }
 
         public static void MessageLoop()

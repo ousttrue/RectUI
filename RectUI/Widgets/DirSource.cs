@@ -46,14 +46,8 @@ namespace RectUI.Widgets
         }
     }
 
-    public class DirSource : IListSource<FileSystemInfo>
+    public class DirSource : ListSource<FileSystemInfo>
     {
-        List<FileSystemInfo> m_files = new List<FileSystemInfo>();
-
-        public FileSystemInfo this[int index] => m_files[index];
-        public int Count => m_files.Count;
-        public event Action Updated;
-
         DirectoryInfo m_current;
         public DirectoryInfo Current
         {
@@ -66,11 +60,11 @@ namespace RectUI.Widgets
                 }
                 m_current = value;
 
-                m_files.Clear();
-                m_files.Add(m_current.Parent);
+                m_items.Clear();
+                m_items.Add(m_current.Parent);
                 try
                 {
-                    m_files.AddRange(
+                    m_items.AddRange(
                         m_current.EnumerateFileSystemInfos()
                         );
                 }
@@ -79,13 +73,22 @@ namespace RectUI.Widgets
                     // do nothing
                 }
 
-                Updated?.Invoke();
+                RaiseUpdate();
             }
         }
 
         public DirSource(string path = ".")
         {
             Current = new DirectoryInfo(Path.GetFullPath(path));
+
+            Entered += f =>
+            {
+                var d = f as DirectoryInfo;
+                if (d != null)
+                {
+                    ChangeDirectory(d);
+                }
+            };
         }
 
         public void ChangeDirectory(DirectoryInfo d)
@@ -93,22 +96,9 @@ namespace RectUI.Widgets
             Current = d;
         }
 
-        public ListItemRegion<FileSystemInfo> CreateItem()
+        public override ListItemRegion<FileSystemInfo> CreateItem()
         {
             return new DirItemRegion(this);
-        }
-
-        public void LeftClicked(int index)
-        {
-            if(index<0 || index>= m_files.Count)
-            {
-                return;
-            }
-            var d = m_files[index] as DirectoryInfo;
-            if (d != null)
-            {
-                ChangeDirectory(d);
-            }
         }
     }
 

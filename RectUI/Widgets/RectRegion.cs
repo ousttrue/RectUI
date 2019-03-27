@@ -297,6 +297,14 @@ namespace RectUI.Widgets
             LeftClicked?.Invoke(sender);
         }
 
+        public event Action<RectRegion> LeftDoubleClicked;
+        public bool LeftDoubleClick(RectRegion sender)
+        {
+            if (LeftDoubleClicked == null) return false;
+            LeftDoubleClicked?.Invoke(sender);
+            return true;
+        }
+
         public event Action<RectRegion, DragEvent, int, int> LeftDragged;
         public bool LeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
         {

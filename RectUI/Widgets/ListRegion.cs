@@ -11,18 +11,34 @@ namespace RectUI.Widgets
         int Count { get; }
         T this[int index] { get; }
         event Action Updated;
+
+        event Action<T> Entered;
+        void Enter(int index);
+
         ListItemRegion<T> CreateItem();
-        void LeftClicked(int index);
     }
 
     public class ListSource<T> : IListSource<T>, IEnumerable<T>
     {
-        List<T> m_items = new List<T>();
+        protected List<T> m_items = new List<T>();
         public int Count => m_items.Count;
 
         public T this[int index] { get { return m_items[index]; } }
 
         public event Action Updated;
+        protected void RaiseUpdate()
+        {
+            Updated?.Invoke();
+        }
+
+        public event Action<T> Entered;
+        public void Enter(int index)
+        {
+            if (index >= 0 && index < Count)
+            {
+                Entered?.Invoke(this[index]);
+            }
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -39,16 +55,11 @@ namespace RectUI.Widgets
             m_items.Add(value);
         }
 
-        public ListItemRegion<T> CreateItem()
+        public virtual ListItemRegion<T> CreateItem()
         {
             return new ListItemRegion<T>(this)
             {
             };
-        }
-
-        public void LeftClicked(int index)
-        {
-            //throw new NotImplementedException();
         }
     }
 
@@ -174,7 +185,11 @@ namespace RectUI.Widgets
 
             ItemLeftClicked += (i, content) =>
             {
-                source.LeftClicked(i);
+                // Todo: select
+            };
+            ItemLeftDoubleClicked += (i, content)=>
+            {
+                source.Enter(i);
             };
         }
 
@@ -210,6 +225,7 @@ namespace RectUI.Widgets
                     r = m_source.CreateItem();
                     r.Parent = this;
                     r.LeftClicked += x => R_LeftClicked(x);
+                    r.LeftDoubleClicked += x => R_LeftDoubleClicked(x);
                     Children.Add(r);
                 }
 
@@ -233,6 +249,14 @@ namespace RectUI.Widgets
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
             ItemLeftClicked?.Invoke(first+index, r.Content);
+        }
+
+        public event Action<int, object> ItemLeftDoubleClicked;
+        private void R_LeftDoubleClicked(RectRegion r)
+        {
+            var index = Children.IndexOf(r);
+            var first = ScrollY / ItemHeight;
+            ItemLeftDoubleClicked?.Invoke(first + index, r.Content);
         }
     }
 }
