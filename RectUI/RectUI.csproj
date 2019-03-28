@@ -121,6 +121,7 @@
     <Compile Include="Graphics\InterleavedBuffer.cs" />
     <Compile Include="Graphics\Triangle.cs" />
     <Compile Include="Widgets\ButtonRegion.cs" />
+    <Compile Include="Widgets\D3DRegion.cs" />
     <Compile Include="Widgets\DirSource.cs" />
     <Compile Include="Widgets\ListRegion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -147,6 +148,20 @@
       <Project>{7DF65FB7-FC53-4EF8-AC2F-1C825D67C767}</Project>
       <Name>RectUI.JSON</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="shaders\gizmo.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="shaders\screen.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="shaders\shader.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="shaders\unlit.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

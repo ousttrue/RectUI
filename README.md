@@ -1,4 +1,5 @@
 # ToDo
+* [ ] Text alignment
 * [ ] style each reagion
 * [ ] save/restore state
 * [ ] middle drag list

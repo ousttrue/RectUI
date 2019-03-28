@@ -161,7 +161,9 @@ namespace RectUIGLTF
 
     class Program
     {
-        static RectRegion BuildUI(Window dialog, Action onOpen)
+        static RectRegion BuildUI(Window dialog, 
+            Scene scene,
+            Action onOpen)
         {
             return new PanelRegion
             {
@@ -173,13 +175,26 @@ namespace RectUIGLTF
                         Top = 5,
                     },
                     Content = "open",
-                }
+                },
+
+                new D3DRegion(scene)
+                {
+                    Rect = new Rect(200, 40),
+                    Anchor=new Anchor{
+                        Left = 5,
+                        Top = 50,
+                        Bottom = 5,
+                        Right = 5,
+                    },
+                },
             };
         }
 
         [STAThread]
         static void Main(string[] args)
         {
+            var scene = new Scene();
+
             using (var app = new App())
             {
                 var window = Window.Create(SW.SHOW);
@@ -187,16 +202,27 @@ namespace RectUIGLTF
 
                 app.Bind(dialog.Window, dialog.UI);
 
-                app.Bind(window, BuildUI(dialog.Window, async () =>
+                Action onOpen = async () =>
                 {
                     var f = await dialog.OpenAsync();
                     if (f != null)
                     {
-                        Console.WriteLine($"open: {f.FullName}");
-                        var source = await Task.Run(() => AssetSource.Load(f.FullName));
-                        Console.WriteLine($"load: {source}");
+                        try
+                        {
+                            Console.WriteLine($"open: {f.FullName}");
+                            var source = await Task.Run(() => AssetSource.Load(f.FullName));
+                            Console.WriteLine($"loaded: {source}");
+                            var asset = await Task.Run(() => AssetContext.Load(source));
+                            Console.WriteLine($"build: {source}");
+                            scene.Asset = asset;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
                     }
-                }));
+                };
+                app.Bind(window, BuildUI(dialog.Window, scene, onOpen));
 
                 Window.MessageLoop();
             }
