@@ -1,9 +1,11 @@
 ﻿using DesktopDll;
 using RectUI;
+using RectUI.Assets;
 using RectUI.Widgets;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace RectUIGLTF
 {
@@ -185,11 +187,14 @@ namespace RectUIGLTF
 
                 app.Bind(dialog.Window, dialog.UI);
 
-                app.Bind(window, BuildUI(dialog.Window, async () => {
+                app.Bind(window, BuildUI(dialog.Window, async () =>
+                {
                     var f = await dialog.OpenAsync();
                     if (f != null)
                     {
                         Console.WriteLine($"open: {f.FullName}");
+                        var source = await Task.Run(() => AssetSource.Load(f.FullName));
+                        Console.WriteLine($"load: {source}");
                     }
                 }));
 
