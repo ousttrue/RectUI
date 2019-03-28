@@ -15,12 +15,38 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ButtonActive;
 
             MouseRightDragged += D3DRegion_MouseRightDragged;
+            MouseMiddleDragged += D3DRegion_MouseMiddleDragged;
             OnWheel += D3DRegion_OnWheel;
         }
 
         private void D3DRegion_OnWheel(RectRegion arg1, int arg2)
         {
             _camera.Dolly(arg2);
+        }
+
+        int _mx;
+        int _my;
+        private void D3DRegion_MouseMiddleDragged(RectRegion arg1, DragEvent arg2, int arg3, int arg4)
+        {
+            switch (arg2)
+            {
+                case DragEvent.Begin:
+                    break;
+
+                case DragEvent.Drag:
+                    {
+                        var dx = arg3 - _mx;
+                        var dy = arg4 - _my;
+                        _camera.Shift(dx, dy);
+                    }
+                    break;
+
+                case DragEvent.End:
+                    break;
+            }
+
+            _mx = arg3;
+            _my = arg4;
         }
 
         int _rx;

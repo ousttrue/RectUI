@@ -16,9 +16,11 @@ namespace RectUI.Assets
                 _matrices = new Matrix[_joints.Length];
             }
 
+            /*
             var root = nodes[RootIndex];
             var rootMatrix = root.WorldMatrix;
             rootMatrix.Invert();
+            */
 
             for (int i = 0; i < _joints.Length; ++i)
             {

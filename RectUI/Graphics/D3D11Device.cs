@@ -143,5 +143,10 @@ namespace RectUI.Graphics
                 return new DXGISwapChain(swapchain);
             }
         }
+
+        public void SetViewport(SharpDX.Viewport viewport)
+        {
+            Context.Rasterizer.SetViewport(viewport);
+        }
     }
 }

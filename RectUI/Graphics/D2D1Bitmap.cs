@@ -336,6 +336,9 @@ namespace RectUI.Graphics
         RectangleF m_rect;
         void DrawScene(D3D11Device device, RectangleF rect, Camera camera, Scene scene)
         {
+            //
+            // render 3D scene
+            //
             if (rect != m_rect)
             {
                 if (m_renderTarget != null)
@@ -353,8 +356,12 @@ namespace RectUI.Graphics
             }
 
             m_renderTarget.Setup(device, new Color4(0.2f, 0, 0, 1));
+            device.SetViewport(new Viewport(0, 0, (int)rect.Width, (int)rect.Height));
             scene.Draw(device, camera.ViewProjection);
 
+            //
+            // draw render target
+            //
             Bitmap bitmap;
             if (!m_d3dbitmapMap.TryGetValue(m_renderTarget, out bitmap))
             {
