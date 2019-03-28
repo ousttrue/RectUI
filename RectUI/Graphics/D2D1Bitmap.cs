@@ -1,4 +1,5 @@
 ﻿using DesktopDll;
+using RectUI.Assets;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -167,7 +168,7 @@ namespace RectUI.Graphics
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void Draw(D3D11Device device, DrawCommand command)
+        public void Draw(D3D11Device device, DrawCommand command, object content)
         {
             switch(command.DrawType)
             {
@@ -192,9 +193,18 @@ namespace RectUI.Graphics
                         command.Icon, command.ImageListIndex);
                     break;
 
+                case DrawType.Scene:
+                    DrawScene(device, command.Rectangle, content as Scene);
+                    break;
+
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        void DrawScene(D3D11Device device, RectangleF rect, Scene scene)
+        {
+
         }
 
         void DrawRect(D3D11Device device,

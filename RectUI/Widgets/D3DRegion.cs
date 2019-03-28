@@ -6,7 +6,7 @@ namespace RectUI.Widgets
 {
     public class D3DRegion: RectRegion
     {
-        public D3DRegion(Scene scene)
+        public D3DRegion()
         {
             NormalColor = ColorKeys.ButtonNormal;
             HoverColor = ColorKeys.ButtonHover;
@@ -15,7 +15,7 @@ namespace RectUI.Widgets
 
         public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
-            return base.GetDrawCommands(isActive, isHover);
+            yield return DrawCommandFactory.DrawSceneCommands(Rect.ToSharpDX());
         }
     }
 }

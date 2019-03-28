@@ -9,6 +9,7 @@ namespace RectUI.Graphics
         Text,
         Icon,
         ImageList,
+        Scene,
     }
 
     public struct DrawCommand

@@ -1,20 +1,85 @@
 ﻿using DesktopDll;
 using RectUI;
 using RectUI.Assets;
+using RectUI.JSON;
 using RectUI.Widgets;
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace RectUIGLTF
 {
+    class State
+    {
+        public string OpenPath;
+
+        static string ExecutablePath
+        {
+            get
+            {
+                var path = Assembly.GetAssembly(typeof(Program)).CodeBase;
+                return path.Substring("file:///".Length);
+            }
+        }
+
+        static string StatePath
+        {
+            get
+            {
+                var exe = ExecutablePath;
+                return Path.Combine(
+                    Path.GetDirectoryName(exe),
+                    Path.GetFileNameWithoutExtension(exe) + ".json"
+                    );
+            }
+        }
+
+        static State s_instance = new State();
+        public static State Instance
+        {
+            get { return s_instance; }
+        }
+
+        public static void Save()
+        {
+            var f = new JsonFormatter();
+            f.Serialize(s_instance);
+            var path = StatePath;
+            Console.WriteLine(path);
+            File.WriteAllBytes(path, f.GetStoreBytes().ToArray());
+        }
+
+        public static void Restore()
+        {
+            try
+            {
+                var bytes = File.ReadAllBytes(StatePath);
+                var json = bytes.ParseAsJson();
+                json.Deserialize(ref s_instance);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
     class FileDialog
     {
         public RectRegion UI;
         public Window Window;
 
+        public String OpenPath
+        {
+            get;
+            set;
+        }
+
         event Action<FileInfo> m_fileSelected;
+        public Action<DirectoryInfo> FolderChanged;
 
         public class AwaiterContext
         {
@@ -24,8 +89,9 @@ namespace RectUIGLTF
         }
         AwaiterContext m_context;
 
-        public FileDialog(Window parent)
+        public FileDialog(Window parent, string openPath)
         {
+            OpenPath = openPath;
             Window = parent.CreateModal(400, 300);
             Window.OnClose += () =>
             {
@@ -41,16 +107,20 @@ namespace RectUIGLTF
                 Window.Close();
             };
 
-            var source = new DirSource();
+            var source = new DirSource(OpenPath);
+
             source.Entered += obj =>
             {
                 var f = obj as FileInfo;
-                if (f == null)
-                {
-                    // dir...
-                    return;
-                }
+                if (f == null) { return; }
                 m_fileSelected?.Invoke(f);
+            };
+
+            source.Entered += obj =>
+            {
+                var d = obj as DirectoryInfo;
+                if (d == null) { return; }
+                FolderChanged?.Invoke(d);
             };
 
             UI = new PanelRegion
@@ -148,7 +218,8 @@ namespace RectUIGLTF
             public bool IsCompleted => m_isCompleted;
 
             Action m_continuation;
-            public void OnCompleted(Action continuation) {
+            public void OnCompleted(Action continuation)
+            {
                 m_continuation = continuation;
             }
 
@@ -161,7 +232,7 @@ namespace RectUIGLTF
 
     class Program
     {
-        static RectRegion BuildUI(Window dialog, 
+        static RectRegion BuildUI(Window dialog,
             Scene scene,
             Action onOpen)
         {
@@ -177,8 +248,9 @@ namespace RectUIGLTF
                     Content = "open",
                 },
 
-                new D3DRegion(scene)
+                new D3DRegion
                 {
+                    Content = scene,
                     Rect = new Rect(200, 40),
                     Anchor=new Anchor{
                         Left = 5,
@@ -193,12 +265,18 @@ namespace RectUIGLTF
         [STAThread]
         static void Main(string[] args)
         {
+            State.Restore();
+
             var scene = new Scene();
 
             using (var app = new App())
             {
                 var window = Window.Create(SW.SHOW);
-                var dialog = new FileDialog(window);
+                var dialog = new FileDialog(window, State.Instance.OpenPath);
+                dialog.FolderChanged += d =>
+                {
+                    State.Instance.OpenPath = d.FullName;
+                };
 
                 app.Bind(dialog.Window, dialog.UI);
 
@@ -225,6 +303,8 @@ namespace RectUIGLTF
                 app.Bind(window, BuildUI(dialog.Window, scene, onOpen));
 
                 Window.MessageLoop();
+
+                State.Save();
             }
         }
     }

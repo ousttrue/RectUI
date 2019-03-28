@@ -77,8 +77,15 @@ namespace RectUI.Widgets
             }
         }
 
-        public DirSource(string path = ".")
+        public DirSource():this(".")
+        { }
+
+        public DirSource(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                path = ".";
+            }
             Current = new DirectoryInfo(Path.GetFullPath(path));
 
             Entered += f =>

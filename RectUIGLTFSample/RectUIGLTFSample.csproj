@@ -57,6 +57,10 @@
       <Project>{63011582-C45F-471A-ACD6-37361D521184}</Project>
       <Name>DesktopDll</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RectUI.JSON\RectUI.JSON.csproj">
+      <Project>{7df65fb7-fc53-4ef8-ac2f-1c825d67c767}</Project>
+      <Name>RectUI.JSON</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RectUI\RectUI.csproj">
       <Project>{F07B7387-018C-4A7C-855C-AF7967F3F0F9}</Project>
       <Name>RectUI</Name>

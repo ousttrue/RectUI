@@ -78,5 +78,14 @@ namespace RectUI
                 FontSize = fontSize - topPadding - bottomPadding,
             };
         }
+
+        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect)
+        {
+            yield return new DrawCommand
+            {
+                DrawType = DrawType.Scene,
+                Rectangle = rect,
+            };
+        }
     }
 }

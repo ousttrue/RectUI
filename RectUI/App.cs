@@ -116,7 +116,7 @@ namespace RectUI
             {
                 foreach (var c in r.GetDrawCommands(UIContext.Active==r, UIContext.Hover==r).SelectMany(x => x))
                 {
-                    m_backbuffer.Draw(m_device, c);
+                    m_backbuffer.Draw(m_device, c, r.Content);
                 }
             }
 
