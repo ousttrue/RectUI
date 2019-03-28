@@ -107,6 +107,9 @@ namespace RectUI.Graphics
         Dictionary<IntPtr, Bitmap> _bitmapMap = new Dictionary<IntPtr, Bitmap>();
         Dictionary<int, Bitmap> _imageListMap = new Dictionary<int, Bitmap>();
 
+        D3D11RenderTarget m_renderTarget;
+        Dictionary<D3D11RenderTarget, Bitmap> m_d3dbitmapMap = new Dictionary<D3D11RenderTarget, Bitmap>();
+
         public void Dispose()
         {
             if (_textFormat != null)
@@ -202,11 +205,6 @@ namespace RectUI.Graphics
             }
         }
 
-        void DrawScene(D3D11Device device, RectangleF rect, Scene scene)
-        {
-
-        }
-
         void DrawRect(D3D11Device device,
             RectangleF rect,
             Color4? fill,
@@ -251,6 +249,22 @@ namespace RectUI.Graphics
             // todo
         }
 
+        BitmapProperties GetBP
+        {
+            get
+            {
+                var bp = new BitmapProperties
+                {
+                    PixelFormat = new PixelFormat
+                    {
+                        Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
+                        AlphaMode = AlphaMode.Premultiplied
+                    }
+                };
+                return bp;
+            }
+        }
+
         void DrawImageList(D3D11Device device,
             RectangleF rect,
             IntPtr imageList, int imageListIndex)
@@ -277,19 +291,11 @@ namespace RectUI.Graphics
                     var bytes = memoryBitmap.GetBitmap();
                     if (bytes != null)
                     {
-                        var bp = new BitmapProperties
-                        {
-                            PixelFormat=new PixelFormat
-                            {
-                                Format= SharpDX.DXGI.Format.B8G8R8A8_UNorm,
-                                AlphaMode = AlphaMode.Premultiplied
-                            }
-                        };
                         using(var s = new DataStream(w * h * 4, true, true))
                         {
                             s.Write(bytes, 0, bytes.Length);
                             s.Position = 0;
-                            bitmap = new Bitmap(device.D2DDeviceContext, new Size2(w, h), s, w * 4, bp);
+                            bitmap = new Bitmap(device.D2DDeviceContext, new Size2(w, h), s, w * 4, GetBP);
                             _imageListMap.Add(imageListIndex, bitmap);
                         }
                     }
@@ -325,6 +331,40 @@ namespace RectUI.Graphics
 
                 device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
             }
+        }
+
+        RectangleF m_rect;
+        void DrawScene(D3D11Device device, RectangleF rect, Scene scene)
+        {
+            if (rect != m_rect)
+            {
+                if (m_renderTarget != null)
+                {
+                    m_d3dbitmapMap[m_renderTarget].Dispose();
+                    m_d3dbitmapMap.Remove(m_renderTarget);
+
+                    m_renderTarget.Dispose();
+                    m_renderTarget = null;
+                }
+            }
+            if (m_renderTarget == null)
+            {
+                m_renderTarget = D3D11RenderTarget.Create(device, (int)rect.Width, (int)rect.Height);
+            }
+
+            m_renderTarget.Setup(device, new Color4(0.2f, 0, 0, 1));
+
+            Bitmap bitmap;
+            if (!m_d3dbitmapMap.TryGetValue(m_renderTarget, out bitmap))
+            {
+                using (var surface = m_renderTarget.Texture.QueryInterface<SharpDX.DXGI.Surface>())
+                {
+                    bitmap = new Bitmap(device.D2DDeviceContext, surface, GetBP);
+                }
+                m_d3dbitmapMap.Add(m_renderTarget, bitmap);
+            }
+
+            device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
     }
 }
