@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUISample", "RectUISampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUI", "RectUI\RectUI.csproj", "{F07B7387-018C-4A7C-855C-AF7967F3F0F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUIGLTF", "RectUIGLTF\RectUIGLTF.csproj", "{6C86B64F-2C5A-4BE5-AD80-5CC926A3EC1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUIGLTFSample", "RectUIGLTFSample\RectUIGLTFSample.csproj", "{6C86B64F-2C5A-4BE5-AD80-5CC926A3EC1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

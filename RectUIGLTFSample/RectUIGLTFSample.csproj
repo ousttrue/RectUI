@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6C86B64F-2C5A-4BE5-AD80-5CC926A3EC1E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>RectUIGLTF</RootNamespace>
-    <AssemblyName>RectUIGLTF</AssemblyName>
+    <RootNamespace>RectUIGLTFSample</RootNamespace>
+    <AssemblyName>RectUIGLTFSample</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
