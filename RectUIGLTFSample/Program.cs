@@ -14,7 +14,8 @@ namespace RectUIGLTF
 {
     class State
     {
-        public string OpenPath;
+        public string OpenFile;
+        public string OpenDir;
 
         static string ExecutablePath
         {
@@ -72,26 +73,18 @@ namespace RectUIGLTF
         public RectRegion UI;
         public Window Window;
 
-        public String OpenPath
-        {
-            get;
-            set;
-        }
-
-        event Action<FileInfo> m_fileSelected;
-        public Action<DirectoryInfo> FolderChanged;
+        public event Action<FileSystemInfo> FileChanged;
 
         public class AwaiterContext
         {
             public Awaiter Awaiter;
             public Action Complete;
-            public Action<FileSystemInfo> SetResult;
+            public Action<FileInfo> SetResult;
         }
         AwaiterContext m_context;
 
-        public FileDialog(Window parent, string openPath)
+        public FileDialog(Window parent, string openDir)
         {
-            OpenPath = openPath;
             Window = parent.CreateModal(400, 300);
             Window.OnClose += () =>
             {
@@ -100,27 +93,22 @@ namespace RectUIGLTF
                 context.Complete();
             };
 
-            m_fileSelected += (f) =>
-            {
-                m_context.SetResult(f);
-                parent.Enable();
-                Window.Close();
-            };
-
-            var source = new DirSource(OpenPath);
-
-            source.Entered += obj =>
+            FileChanged += (obj) =>
             {
                 var f = obj as FileInfo;
-                if (f == null) { return; }
-                m_fileSelected?.Invoke(f);
+                if (f != null)
+                {
+                    m_context.SetResult(f);
+                    parent.Enable();
+                    Window.Close();
+                }
             };
+
+            var source = new DirSource(Path.GetDirectoryName(openDir));
 
             source.Entered += obj =>
             {
-                var d = obj as DirectoryInfo;
-                if (d == null) { return; }
-                FolderChanged?.Invoke(d);
+                FileChanged?.Invoke(obj);
             };
 
             UI = new PanelRegion
@@ -262,23 +250,58 @@ namespace RectUIGLTF
             };
         }
 
-        [STAThread]
-        static void Main(string[] args)
+        class Manager: IDisposable
         {
-            State.Restore();
+            Scene m_scene = new Scene();
+            App m_app = new App();
 
-            var scene = new Scene();
+            public void Dispose()
+            {
+                m_scene.Dispose();
+                m_app.Dispose();
+            }
 
-            using (var app = new App())
+            public Manager()
+            {
+                State.Restore();
+
+                var task = Load(State.Instance.OpenFile);
+            }
+
+            async Task Load(string path)
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+
+                Console.WriteLine($"open: {path}");
+                var source = await Task.Run(() => AssetSource.Load(path));
+                Console.WriteLine($"loaded: {source}");
+                var asset = await Task.Run(() => AssetContext.Load(source));
+                Console.WriteLine($"build: {source}");
+                m_scene.Asset = asset;
+            }
+
+            public void Run()
             {
                 var window = Window.Create(SW.SHOW);
-                var dialog = new FileDialog(window, State.Instance.OpenPath);
-                dialog.FolderChanged += d =>
+                var dialog = new FileDialog(window, State.Instance.OpenDir);
+                dialog.FileChanged += obj =>
                 {
-                    State.Instance.OpenPath = d.FullName;
+                    var f = obj as FileInfo;
+                    if (f != null)
+                    {
+                        State.Instance.OpenFile = f.FullName;
+                    }
+                    var d = obj as DirectoryInfo;
+                    if (d != null)
+                    {
+                        State.Instance.OpenDir = d.FullName;
+                    }
                 };
 
-                app.Bind(dialog.Window, dialog.UI);
+                m_app.Bind(dialog.Window, dialog.UI);
 
                 Action onOpen = async () =>
                 {
@@ -287,12 +310,7 @@ namespace RectUIGLTF
                     {
                         try
                         {
-                            Console.WriteLine($"open: {f.FullName}");
-                            var source = await Task.Run(() => AssetSource.Load(f.FullName));
-                            Console.WriteLine($"loaded: {source}");
-                            var asset = await Task.Run(() => AssetContext.Load(source));
-                            Console.WriteLine($"build: {source}");
-                            scene.Asset = asset;
+                            await Load(f.FullName);
                         }
                         catch (Exception ex)
                         {
@@ -300,11 +318,20 @@ namespace RectUIGLTF
                         }
                     }
                 };
-                app.Bind(window, BuildUI(dialog.Window, scene, onOpen));
+                m_app.Bind(window, BuildUI(dialog.Window, m_scene, onOpen));
 
                 Window.MessageLoop();
 
                 State.Save();
+            }
+        }
+
+        [STAThread]
+        static void Main(string[] args)
+        {
+            using (var man = new Manager())
+            {
+                man.Run();
             }
         }
     }
