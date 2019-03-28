@@ -266,7 +266,7 @@ namespace RectUI.Widgets
         #endregion
 
         #region MouseEvents
-        public RectRegion MouseMove(int x, int y)
+        public virtual RectRegion MouseMove(int x, int y)
         {
             // children
             if (m_children != null)
@@ -291,25 +291,41 @@ namespace RectUI.Widgets
             return null;
         }
 
-        public event Action<RectRegion> LeftClicked;
-        public void LeftClick(RectRegion sender)
+        public event Action<RectRegion> MouseLeftClicked;
+        public void MouseLeftClick(RectRegion sender)
         {
-            LeftClicked?.Invoke(sender);
+            MouseLeftClicked?.Invoke(sender);
         }
 
-        public event Action<RectRegion> LeftDoubleClicked;
-        public bool LeftDoubleClick(RectRegion sender)
+        public event Action<RectRegion> MouseLeftDoubleClicked;
+        public bool MouseLeftDoubleClick(RectRegion sender)
         {
-            if (LeftDoubleClicked == null) return false;
-            LeftDoubleClicked?.Invoke(sender);
+            if (MouseLeftDoubleClicked == null) return false;
+            MouseLeftDoubleClicked?.Invoke(sender);
             return true;
         }
 
-        public event Action<RectRegion, DragEvent, int, int> LeftDragged;
-        public bool LeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        public event Action<RectRegion, DragEvent, int, int> MouseLeftDragged;
+        public bool MouseLeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
         {
-            if (LeftDragged == null) return false;
-            LeftDragged(sender, dragEvent, x, y);
+            if (MouseLeftDragged == null) return false;
+            MouseLeftDragged(sender, dragEvent, x, y);
+            return true;
+        }
+
+        public event Action<RectRegion, DragEvent, int, int> MouseRightDragged;
+        public bool MouseRightDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        {
+            if (MouseRightDragged == null) return false;
+            MouseRightDragged(sender, dragEvent, x, y);
+            return true;
+        }
+
+        public event Action<RectRegion, DragEvent, int, int> MouseMiddleDragged;
+        public bool MouseMiddleDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        {
+            if (MouseMiddleDragged == null) return false;
+            MouseMiddleDragged(sender, dragEvent, x, y);
             return true;
         }
 

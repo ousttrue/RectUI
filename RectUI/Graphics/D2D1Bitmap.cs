@@ -197,7 +197,7 @@ namespace RectUI.Graphics
                     break;
 
                 case DrawType.Scene:
-                    DrawScene(device, command.Rectangle, content as Scene);
+                    DrawScene(device, command.Rectangle, command.Camera, content as Scene);
                     break;
 
                 default:
@@ -334,7 +334,7 @@ namespace RectUI.Graphics
         }
 
         RectangleF m_rect;
-        void DrawScene(D3D11Device device, RectangleF rect, Scene scene)
+        void DrawScene(D3D11Device device, RectangleF rect, Camera camera, Scene scene)
         {
             if (rect != m_rect)
             {
@@ -353,6 +353,7 @@ namespace RectUI.Graphics
             }
 
             m_renderTarget.Setup(device, new Color4(0.2f, 0, 0, 1));
+            scene.Draw(device, camera.ViewProjection);
 
             Bitmap bitmap;
             if (!m_d3dbitmapMap.TryGetValue(m_renderTarget, out bitmap))

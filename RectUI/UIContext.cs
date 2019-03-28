@@ -11,6 +11,8 @@ namespace RectUI
     public class UIContext
     {
         RectRegion _mouseLeftDown;
+        RectRegion _mouseRightDown;
+        RectRegion _mouseMiddleDown;
         public bool IsMouseLeftDown;
         public bool IsMouseRightDown;
         public bool IsMouseMiddleDown;
@@ -63,7 +65,21 @@ namespace RectUI
             {
                 if (_mouseLeftDown != null)
                 {
-                    if (_mouseLeftDown.LeftDrag(Active, DragEvent.Drag, x, y))
+                    if (_mouseLeftDown.MouseLeftDrag(Active, DragEvent.Drag, x, y))
+                    {
+                        Updated?.Invoke();
+                    }
+                }
+                if (_mouseRightDown != null)
+                {
+                    if (_mouseRightDown.MouseRightDrag(Active, DragEvent.Drag, x, y))
+                    {
+                        Updated?.Invoke();
+                    }
+                }
+                if (_mouseMiddleDown != null)
+                {
+                    if (_mouseMiddleDown.MouseMiddleDrag(Active, DragEvent.Drag, x, y))
                     {
                         Updated?.Invoke();
                     }
@@ -82,7 +98,7 @@ namespace RectUI
                 Active = Hover;
             }
 
-            _mouseLeftDown = Active.ParentPath.FirstOrDefault(r => r.LeftDrag(r, DragEvent.Begin, x, y));
+            _mouseLeftDown = Active.ParentPath.FirstOrDefault(r => r.MouseLeftDrag(r, DragEvent.Begin, x, y));
         }
 
         public void MouseLeftUp(int x, int y)
@@ -92,12 +108,12 @@ namespace RectUI
             {
                 if (Active == Hover)
                 {
-                    Active.LeftClick(Active);
+                    Active.MouseLeftClick(Active);
                 }
 
                 if (_mouseLeftDown != null)
                 {
-                    _mouseLeftDown.LeftDrag(Active, DragEvent.End, x, y);
+                    _mouseLeftDown.MouseLeftDrag(Active, DragEvent.End, x, y);
                     _mouseLeftDown = null;
                 }
 
@@ -118,6 +134,8 @@ namespace RectUI
             {
                 Active = Hover;
             }
+
+            _mouseRightDown = Active.ParentPath.FirstOrDefault(r => r.MouseRightDrag(r, DragEvent.Begin, x, y));
         }
 
         public void MouseRightUp(int x, int y)
@@ -125,6 +143,12 @@ namespace RectUI
             IsMouseRightDown = false;
             if (Active != null)
             {
+                if (_mouseRightDown != null)
+                {
+                    _mouseRightDown.MouseRightDrag(Active, DragEvent.End, x, y);
+                    _mouseRightDown = null;
+                }
+
                 if (!IsAnyDown)
                 {
                     Active = null;
@@ -142,6 +166,8 @@ namespace RectUI
             {
                 Active = Hover;
             }
+
+            _mouseMiddleDown = Active.ParentPath.FirstOrDefault(r => r.MouseMiddleDrag(r, DragEvent.Begin, x, y));
         }
 
         public void MouseMiddleUp(int x, int y)
@@ -149,6 +175,12 @@ namespace RectUI
             IsMouseMiddleDown = false;
             if (Active != null)
             {
+                if (_mouseMiddleDown != null)
+                {
+                    _mouseMiddleDown.MouseMiddleDrag(Active, DragEvent.End, x, y);
+                    _mouseMiddleDown = null;
+                }
+
                 if (!IsAnyDown)
                 {
                     Active = null;
@@ -167,7 +199,7 @@ namespace RectUI
 
         public void MouseLeftDoubleClicked()
         {
-            var processed = (Active ?? Hover).ParentPath.FirstOrDefault(x => x.LeftDoubleClick(x));
+            var processed = (Active ?? Hover).ParentPath.FirstOrDefault(x => x.MouseLeftDoubleClick(x));
             if (processed != null)
             {
                 Updated?.Invoke();

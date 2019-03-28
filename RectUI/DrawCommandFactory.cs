@@ -79,12 +79,13 @@ namespace RectUI
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect)
+        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect, Camera camera)
         {
             yield return new DrawCommand
             {
                 DrawType = DrawType.Scene,
                 Rectangle = rect,
+                Camera = camera,
             };
         }
     }

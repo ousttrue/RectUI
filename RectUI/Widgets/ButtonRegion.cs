@@ -17,7 +17,7 @@ namespace RectUI.Widgets
             m_action = action;
             if (m_action != null)
             {
-                LeftClicked += m_action;
+                MouseLeftClicked += m_action;
             }
 
             NormalColor = ColorKeys.ButtonNormal;
@@ -39,7 +39,7 @@ namespace RectUI.Widgets
         {
             if (m_action != null)
             {
-                LeftClicked -= m_action;
+                MouseLeftClicked -= m_action;
             }
             base.Dispose();
         }

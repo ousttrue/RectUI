@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 
+
 namespace RectUI.Graphics
 {
     public enum DrawType
@@ -24,5 +25,6 @@ namespace RectUI.Graphics
         public float FontSize;
         public IntPtr Icon;
         public int ImageListIndex;
+        public Camera Camera;
     }
 }

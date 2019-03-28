@@ -99,6 +99,7 @@
     <Compile Include="Assets\Animation.cs" />
     <Compile Include="Assets\AssetContext.cs" />
     <Compile Include="Assets\AssetSource.cs" />
+    <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Assets\Mesh.cs" />
     <Compile Include="Assets\Node.cs" />
     <Compile Include="Assets\Scene.cs" />

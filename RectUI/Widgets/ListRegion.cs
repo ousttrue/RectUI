@@ -224,8 +224,8 @@ namespace RectUI.Widgets
                 {
                     r = m_source.CreateItem();
                     r.Parent = this;
-                    r.LeftClicked += x => R_LeftClicked(x);
-                    r.LeftDoubleClicked += x => R_LeftDoubleClicked(x);
+                    r.MouseLeftClicked += x => R_LeftClicked(x);
+                    r.MouseLeftDoubleClicked += x => R_LeftDoubleClicked(x);
                     Children.Add(r);
                 }
 

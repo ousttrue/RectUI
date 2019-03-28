@@ -1,6 +1,7 @@
 # ToDo
+* [ ] Logger(to console)
 * [ ] Text alignment
-* [ ] style each reagion
+* [ ] style each region
 * [ ] save/restore state
 * [ ] middle drag list
 * [x] left drag splitter
