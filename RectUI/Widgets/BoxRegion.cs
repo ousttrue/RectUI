@@ -2,6 +2,11 @@
 {
     public abstract class BoxRegion : RectRegion
     {
+        protected BoxRegion(Rect rect)
+        {
+            Rect = rect;
+        }
+
         public void Add(RectRegion child)
         {
             child.Parent = this;
@@ -29,7 +34,11 @@
                         break;
                 }
             }
-            var expandSize = remain / expandCount;
+            var expandSize = 0;
+            if (expandCount > 0)
+            {
+                expandSize = remain / expandCount;
+            }
 
             // レイアウト
             var pos = 0;
@@ -51,6 +60,9 @@
 
     public class VBoxRegion : BoxRegion
     {
+        public VBoxRegion(Rect rect = default(Rect)) : base(rect)
+        { }
+
         protected override Rect CreateRect(ref int pos, int length)
         {
             var rect = new Rect(Rect.X, Rect.Y + pos, Rect.Width, length);
@@ -66,6 +78,9 @@
 
     public class HBoxRegion : BoxRegion
     {
+        public HBoxRegion(Rect rect = default(Rect)) : base(rect)
+        { }
+
         protected override Rect CreateRect(ref int pos, int length)
         {
             var rect = new Rect(Rect.X + pos, Rect.Y, length, Rect.Height);

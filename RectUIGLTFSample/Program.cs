@@ -111,44 +111,41 @@ namespace RectUIGLTF
                 FileChanged?.Invoke(obj);
             };
 
-            UI = new PanelRegion
+            UI = new VBoxRegion()
             {
                 new ListRegion<FileSystemInfo>(source)
                 {
-                    Anchor= new Anchor
-                    {
-                        Left=5,
-                        Top = 20,
-                        Right = 5,
-                        Bottom= 36,
-                    }
+                    BoxItem = BoxItem.Expand,
                 },
 
-                new ButtonRegion(_ =>
+                new HBoxRegion(new Rect(200, 40))
                 {
-
-                })
-                {
-                    Content = "Open",
-                    Rect = new Rect(96, 24),
-                    Anchor = new Anchor
+                    new ButtonRegion(_ =>
                     {
-                        Bottom=5, Left=5,
-                    }
-                },
 
-                new ButtonRegion(_ =>
-                {
-
-                })
-                {
-                    Content = "Cancel",
-                    Rect = new Rect(96, 24),
-                    Anchor = new Anchor
+                    })
                     {
-                        Bottom=5, Right=5,
+                        Content = "Open",
+                        Rect = new Rect(96, 24),
+                        Anchor = new Anchor
+                        {
+                            Bottom=5, Left=5,
+                        }
+                    },
+
+                    new ButtonRegion(_ =>
+                    {
+
+                    })
+                    {
+                        Content = "Cancel",
+                        Rect = new Rect(96, 24),
+                        Anchor = new Anchor
+                        {
+                            Bottom=5, Right=5,
+                        }
                     }
-                },
+                }
             };
         }
 
@@ -224,28 +221,17 @@ namespace RectUIGLTF
             Scene scene,
             Action onOpen)
         {
-            return new VBoxRegion
+            return new VBoxRegion()
             {
                 new ButtonRegion(_ => onOpen())
                 {
                     Rect = new Rect(200, 40),
-                    Anchor=new Anchor{
-                        Left = 5,
-                        Top = 5,
-                    },
                     Content = "open",
                 },
 
                 new D3DRegion
                 {
                     Content = scene,
-                    Rect = new Rect(200, 40),
-                    Anchor=new Anchor{
-                        Left = 5,
-                        Top = 50,
-                        Bottom = 5,
-                        Right = 5,
-                    },
                     BoxItem = BoxItem.Expand,
                 }, 
             };
