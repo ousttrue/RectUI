@@ -9,6 +9,14 @@
 
         public void Add(RectRegion child)
         {
+            child.BoxItem = BoxItem.Fixed;
+            child.Parent = this;
+            Children.Add(child);
+        }
+
+        public void Add(BoxItem boxItem, RectRegion child)
+        {
+            child.BoxItem = boxItem;
             child.Parent = this;
             Children.Add(child);
         }

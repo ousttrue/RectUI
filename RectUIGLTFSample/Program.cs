@@ -17,17 +17,17 @@ namespace RectUIGLTFSample
         {
             return new VBoxRegion()
             {
-                new ButtonRegion(_ => onOpen())
+                new ButtonRegion
                 {
+                    Action = _ => onOpen(),
                     Rect = new Rect(200, 40),
                     Content = "open",
                 },
 
-                new D3DRegion
-                {
-                    Content = scene,
-                    BoxItem = BoxItem.Expand,
-                },
+                {BoxItem.Expand,
+                    new D3DRegion{
+                       Content = scene,
+                    }},
             };
         }
 

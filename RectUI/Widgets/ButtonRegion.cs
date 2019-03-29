@@ -11,15 +11,24 @@ namespace RectUI.Widgets
     public class ButtonRegion : RectRegion
     {
         Action<RectRegion> m_action;
-
-        public ButtonRegion(Action<RectRegion> action=null)
+        public Action<RectRegion> Action
         {
-            m_action = action;
-            if (m_action != null)
+            set
             {
-                MouseLeftClicked += m_action;
+                if (m_action != null)
+                {
+                    MouseLeftClicked -= m_action;
+                }
+                m_action = value;
+                if (m_action != null)
+                {
+                    MouseLeftClicked += m_action;
+                }
             }
+        }
 
+        public ButtonRegion()
+        {
             NormalColor = ColorKeys.ButtonNormal;
             HoverColor = ColorKeys.ButtonHover;
             ActiveColor = ColorKeys.ButtonActive;

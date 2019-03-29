@@ -49,17 +49,11 @@ namespace RectUI.Widgets
 
             UI = new VBoxRegion()
             {
-                new ListRegion<FileSystemInfo>(source)
-                {
-                    BoxItem = BoxItem.Expand,
-                },
+                {BoxItem.Expand, new ListRegion<FileSystemInfo>(source) },
 
                 new HBoxRegion(new Rect(200, 40))
                 {
-                    new ButtonRegion(_ =>
-                    {
-
-                    })
+                    new ButtonRegion
                     {
                         Content = "Open",
                         Rect = new Rect(96, 24),
@@ -69,10 +63,7 @@ namespace RectUI.Widgets
                         }
                     },
 
-                    new ButtonRegion(_ =>
-                    {
-
-                    })
+                    new ButtonRegion
                     {
                         Content = "Cancel",
                         Rect = new Rect(96, 24),

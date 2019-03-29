@@ -2,8 +2,9 @@
 {
     public class PanelRegion : RectRegion
     {
-        public void Add(RectRegion child)
+        public void Add(Anchor anchor, RectRegion child)
         {
+            child.Anchor = anchor;
             child.Parent = this;
             Children.Add(child);
         }

@@ -42,7 +42,7 @@ namespace RectUI.Widgets
         {
             Children.Add(null); // left
             Children.Add(null); // right
-            Children.Add(new ButtonRegion(_ => { })); // splitter
+            Children.Add(new ButtonRegion()); // splitter
             Splitter.MouseLeftDragged += Splitter_LeftDragged;
         }
 
