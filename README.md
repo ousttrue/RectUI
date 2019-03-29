@@ -1,7 +1,7 @@
 # ToDo
 * [ ] Render thread
 * [x] 3D scene
-* [ ] vbox, hbox
+* [x] vbox, hbox
 * [ ] Logger(to console)
 * [x] Text alignment
 * [ ] style each region

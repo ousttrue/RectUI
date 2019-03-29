@@ -1,73 +1,15 @@
 ﻿using DesktopDll;
 using RectUI;
 using RectUI.Assets;
-using RectUI.JSON;
 using RectUI.Widgets;
 using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace RectUIGLTF
+
+namespace RectUIGLTFSample
 {
-    class State
-    {
-        public string OpenFile;
-        public string OpenDir;
-
-        static string ExecutablePath
-        {
-            get
-            {
-                var path = Assembly.GetAssembly(typeof(Program)).CodeBase;
-                return path.Substring("file:///".Length);
-            }
-        }
-
-        static string StatePath
-        {
-            get
-            {
-                var exe = ExecutablePath;
-                return Path.Combine(
-                    Path.GetDirectoryName(exe),
-                    Path.GetFileNameWithoutExtension(exe) + ".json"
-                    );
-            }
-        }
-
-        static State s_instance = new State();
-        public static State Instance
-        {
-            get { return s_instance; }
-        }
-
-        public static void Save()
-        {
-            var f = new JsonFormatter();
-            f.Serialize(s_instance);
-            var path = StatePath;
-            Console.WriteLine(path);
-            File.WriteAllBytes(path, f.GetStoreBytes().ToArray());
-        }
-
-        public static void Restore()
-        {
-            try
-            {
-                var bytes = File.ReadAllBytes(StatePath);
-                var json = bytes.ParseAsJson();
-                json.Deserialize(ref s_instance);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        }
-    }
-
     class FileDialog
     {
         public RectRegion UI;
@@ -233,11 +175,11 @@ namespace RectUIGLTF
                 {
                     Content = scene,
                     BoxItem = BoxItem.Expand,
-                }, 
+                },
             };
         }
 
-        class Manager: IDisposable
+        class Manager : IDisposable
         {
             Scene m_scene = new Scene();
             App m_app = new App();
