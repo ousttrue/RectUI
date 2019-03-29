@@ -1,4 +1,5 @@
 # ToDo
+* [ ] Render thread
 * [x] 3D scene
 * [ ] vbox, hbox
 * [ ] Logger(to console)

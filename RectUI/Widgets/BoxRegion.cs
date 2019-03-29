@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace RectUI.Widgets
+﻿namespace RectUI.Widgets
 {
-    /// <summary>
-    /// 縦に整列させる
-    /// </summary>
-    public class VBoxRegion : RectRegion
+    public abstract class BoxRegion : RectRegion
     {
         public void Add(RectRegion child)
         {
@@ -18,17 +8,20 @@ namespace RectUI.Widgets
             Children.Add(child);
         }
 
+        protected abstract int GetLength(Rect r);
+        protected abstract Rect CreateRect(ref int pos, int length);
+
         protected override void Layout()
         {
             // fix が使った残りの領域を得る
-            var remain = Rect.Height;
+            var remain = GetLength(Rect);
             var expandCount = 0;
             foreach (var child in Children)
             {
                 switch (child.BoxItem)
                 {
                     case BoxItem.Fixed:
-                        remain -= child.Rect.Height;
+                        remain -= GetLength(child.Rect);
                         break;
 
                     case BoxItem.Expand:
@@ -40,21 +33,49 @@ namespace RectUI.Widgets
 
             // レイアウト
             var pos = 0;
-            foreach(var child in Children)
+            foreach (var child in Children)
             {
-                switch(child.BoxItem)
+                switch (child.BoxItem)
                 {
                     case BoxItem.Fixed:
-                        child.Rect = new Rect(Rect.X, Rect.Y + pos, Rect.Width, child.Rect.Height);
-                        pos += child.Rect.Height;
+                        child.Rect = CreateRect(ref pos, child.Rect.Height);
                         break;
 
                     case BoxItem.Expand:
-                        child.Rect = new Rect(Rect.X, Rect.Y + pos, Rect.Width, expandSize);
-                        pos += expandSize;
+                        child.Rect = CreateRect(ref pos, expandSize);
                         break;
                 }
             }
+        }
+    }
+
+    public class VBoxRegion : BoxRegion
+    {
+        protected override Rect CreateRect(ref int pos, int length)
+        {
+            var rect = new Rect(Rect.X, Rect.Y + pos, Rect.Width, length);
+            pos += length;
+            return rect;
+        }
+
+        protected override int GetLength(Rect r)
+        {
+            return r.Height;
+        }
+    }
+
+    public class HBoxRegion : BoxRegion
+    {
+        protected override Rect CreateRect(ref int pos, int length)
+        {
+            var rect = new Rect(Rect.X + pos, Rect.Y, length, Rect.Height);
+            pos += length;
+            return rect;
+        }
+
+        protected override int GetLength(Rect r)
+        {
+            return r.Width;
         }
     }
 }
