@@ -27,7 +27,7 @@ namespace RectUI.Widgets
 
     public enum BoxItem
     {
-        Fix,
+        Fixed,
         Expand,
     }
 

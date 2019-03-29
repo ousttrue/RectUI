@@ -224,7 +224,7 @@ namespace RectUIGLTF
             Scene scene,
             Action onOpen)
         {
-            return new PanelRegion
+            return new VBoxRegion
             {
                 new ButtonRegion(_ => onOpen())
                 {
