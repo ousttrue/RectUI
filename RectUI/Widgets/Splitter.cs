@@ -65,24 +65,12 @@ namespace RectUI.Widgets
 
         }
 
-        public override Rect Rect
+        protected override void Layout()
         {
-            get { return base.Rect; }
-            set
+            if (Splitter.Rect.Height == 0)
             {
-                base.Rect = value;
-
-                if (Splitter.Rect.Height == 0)
-                {
-                    Splitter.Rect = new Rect(Rect.X + Rect.Width / 2, Rect.Y, _splitterWidth, Rect.Height);
-                }
-
-                Layout();
+                Splitter.Rect = new Rect(Rect.X + Rect.Width / 2, Rect.Y, _splitterWidth, Rect.Height);
             }
-        }
-
-        void Layout()
-        {
             Splitter.Rect = new Rect(Splitter.Rect.X, Splitter.Rect.Y, _splitterWidth, Rect.Height);
 
             if (Left != null)

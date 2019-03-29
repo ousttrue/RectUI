@@ -25,6 +25,12 @@ namespace RectUI.Widgets
         public int? Bottom;
     }
 
+    public enum BoxItem
+    {
+        Fix,
+        Expand,
+    }
+
     public struct ColorKeys
     {
         public StyleColorKey FillColorKey;
@@ -167,10 +173,21 @@ namespace RectUI.Widgets
         }
         #endregion
 
-        public virtual Rect Rect
+        Rect m_rect;
+        public Rect Rect
         {
-            get;
-            set;
+            get { return m_rect; }
+            set
+            {
+                if (m_rect.Equals(value)) return;
+                m_rect = value;
+                Layout();
+            }
+        }
+
+        protected virtual void Layout()
+        {
+
         }
 
         public Anchor Anchor
@@ -178,6 +195,8 @@ namespace RectUI.Widgets
             get;
             set;
         }
+
+        public BoxItem BoxItem;
 
         #region Style & DrawCommands
         Style m_style = new Style();
@@ -337,55 +356,5 @@ namespace RectUI.Widgets
             return true;
         }
         #endregion
-    }
-
-    public class PanelRegion: RectRegion
-    {
-        public void Add(RectRegion child)
-        {
-            child.Parent = this;
-            Children.Add(child);
-        }
-
-        public override Rect Rect
-        {
-            get { return base.Rect; }
-            set
-            {
-                base.Rect = value;
-
-                Layout();
-            }
-        }
-
-        (int, int) GetPosLen(int total, int pos, int value, int? head, int? tail)
-        {
-            if (head.HasValue && tail.HasValue)
-            {
-                return (head.Value, total - head.Value - tail.Value);
-            }
-            else if (head.HasValue)
-            {
-                return (head.Value, value);
-            }
-            else if(tail.HasValue)
-            {
-                return (total - tail.Value - value, value);
-            }
-            else
-            {
-                return (pos, value);
-            }
-        }
-
-        void Layout()
-        {
-            foreach(var child in Children)
-            {
-                var (x, w) = GetPosLen(Rect.Width, child.Rect.X, child.Rect.Width, child.Anchor.Left, child.Anchor.Right);
-                var (y, h) = GetPosLen(Rect.Height, child.Rect.Y, child.Rect.Height, child.Anchor.Top, child.Anchor.Bottom);
-                child.Rect = new Rect(x, y, w, h);
-            }
-        }
     }
 }

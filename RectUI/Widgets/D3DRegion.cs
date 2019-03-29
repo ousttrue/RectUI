@@ -74,14 +74,9 @@ namespace RectUI.Widgets
             _ry = arg4;
         }
 
-        public override Rect Rect
+        protected override void Layout()
         {
-            get => base.Rect;
-            set
-            {
-                _camera.Resize(value.Width, value.Height);
-                base.Rect = value;
-            }
+            _camera.Resize(Rect.Width, Rect.Height);
         }
 
         public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)

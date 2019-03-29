@@ -246,7 +246,8 @@ namespace RectUIGLTF
                         Bottom = 5,
                         Right = 5,
                     },
-                },
+                    BoxItem = BoxItem.Expand,
+                }, 
             };
         }
 

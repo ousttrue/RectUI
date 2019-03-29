@@ -115,16 +115,6 @@ namespace RectUI.Widgets
 
     public class ListRegion<T> : RectRegion
     {
-        public override Rect Rect
-        {
-            get => base.Rect;
-            set
-            {
-                base.Rect = value;
-                Layout();
-            }
-        }
-
         int m_itemHeight = 18;
         public int ItemHeight
         {
@@ -205,7 +195,7 @@ namespace RectUI.Widgets
             }
         }
 
-        void Layout()
+        protected override void Layout()
         {
             var count = Rect.Height / ItemHeight + 1;
 
