@@ -25,14 +25,34 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ButtonActive;
         }
 
+        Padding m_padding = new Padding
+        {
+            Left = 2,
+            Top = 2,
+            Right = 2,
+            Bottom = 2,
+        };
+
+        FontInfo m_font = new FontInfo
+        {
+            Font = "MSGothic",
+            Size = 18,
+        };
+
         public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
             yield return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
-            yield return DrawCommandFactory.DrawTextCommands(this, 
-                GetTextColor(isActive, isHover), "MSGothic", 18, 2, 2, 2, 2, Content as string);
+            yield return DrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
+                GetTextColor(isActive, isHover), m_font, 
+                new TextInfo
+                {
+                    Text = Content as string,
+                    HorizontalAlignment = TextHorizontalAlignment.Center,
+                    VerticalAlignment = TextVerticalAlignment.Center,                   
+                });
         }
 
         public override void Dispose()

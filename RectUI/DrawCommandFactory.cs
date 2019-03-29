@@ -24,12 +24,8 @@ namespace RectUI
         }
 
         public static IEnumerable<DrawCommand> DrawIconCommands(UIContext uiContext, RectRegion r, 
-            IntPtr icon, Style style = null)
+            IntPtr icon)
         {
-            if (style == null)
-            {
-                style = Style.Default;
-            }
             yield return new DrawCommand
             {
                 DrawType = DrawType.Icon,
@@ -39,12 +35,8 @@ namespace RectUI
         }
 
         public static IEnumerable<DrawCommand> DrawImageListCommands(RectRegion r, 
-            IntPtr imageList, int imageListIndex, Style style = null)
+            IntPtr imageList, int imageListIndex)
         {
-            if (style == null)
-            {
-                style = Style.Default;
-            }
             yield return new DrawCommand
             {
                 DrawType = DrawType.ImageList,
@@ -54,28 +46,25 @@ namespace RectUI
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawTextCommands(RectRegion r, 
+        public static IEnumerable<DrawCommand> DrawTextCommands(RectangleF rect,
+            Padding padding,
             Color4? textColor,
-            string font, float fontSize, 
-            float leftPadding, float topPadding, float rightPadding, float bottomPadding,
-            string text, Style style=null)
+            FontInfo font,
+            TextInfo text)
         {
-            if (style == null)
-            {
-                style = Style.Default;
-            }
+            rect = new RectangleF(
+                padding.Left + rect.X,
+                padding.Top + rect.Y,
+                rect.Width - padding.Left - padding.Right,
+                rect.Height -padding.Top - padding.Bottom
+            );
             yield return new DrawCommand
             {
                 DrawType = DrawType.Text,
-                Rectangle = new SharpDX.RectangleF(
-                    r.Rect.X + leftPadding, 
-                    r.Rect.Y + topPadding, 
-                    r.Rect.Width - leftPadding - rightPadding, 
-                    r.Rect.Height),
+                Rectangle = rect,
                 Text = text,
                 TextColor = textColor,
                 Font = font,
-                FontSize = fontSize - topPadding - bottomPadding,
             };
         }
 

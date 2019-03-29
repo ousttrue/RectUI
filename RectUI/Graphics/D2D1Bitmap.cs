@@ -181,8 +181,8 @@ namespace RectUI.Graphics
                     break;
 
                 case DrawType.Text:
-                    DrawText(device, command.Rectangle, 
-                        command.Font, command.FontSize,
+                    DrawText(device, command.Rectangle,
+                        command.Font,
                         command.TextColor, command.Text);
                     break;
 
@@ -307,31 +307,66 @@ namespace RectUI.Graphics
 
         void DrawText(D3D11Device device,
             RectangleF rect,
-            string font,
-            float fontSize,
+            FontInfo font,
             Color4? textColor,
-            string text)
+            TextInfo text)
         {
-            if (textColor.HasValue && !string.IsNullOrEmpty(text))
+            if (!textColor.HasValue)
             {
-                SolidColorBrush brush;
-                if (!_brushMap.TryGetValue(textColor.Value, out brush))
-                {
-                    brush = new SolidColorBrush(device.D2DDeviceContext, textColor.Value);
-                    _brushMap.Add(textColor.Value, brush);
-                }
-
-                if (_textFormat == null)
-                {
-                    using (var f = new SharpDX.DirectWrite.Factory())
-                    {
-                        _textFormat = new TextFormat(f, font, fontSize);
-                    }
-                }
-
-                device.D2DDeviceContext.DrawText(text, _textFormat, rect, brush);
+                return;
             }
-        }
+            if (string.IsNullOrEmpty(text.Text))
+            {
+                return;
+            }
+
+            SolidColorBrush brush;
+            if (!_brushMap.TryGetValue(textColor.Value, out brush))
+            {
+                brush = new SolidColorBrush(device.D2DDeviceContext, textColor.Value);
+                _brushMap.Add(textColor.Value, brush);
+            }
+
+            if (_textFormat == null)
+            {
+                using (var f = new SharpDX.DirectWrite.Factory())
+                {
+                    _textFormat = new TextFormat(f, font.Font, font.Size);
+                }
+
+                switch (text.HorizontalAlignment)
+                {
+                    case TextHorizontalAlignment.Left:
+                        _textFormat.TextAlignment = TextAlignment.Leading;
+                        break;
+
+                    case TextHorizontalAlignment.Center:
+                        _textFormat.TextAlignment = TextAlignment.Center;
+                        break;
+
+                    case TextHorizontalAlignment.Right:
+                        _textFormat.TextAlignment = TextAlignment.Trailing;
+                        break;
+                }
+
+                switch (text.VerticalAlignment)
+                {
+                    case TextVerticalAlignment.Top:
+                        _textFormat.ParagraphAlignment = ParagraphAlignment.Near;
+                        break;
+
+                    case TextVerticalAlignment.Center:
+                        _textFormat.ParagraphAlignment = ParagraphAlignment.Center;
+                        break;
+
+                    case TextVerticalAlignment.Bottom:
+                        _textFormat.ParagraphAlignment = ParagraphAlignment.Far;
+                        break;
+                }
+            }
+
+            device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
+        }       
 
         RectangleF m_rect;
         void DrawScene(D3D11Device device, RectangleF rect, Camera camera, Scene scene)
@@ -341,6 +376,7 @@ namespace RectUI.Graphics
             //
             if (rect != m_rect)
             {
+                m_rect = rect;
                 if (m_renderTarget != null)
                 {
                     m_d3dbitmapMap[m_renderTarget].Dispose();

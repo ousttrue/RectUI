@@ -105,13 +105,30 @@ namespace RectUI.Widgets
             yield return GetIconCommands();
 
             var color = GetTextColor(isActive, isHover);
-            yield return DrawCommandFactory.DrawTextCommands(this,
-                color, "MS Gothic", Rect.Height,
-                21, 3, 5, 2,
-                Content.ToString());
+            yield return DrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
+                color, 
+                new FontInfo
+                {
+                    Font = "MS Gothic",
+                    Size = Rect.Height-m_padding.Top-m_padding.Bottom,
+                },
+                new TextInfo
+                {
+                    Text = Content.ToString(),
+                    HorizontalAlignment = TextHorizontalAlignment.Left,
+                    VerticalAlignment = TextVerticalAlignment.Center,
+                }
+                );
         }
-    }
 
+        Padding m_padding = new Padding
+        {
+            Left = 21,
+            Top = 3,
+            Right = 5,
+            Bottom = 2,
+        };
+    }
 
     public class ListRegion<T> : RectRegion
     {

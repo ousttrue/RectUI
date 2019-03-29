@@ -2,7 +2,7 @@
 * [x] 3D scene
 * [ ] vbox, hbox
 * [ ] Logger(to console)
-* [ ] Text alignment
+* [x] Text alignment
 * [ ] style each region
 * [ ] save/restore state
 * [ ] middle drag list
