@@ -1,5 +1,4 @@
 ﻿using DesktopDll;
-using RectUI;
 using RectUI.Application;
 using RectUI.Assets;
 using RectUI.Widgets;
@@ -13,7 +12,6 @@ namespace RectUIGLTFSample
     class Program
     {
         static RectRegion BuildUI(
-            Scene scene,
             Action onOpen)
         {
             return new VBoxRegion()
@@ -25,21 +23,16 @@ namespace RectUIGLTFSample
                     Content = "open",
                 },
 
-                {BoxItem.Expand,
-                    new D3DRegion{
-                       Content = scene,
-                    }},
+                {BoxItem.Expand, new D3DRegion()}
             };
         }
 
         class Manager : IDisposable
         {
-            Scene m_scene = new Scene();
             App m_app = new App();
 
             public void Dispose()
             {
-                m_scene.Dispose();
                 m_app.Dispose();
             }
 
@@ -62,7 +55,7 @@ namespace RectUIGLTFSample
                 Console.WriteLine($"loaded: {source}");
                 var asset = await Task.Run(() => AssetContext.Load(source));
                 Console.WriteLine($"build: {source}");
-                m_scene.Asset = asset;
+                m_app.Scene.Asset=asset;
             }
 
             public void Run()
@@ -120,7 +113,7 @@ namespace RectUIGLTFSample
                         }
                     }
                 };
-                m_app.Bind(window, BuildUI(m_scene, onOpen));
+                m_app.Bind(window, BuildUI(onOpen));
 
                 Window.MessageLoop();
 

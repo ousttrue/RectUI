@@ -1,4 +1,5 @@
 ﻿using DesktopDll;
+using RectUI.Assets;
 using RectUI.Graphics;
 using RectUI.Widgets;
 using SharpDX;
@@ -19,8 +20,20 @@ namespace RectUI.Application
         }
         Dictionary<Window, WindowBuffer> m_windowStateMap = new Dictionary<Window, WindowBuffer>();
 
+        Scene m_scene = new Scene();
+        public Scene Scene
+        {
+            get { return m_scene; }
+        }
+
         public virtual void Dispose()
         {
+            if (m_scene != null)
+            {
+                m_scene.Dispose();
+                m_scene = null;
+            }
+
             foreach (var kv in m_windowStateMap)
             {
                 kv.Value.State.Dispose();
@@ -45,7 +58,10 @@ namespace RectUI.Application
             var state = new WindowState(window, root);
             var bb = new Backbuffer(m_device, window);
 
-            state.OnPaint += (commands) => bb.Paint(m_device, commands);
+            state.OnPaint += (commands) =>
+            {
+                bb.ExecuteCommands(m_device, m_scene, commands);
+            };
             state.WindowSizeChanged += (w, h) => bb.Resize(w, h);
 
             m_windowStateMap.Add(window, new WindowBuffer
