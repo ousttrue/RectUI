@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using RectUI.Assets;
-using RectUI.Graphics;
+﻿using RectUI.Graphics;
+using System.Collections.Generic;
+
 
 namespace RectUI.Widgets
 {
@@ -83,7 +83,7 @@ namespace RectUI.Widgets
         {
             _camera.Update();
 
-            yield return DrawCommandFactory.DrawSceneCommands(Rect.ToSharpDX(), _camera);
+            yield return DrawCommandFactory.DrawSceneCommands(Rect.ToSharpDX(), _camera, Content as Assets.Scene);
         }
     }
 }

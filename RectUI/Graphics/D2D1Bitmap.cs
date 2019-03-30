@@ -156,7 +156,7 @@ namespace RectUI.Graphics
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void Draw(D3D11Device device, DrawCommand command, object content)
+        public void Draw(D3D11Device device, DrawCommand command)
         {
             switch(command.DrawType)
             {
@@ -182,7 +182,7 @@ namespace RectUI.Graphics
                     break;
 
                 case DrawType.Scene:
-                    DrawScene(device, command.Rectangle, command.Camera, content as Scene);
+                    DrawScene(device, command.Rectangle, command.Camera, command.Scene);
                     break;
 
                 default:

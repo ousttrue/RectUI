@@ -21,7 +21,7 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawIconCommands(RectangleF rect, 
+        public static IEnumerable<DrawCommand> DrawIconCommands(RectangleF rect,
             IntPtr icon)
         {
             yield return new DrawCommand
@@ -32,7 +32,7 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawImageListCommands(RectangleF rect, 
+        public static IEnumerable<DrawCommand> DrawImageListCommands(RectangleF rect,
             IntPtr imageList, int imageListIndex)
         {
             yield return new DrawCommand
@@ -54,7 +54,7 @@ namespace RectUI.Graphics
                 padding.Left + rect.X,
                 padding.Top + rect.Y,
                 rect.Width - padding.Left - padding.Right,
-                rect.Height -padding.Top - padding.Bottom
+                rect.Height - padding.Top - padding.Bottom
             );
             yield return new DrawCommand
             {
@@ -66,13 +66,16 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect, Camera camera)
+        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect, 
+            Camera camera,
+            Assets.Scene scene)
         {
             yield return new DrawCommand
             {
                 DrawType = DrawType.Scene,
                 Rectangle = rect,
                 Camera = camera,
+                Scene = scene,
             };
         }
     }

@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using RectUI.Assets;
+using SharpDX;
 using System;
 
 
@@ -60,5 +61,6 @@ namespace RectUI.Graphics
         public IntPtr Icon;
         public int ImageListIndex;
         public Camera Camera;
+        public Scene Scene;
     }
 }
