@@ -33,7 +33,7 @@ namespace RectUI.Application
             UIContext = new UIContext();
 
             window.OnResize += Window_OnResize;
-            window.OnPaint += Window_OnPaint;
+            //window.OnPaint += Window_OnPaint;
             window.OnMouseLeftDown += Window_OnMouseLeftDown;
             window.OnMouseLeftUp += Window_OnMouseLeftUp;
             window.OnMouseRightDown += Window_OnMouseRightDown;
@@ -44,7 +44,8 @@ namespace RectUI.Application
             window.OnMouseWheel += Window_OnMouseWheel;
             window.OnMouseLeftDoubleClicked += Window_OnMouseLeftDoubleClicked;
 
-            UIContext.Updated += () => window.Invalidate();
+            //UIContext.Updated += () => window.Invalidate();
+            UIContext.Updated += Window_OnPaint;
 
             Window_OnResize(window.Width, window.Height);
         }
