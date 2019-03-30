@@ -8,11 +8,11 @@ namespace RectUI.Graphics
     /// <summary>
     /// RectRegionの内部を描画する
     /// </summary>
-    public static class DrawCommandFactory
+    public static class D2DDrawCommandFactory
     {
-        public static IEnumerable<DrawCommand> DrawRectCommands(RectangleF rect, Color4? fill, Color4? border)
+        public static IEnumerable<D2DDrawCommand> DrawRectCommands(RectangleF rect, Color4? fill, Color4? border)
         {
-            yield return new DrawCommand
+            yield return new D2DDrawCommand
             {
                 DrawType = DrawType.Rectangle,
                 Rectangle = rect,
@@ -21,10 +21,10 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawIconCommands(RectangleF rect,
+        public static IEnumerable<D2DDrawCommand> DrawIconCommands(RectangleF rect,
             IntPtr icon)
         {
-            yield return new DrawCommand
+            yield return new D2DDrawCommand
             {
                 DrawType = DrawType.Icon,
                 Rectangle = rect,
@@ -32,10 +32,10 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawImageListCommands(RectangleF rect,
+        public static IEnumerable<D2DDrawCommand> DrawImageListCommands(RectangleF rect,
             IntPtr imageList, int imageListIndex)
         {
-            yield return new DrawCommand
+            yield return new D2DDrawCommand
             {
                 DrawType = DrawType.ImageList,
                 Rectangle = rect,
@@ -44,7 +44,7 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawTextCommands(RectangleF rect,
+        public static IEnumerable<D2DDrawCommand> DrawTextCommands(RectangleF rect,
             Padding padding,
             Color4? textColor,
             FontInfo font,
@@ -56,7 +56,7 @@ namespace RectUI.Graphics
                 rect.Width - padding.Left - padding.Right,
                 rect.Height - padding.Top - padding.Bottom
             );
-            yield return new DrawCommand
+            yield return new D2DDrawCommand
             {
                 DrawType = DrawType.Text,
                 Rectangle = rect,
@@ -66,11 +66,11 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawSceneCommands(RectangleF rect, 
+        public static IEnumerable<D2DDrawCommand> DrawSceneCommands(RectangleF rect, 
             Camera camera,
             Assets.Scene scene)
         {
-            yield return new DrawCommand
+            yield return new D2DDrawCommand
             {
                 DrawType = DrawType.Scene,
                 Rectangle = rect,

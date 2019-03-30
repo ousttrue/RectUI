@@ -48,13 +48,13 @@ namespace RectUI.Widgets
             Size = 18,
         };
 
-        public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<IEnumerable<D2DDrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
-            yield return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+            yield return D2DDrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
-            yield return DrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
+            yield return D2DDrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
                 GetTextColor(isActive, isHover), m_font, 
                 new TextInfo
                 {

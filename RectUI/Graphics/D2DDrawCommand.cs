@@ -49,7 +49,7 @@ namespace RectUI.Graphics
         public float Bottom;
     }
 
-    public struct DrawCommand
+    public struct D2DDrawCommand
     {
         public DrawType DrawType;
         public RectangleF Rectangle;

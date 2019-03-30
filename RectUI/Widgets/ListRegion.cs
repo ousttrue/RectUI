@@ -76,12 +76,12 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        public virtual IEnumerable<DrawCommand> GetIconCommands()
+        public virtual IEnumerable<D2DDrawCommand> GetIconCommands()
         {
             yield break;
         }
 
-        public override IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<IEnumerable<D2DDrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
             if (Content == null)
             {
@@ -91,7 +91,7 @@ namespace RectUI.Widgets
             var rect = Rect.ToSharpDX();
             rect.X += 16;
             rect.Width -= 16;
-            yield return DrawCommandFactory.DrawRectCommands(rect,
+            yield return D2DDrawCommandFactory.DrawRectCommands(rect,
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
@@ -105,7 +105,7 @@ namespace RectUI.Widgets
             yield return GetIconCommands();
 
             var color = GetTextColor(isActive, isHover);
-            yield return DrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
+            yield return D2DDrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
                 color, 
                 new FontInfo
                 {

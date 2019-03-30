@@ -8,7 +8,7 @@ using SharpDX;
 
 namespace RectUI.Widgets
 {
-    public delegate IEnumerable<DrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
+    public delegate IEnumerable<D2DDrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
 
     public enum DragEvent
     {
@@ -276,9 +276,9 @@ namespace RectUI.Widgets
             return Style.GetColor(NormalColor.TextColorKey);
         }
 
-        public virtual IEnumerable<IEnumerable<DrawCommand>> GetDrawCommands(bool isActive, bool isHover)
+        public virtual IEnumerable<IEnumerable<D2DDrawCommand>> GetDrawCommands(bool isActive, bool isHover)
         {
-            yield return DrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
+            yield return D2DDrawCommandFactory.DrawRectCommands(Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
         }

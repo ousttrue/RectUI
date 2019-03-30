@@ -112,12 +112,12 @@
     <Compile Include="Graphics\D3D11Mesh.cs" />
     <Compile Include="Graphics\D3D11MeshFactory.cs" />
     <Compile Include="Graphics\D3D11Shader.cs" />
-    <Compile Include="Graphics\DrawCommand.cs" />
+    <Compile Include="Graphics\D2DDrawCommand.cs" />
     <Compile Include="Graphics\D2D1Bitmap.cs" />
     <Compile Include="Graphics\D3D11Device.cs" />
     <Compile Include="Graphics\D3D11RenderTarget.cs" />
     <Compile Include="Graphics\DXGISwapchain.cs" />
-    <Compile Include="Graphics\DrawCommandFactory.cs" />
+    <Compile Include="Graphics\D2DDrawCommandFactory.cs" />
     <Compile Include="Graphics\ImageLoader.cs" />
     <Compile Include="Graphics\InterleavedBuffer.cs" />
     <Compile Include="Graphics\Triangle.cs" />
