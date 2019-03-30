@@ -1,4 +1,6 @@
 # ToDo
+* [ ] hierarchy
+* [ ] inspector
 * [ ] mouse capture
 * [x] Render thread
 * [x] 3D scene
