@@ -1,5 +1,4 @@
-﻿using RectUI.Widgets;
-using SharpDX;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 
@@ -22,24 +21,24 @@ namespace RectUI.Graphics
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawIconCommands(UIContext uiContext, RectRegion r, 
+        public static IEnumerable<DrawCommand> DrawIconCommands(RectangleF rect, 
             IntPtr icon)
         {
             yield return new DrawCommand
             {
                 DrawType = DrawType.Icon,
-                Rectangle = new SharpDX.RectangleF(r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height),
+                Rectangle = rect,
                 Icon = icon
             };
         }
 
-        public static IEnumerable<DrawCommand> DrawImageListCommands(RectRegion r, 
+        public static IEnumerable<DrawCommand> DrawImageListCommands(RectangleF rect, 
             IntPtr imageList, int imageListIndex)
         {
             yield return new DrawCommand
             {
                 DrawType = DrawType.ImageList,
-                Rectangle = new SharpDX.RectangleF(r.Rect.X, r.Rect.Y, r.Rect.Width, r.Rect.Height),
+                Rectangle = rect,
                 Icon = imageList,
                 ImageListIndex = imageListIndex
             };

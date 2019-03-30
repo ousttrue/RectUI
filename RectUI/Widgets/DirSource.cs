@@ -119,7 +119,7 @@ namespace RectUI.Widgets
         {
             var f = Content as FileSystemInfo;
             var icon = SystemIcon.Get(f.FullName, true);
-            return DrawCommandFactory.DrawImageListCommands(this,
+            return DrawCommandFactory.DrawImageListCommands(Rect.ToSharpDX(),
                 icon.ImageList, icon.ImageListIndex);
         }
     }
