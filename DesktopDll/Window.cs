@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 
 namespace DesktopDll
 {
@@ -16,6 +16,7 @@ namespace DesktopDll
         ENABLE = 0x000A,
         PAINT = 0x000F,
         CLOSE = 0x0010,
+        QUIT = 0x0012,
         SHOWWINDOW = 0x0018,
         MOUSEMOVE = 0x0200,
         LBUTTONDOWN = 0x0201,
@@ -236,17 +237,39 @@ namespace DesktopDll
             User32.PostMessageW(m_hwnd, WM.CLOSE, 0, 0);
         }
 
-        public static void MessageLoop()
+        public static void MessageLoop(Action onFrame)
         {
+            if (onFrame == null)
+            {
+                onFrame = () => { };
+            }
+
+            uint last = 0;
             while (true)
             {
-                var _msg = default(MSG);
-                if (!User32.GetMessageW(ref _msg, 0, 0, 0))
+                var msg = default(MSG);
+                while (User32.PeekMessageW(ref msg, 0, 0, 0, PM.REMOVE))
                 {
-                    break;
-                };
-                User32.TranslateMessage(ref _msg);
-                User32.DispatchMessage(ref _msg);
+                    if (msg.message == WM.QUIT)
+                    {
+                        return;
+                    }
+                    User32.TranslateMessage(ref msg);
+                    User32.DispatchMessage(ref msg);
+                }
+
+                var now = Winmm.timeGetTime();
+                onFrame();
+                if (last != 0)
+                {
+                    var delta = (int)(now - last);
+                    var sleep = 30 - delta;
+                    if (sleep > 0)
+                    {
+                        Thread.Sleep(sleep);
+                    }
+                }
+                last = now;
             }
         }
 

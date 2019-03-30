@@ -55,7 +55,7 @@ namespace RectUI.Application
             UIContext = new UIContext();
 
             window.OnResize += Window_OnResize;
-            window.OnPaint += Window_OnPaint;
+            window.OnPaint += () => m_invalidated = true;
             window.OnMouseLeftDown += Window_OnMouseLeftDown;
             window.OnMouseLeftUp += Window_OnMouseLeftUp;
             window.OnMouseRightDown += Window_OnMouseRightDown;
@@ -67,7 +67,7 @@ namespace RectUI.Application
             window.OnMouseLeftDoubleClicked += Window_OnMouseLeftDoubleClicked;
 
             //UIContext.Updated += () => window.Invalidate();
-            UIContext.Updated += Window_OnPaint;
+            UIContext.Updated += () => m_invalidated = true;
 
             Window_OnResize(window.Width, window.Height);
         }
@@ -149,6 +149,16 @@ namespace RectUI.Application
             }
             Console.WriteLine("CreateList");
             return new CommandList(ReleaseList);
+        }
+
+        bool m_invalidated;
+        public void Draw()
+        {
+            if (m_invalidated)
+            {
+                m_invalidated = false;
+                Window_OnPaint();
+            }
         }
 
         private void Window_OnPaint()

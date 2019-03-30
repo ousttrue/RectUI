@@ -1,4 +1,5 @@
 ﻿using RectUI.Graphics;
+using SharpDX;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,17 +88,19 @@ namespace RectUI.Widgets
                 return;
             }
 
-            var rect = Rect.ToSharpDX();
-            rect.X += 16;
-            rect.Width -= 16;
-            list.Add(new D2DDrawCommand
             {
-                RegionID = ID,
-                Rectangle = Rect.ToSharpDX(),
-                DrawType = DrawType.Rectangle,
-                FillColor = GetFillColor(isActive, isHover),
-                BorderColor = GetBorderColor(isActive, isHover)
-            });
+                var rect = Rect.ToSharpDX();
+                rect.X += 16;
+                rect.Width -= 16;
+                list.Add(new D2DDrawCommand
+                {
+                    RegionID = ID,
+                    Rectangle = Rect.ToSharpDX(),
+                    DrawType = DrawType.Rectangle,
+                    FillColor = GetFillColor(isActive, isHover),
+                    BorderColor = GetBorderColor(isActive, isHover)
+                });
+            }
 
             /*
             if (dir.Current.Parent.FullName == r.Content.FullName)
@@ -108,27 +111,35 @@ namespace RectUI.Widgets
 
             GetIconCommands(list);
 
-            var color = GetTextColor(isActive, isHover);
-
-            // todo: m_padding
-            list.Add(new D2DDrawCommand
             {
-                RegionID = ID,
-                Rectangle = Rect.ToSharpDX(),
-                DrawType = DrawType.Text,
-                TextColor = color,
-                Font = new FontInfo
+                var color = GetTextColor(isActive, isHover);
+
+                // todo: m_padding
+                var rect = new RectangleF(
+                    m_padding.Left + Rect.X,
+                    m_padding.Top + Rect.Y,
+                    Rect.Width - m_padding.Horizontal,
+                    Rect.Height - m_padding.Vertical
+                    );
+                list.Add(new D2DDrawCommand
                 {
-                    Font = "MS Gothic",
-                    Size = Rect.Height - m_padding.Top - m_padding.Bottom,
-                },
-                Text = new TextInfo
-                {
-                    Text = Content.ToString(),
-                    HorizontalAlignment = TextHorizontalAlignment.Left,
-                    VerticalAlignment = TextVerticalAlignment.Center,
-                }
-            });
+                    RegionID = ID,
+                    Rectangle = rect,
+                    DrawType = DrawType.Text,
+                    TextColor = color,
+                    Font = new FontInfo
+                    {
+                        Font = "MS Gothic",
+                        Size = Rect.Height - m_padding.Top - m_padding.Bottom,
+                    },
+                    Text = new TextInfo
+                    {
+                        Text = Content.ToString(),
+                        HorizontalAlignment = TextHorizontalAlignment.Left,
+                        VerticalAlignment = TextVerticalAlignment.Center,
+                    }
+                });
+            }
         }
 
         Padding m_padding = new Padding

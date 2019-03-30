@@ -54,6 +54,12 @@ namespace DesktopDll
         CYSCREEN = 1,
     }
 
+    public enum PM : uint
+    {
+        NOREMOVE = 0x0000,
+        REMOVE = 0x0001,
+        NOYIELD = 0x0002,
+    }
 
     public static class User32
     {
@@ -349,6 +355,24 @@ namespace DesktopDll
           WM Msg,
           WPARAM wParam,
           LPARAM lParam
+        );
+
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-peekmessagew
+        /// </summary>
+        /// <param name="lpMsg"></param>
+        /// <param name="hWnd"></param>
+        /// <param name="wMsgFilterMin"></param>
+        /// <param name="wMsgFilterMax"></param>
+        /// <param name="wRemoveMsg"></param>
+        /// <returns></returns>
+        [DllImport(DLLNAME, CharSet = CharSet.Unicode)]
+        public static extern BOOL PeekMessageW(
+          ref MSG lpMsg,
+          HWND hWnd,
+          UINT wMsgFilterMin,
+          UINT wMsgFilterMax,
+          PM wRemoveMsg
         );
     }
 }

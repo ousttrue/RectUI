@@ -77,5 +77,13 @@ namespace RectUI.Application
                 User32.PostQuitMessage(0);
             }
         }
+
+        public void Draw()
+        {
+            foreach(var kv in m_windowStateMap)
+            {
+                kv.Value.Draw();
+            }
+        }
     }
 }

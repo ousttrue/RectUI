@@ -48,6 +48,9 @@ namespace RectUI.Graphics
         public float Top;
         public float Right;
         public float Bottom;
+
+        public float Horizontal => Left + Right;
+        public float Vertical => Top + Bottom;
     }
 
     public struct D2DDrawCommand
