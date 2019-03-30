@@ -12,13 +12,19 @@ namespace RectUI.Application
     {
         D3D11Device m_device;
 
-        Dictionary<Window, WindowState> m_windowStateMap = new Dictionary<Window, WindowState>();
+        struct WindowBuffer
+        {
+            public WindowState State;
+            public Backbuffer Buffer;
+        }
+        Dictionary<Window, WindowBuffer> m_windowStateMap = new Dictionary<Window, WindowBuffer>();
 
         public virtual void Dispose()
         {
             foreach (var kv in m_windowStateMap)
             {
-                kv.Value.Dispose();
+                kv.Value.State.Dispose();
+                kv.Value.Buffer.Dispose();
             }
             m_windowStateMap.Clear();
 
@@ -36,28 +42,32 @@ namespace RectUI.Application
 
         public void Bind(Window window, RectRegion root)
         {
-            var state = new WindowState(m_device, window, root);
-            state.OnPaint += State_OnPaint;
-            m_windowStateMap.Add(window, state);
+            var state = new WindowState(window, root);
+            var bb = new Backbuffer(m_device, window);
+
+            state.OnPaint += (commands) => bb.Paint(m_device, commands);
+            state.WindowSizeChanged += (w, h) => bb.Resize(w, h);
+
+            m_windowStateMap.Add(window, new WindowBuffer
+            {
+                State = state,
+                Buffer =bb,
+            });
 
             window.OnDestroy += () => Window_OnDestroy(window);
         }
 
-        private void State_OnPaint(D2D1Bitmap m_backbuffer, DXGISwapChain m_swapchain, 
-            KeyValuePair<uint, D2DDrawCommand>[] commands)
-        {
-            m_backbuffer.Begin(m_device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
-            foreach (var kv in commands)
-            {
-                m_backbuffer.Draw(m_device, kv.Key, kv.Value);
-            }       
-            m_backbuffer.End(m_device);
-            m_swapchain.Present();
-        }
-
         private void Window_OnDestroy(Window window)
         {
+            WindowBuffer buffer;
+            if (!m_windowStateMap.TryGetValue(window, out buffer))
+            {
+                return;
+            }
+            buffer.State.Dispose();
+            buffer.Buffer.Dispose();
             m_windowStateMap.Remove(window);
+
             if (!m_windowStateMap.Any())
             {
                 User32.PostQuitMessage(0);

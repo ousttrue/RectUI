@@ -113,9 +113,12 @@ namespace RectUI.Widgets
         #region IEnumerable<RectRegion>
         public virtual void Dispose()
         {
-            foreach (var child in m_children)
+            if (m_children != null)
             {
-                child.Dispose();
+                foreach (var child in m_children)
+                {
+                    child.Dispose();
+                }
             }
         }
 

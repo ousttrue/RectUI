@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\App.cs" />
+    <Compile Include="Application\Backbuffer.cs" />
     <Compile Include="Application\WindowState.cs" />
     <Compile Include="Assets\Animation.cs" />
     <Compile Include="Assets\AssetContext.cs" />

@@ -6,27 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-
 namespace RectUI.Application
 {
     public class WindowState : IDisposable
     {
-        D3D11Device m_device;
-        DXGISwapChain m_swapchain;
-        D2D1Bitmap m_backbuffer;
         RectRegion m_root;
 
         public void Dispose()
         {
-            if (m_backbuffer != null)
+            if (m_root != null)
             {
-                m_backbuffer.Dispose();
-                m_backbuffer = null;
-            }
-            if (m_swapchain != null)
-            {
-                m_swapchain.Dispose();
-                m_swapchain = null;
+                m_root.Dispose();
+                m_root = null;
             }
         }
 
@@ -36,10 +27,9 @@ namespace RectUI.Application
             private set;
         }
 
-        public WindowState(D3D11Device device, Window window, RectRegion root)
+        public WindowState(Window window, RectRegion root)
         {
-            m_device = device;
-
+            m_root = root;
             UIContext = new UIContext();
 
             window.OnResize += Window_OnResize;
@@ -56,12 +46,7 @@ namespace RectUI.Application
 
             UIContext.Updated += () => window.Invalidate();
 
-            m_swapchain = device.CreateSwapchain(window.WindowHandle);
-            m_backbuffer = m_swapchain.CreateBitmap();
-            m_root = root;
-
             Window_OnResize(window.Width, window.Height);
-
         }
 
         private void Window_OnMouseLeftDoubleClicked()
@@ -109,7 +94,15 @@ namespace RectUI.Application
             UIContext.MouseLeftDown(x, y);
         }
 
-        public event Action<D2D1Bitmap, DXGISwapChain, KeyValuePair<uint, D2DDrawCommand>[]> OnPaint;
+        public event Action<int, int> WindowSizeChanged;
+        private void Window_OnResize(int w, int h)
+        {
+            m_root.Rect = new Rect(0, 0, w, h);
+            WindowSizeChanged?.Invoke(w, h);
+        }
+
+        #region OnPaing
+        public event Action<KeyValuePair<uint, D2DDrawCommand>[]> OnPaint;
 
         IEnumerable<KeyValuePair<uint, D2DDrawCommand>> Flatten(RectRegion root)
         {
@@ -128,16 +121,8 @@ namespace RectUI.Application
         private void Window_OnPaint()
         {
             var commands = Flatten(m_root).ToArray();
-            OnPaint?.Invoke(m_backbuffer, m_swapchain, commands.ToArray());
+            OnPaint?.Invoke(commands.ToArray());
         }
-
-        private void Window_OnResize(int w, int h)
-        {
-            m_root.Rect = new Rect(0, 0, w, h);
-            m_backbuffer.Dispose();
-            m_swapchain.Resize(w, h);
-        }
+        #endregion
     }
-
-
 }
