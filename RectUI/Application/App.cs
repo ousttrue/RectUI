@@ -6,82 +6,70 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace RectUI.Application
 {
     public class App : IDisposable
     {
-        D3D11Device m_device;
-
-        struct WindowBuffer
-        {
-            public WindowState State;
-            public Backbuffer Buffer;
-        }
-        Dictionary<Window, WindowBuffer> m_windowStateMap = new Dictionary<Window, WindowBuffer>();
-
-        Scene m_scene = new Scene();
-        public Scene Scene
-        {
-            get { return m_scene; }
-        }
+        RenderThread m_renderThread;
+        Dictionary<Window, WindowState> m_windowStateMap = new Dictionary<Window, WindowState>();
 
         public virtual void Dispose()
         {
-            if (m_scene != null)
-            {
-                m_scene.Dispose();
-                m_scene = null;
-            }
-
             foreach (var kv in m_windowStateMap)
             {
-                kv.Value.State.Dispose();
-                kv.Value.Buffer.Dispose();
+                kv.Value.Dispose();
             }
             m_windowStateMap.Clear();
 
-            if (m_device != null)
+            if (m_renderThread != null)
             {
-                m_device.Dispose();
-                m_device = null;
+                m_renderThread.Dispose();
+                m_renderThread = null;
             }
         }
 
         public App()
         {
-            m_device = D3D11Device.Create();
+            m_renderThread = new RenderThread();
+        }
+
+        public void SetAsset(AssetContext asset)
+        {
+            m_renderThread.EnqueueAsset(asset);
         }
 
         public void Bind(Window window, RectRegion root)
         {
             var state = new WindowState(window, root);
-            var bb = new Backbuffer(m_device, window);
+
+            m_renderThread.EnqueueWindow(window);
 
             state.OnPaint += (commands) =>
             {
-                bb.ExecuteCommands(m_device, m_scene, commands);
+                m_renderThread.EnqueueCommand(window, commands);
             };
-            state.WindowSizeChanged += (w, h) => bb.Resize(w, h);
-
-            m_windowStateMap.Add(window, new WindowBuffer
+            state.WindowSizeChanged += (w, h) =>
             {
-                State = state,
-                Buffer =bb,
-            });
+                m_renderThread.EnqueueWindowResize(window, w, h);
+            };
+
+            m_windowStateMap.Add(window, state);
 
             window.OnDestroy += () => Window_OnDestroy(window);
         }
 
         private void Window_OnDestroy(Window window)
         {
-            WindowBuffer buffer;
-            if (!m_windowStateMap.TryGetValue(window, out buffer))
+            m_renderThread.EnqueueWindowDestroy(window);
+
+            WindowState state;
+            if (!m_windowStateMap.TryGetValue(window, out state))
             {
                 return;
             }
-            buffer.State.Dispose();
-            buffer.Buffer.Dispose();
+            state.Dispose();
             m_windowStateMap.Remove(window);
 
             if (!m_windowStateMap.Any())

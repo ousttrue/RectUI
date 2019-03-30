@@ -102,18 +102,15 @@ namespace RectUI.Application
         }
 
         #region OnPaing
-        public event Action<KeyValuePair<uint, D2DDrawCommand>[]> OnPaint;
+        public event Action<D2DDrawCommand[]> OnPaint;
 
-        IEnumerable<KeyValuePair<uint, D2DDrawCommand>> Flatten(RectRegion root)
+        IEnumerable<D2DDrawCommand> Flatten(RectRegion root)
         {
             foreach (var r in root.Traverse())
             {
-                foreach (var commands in r.GetDrawCommands(UIContext.Active == r, UIContext.Hover == r))
+                foreach (var c in r.GetDrawCommands(UIContext.Active == r, UIContext.Hover == r))
                 {
-                    foreach (var c in commands)
-                    {
-                        yield return new KeyValuePair<uint, D2DDrawCommand>(r.ID, c);
-                    }
+                    yield return c;
                 }
             }
         }

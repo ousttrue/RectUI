@@ -79,11 +79,17 @@ namespace RectUI.Widgets
             _camera.Resize(Rect.Width, Rect.Height);
         }
 
-        public override IEnumerable<IEnumerable<D2DDrawCommand>> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<D2DDrawCommand> GetDrawCommands(bool isActive, bool isHover)
         {
             _camera.Update();
 
-            yield return D2DDrawCommandFactory.DrawSceneCommands(Rect.ToSharpDX(), _camera, Content as Assets.Scene);
+            yield return new D2DDrawCommand
+            {
+                RegionID = ID,
+                Rectangle = Rect.ToSharpDX(),
+                DrawType = DrawType.Scene,
+                Camera = _camera,
+            };
         }
     }
 }

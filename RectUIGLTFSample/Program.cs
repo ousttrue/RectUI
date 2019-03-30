@@ -55,7 +55,7 @@ namespace RectUIGLTFSample
                 Console.WriteLine($"loaded: {source}");
                 var asset = await Task.Run(() => AssetContext.Load(source));
                 Console.WriteLine($"build: {source}");
-                m_app.Scene.Asset=asset;
+                m_app.SetAsset(asset);
             }
 
             public void Run()

@@ -81,7 +81,7 @@ namespace RectUI.Widgets
             yield break;
         }
 
-        public override IEnumerable<IEnumerable<D2DDrawCommand>> GetDrawCommands(bool isActive, bool isHover)
+        public override IEnumerable<D2DDrawCommand> GetDrawCommands(bool isActive, bool isHover)
         {
             if (Content == null)
             {
@@ -91,9 +91,14 @@ namespace RectUI.Widgets
             var rect = Rect.ToSharpDX();
             rect.X += 16;
             rect.Width -= 16;
-            yield return D2DDrawCommandFactory.DrawRectCommands(rect,
-                GetFillColor(isActive, isHover),
-                GetBorderColor(isActive, isHover));
+            yield return new D2DDrawCommand
+            {
+                RegionID = ID,
+                Rectangle = Rect.ToSharpDX(),
+                DrawType = DrawType.Rectangle,
+                FillColor = GetFillColor(isActive, isHover),
+                BorderColor = GetBorderColor(isActive, isHover)
+            };
 
             /*
             if (dir.Current.Parent.FullName == r.Content.FullName)
@@ -102,23 +107,32 @@ namespace RectUI.Widgets
             }
             */
 
-            yield return GetIconCommands();
+            foreach (var c in GetIconCommands())
+            {
+                yield return c;
+            }
 
             var color = GetTextColor(isActive, isHover);
-            yield return D2DDrawCommandFactory.DrawTextCommands(Rect.ToSharpDX(), m_padding,
-                color, 
-                new FontInfo
+
+            // todo: m_padding
+            yield return new D2DDrawCommand
+            {
+                RegionID = ID,
+                Rectangle = Rect.ToSharpDX(),
+                DrawType = DrawType.Text,
+                TextColor = color,
+                Font = new FontInfo
                 {
                     Font = "MS Gothic",
-                    Size = Rect.Height-m_padding.Top-m_padding.Bottom,
+                    Size = Rect.Height - m_padding.Top - m_padding.Bottom,
                 },
-                new TextInfo
+                Text = new TextInfo
                 {
                     Text = Content.ToString(),
                     HorizontalAlignment = TextHorizontalAlignment.Left,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }
-                );
+            };
         }
 
         Padding m_padding = new Padding

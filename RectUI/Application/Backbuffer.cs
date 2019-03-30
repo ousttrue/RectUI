@@ -68,13 +68,11 @@ namespace RectUI.Application
 
         public void ExecuteCommands(D3D11Device device,
             Scene scene,
-            KeyValuePair<uint, D2DDrawCommand>[] commands)
+            D2DDrawCommand[] commands)
         {
             m_backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
-            foreach (var kv in commands)
+            foreach (var command in commands)
             {
-                var regionID = kv.Key;
-                var command = kv.Value;
                 switch (command.DrawType)
                 {
                     case DrawType.Rectangle:
@@ -101,7 +99,7 @@ namespace RectUI.Application
                     case DrawType.Scene:
                         {
                             // render 3D scene
-                            var m_renderTarget = GetOrRenderTarget(device, regionID, command.Rectangle);
+                            var m_renderTarget = GetOrRenderTarget(device, command.RegionID, command.Rectangle);
                             m_renderTarget.Setup(device, new Color4(0.2f, 0, 0, 1));
                             device.SetViewport(new Viewport(0, 0,
                                 (int)command.Rectangle.Width,

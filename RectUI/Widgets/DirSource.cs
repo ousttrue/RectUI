@@ -77,7 +77,7 @@ namespace RectUI.Widgets
             }
         }
 
-        public DirSource():this(".")
+        public DirSource() : this(".")
         { }
 
         public DirSource(string path)
@@ -119,8 +119,15 @@ namespace RectUI.Widgets
         {
             var f = Content as FileSystemInfo;
             var icon = SystemIcon.Get(f.FullName, true);
-            return D2DDrawCommandFactory.DrawImageListCommands(Rect.ToSharpDX(),
-                icon.ImageList, icon.ImageListIndex);
+
+            yield return new D2DDrawCommand
+            {
+                RegionID = ID,
+                Rectangle = Rect.ToSharpDX(),
+                DrawType = DrawType.ImageList,
+                Icon = icon.ImageList,
+                ImageListIndex = icon.ImageListIndex,
+            };
         }
     }
 }

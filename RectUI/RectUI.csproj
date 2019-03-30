@@ -97,6 +97,8 @@
   <ItemGroup>
     <Compile Include="Application\App.cs" />
     <Compile Include="Application\Backbuffer.cs" />
+    <Compile Include="Application\RenderThread.cs" />
+    <Compile Include="Application\RenderThreadContext.cs" />
     <Compile Include="Application\WindowState.cs" />
     <Compile Include="Assets\Animation.cs" />
     <Compile Include="Assets\AssetContext.cs" />
@@ -119,7 +121,6 @@
     <Compile Include="Graphics\D3D11Device.cs" />
     <Compile Include="Graphics\D3D11RenderTarget.cs" />
     <Compile Include="Graphics\DXGISwapchain.cs" />
-    <Compile Include="Graphics\D2DDrawCommandFactory.cs" />
     <Compile Include="Graphics\ImageLoader.cs" />
     <Compile Include="Graphics\InterleavedBuffer.cs" />
     <Compile Include="Graphics\Triangle.cs" />

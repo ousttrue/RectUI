@@ -7,6 +7,7 @@ namespace RectUI.Graphics
 {
     public enum DrawType
     {
+        None,
         Rectangle,
         Text,
         Icon,
@@ -51,8 +52,9 @@ namespace RectUI.Graphics
 
     public struct D2DDrawCommand
     {
-        public DrawType DrawType;
+        public uint RegionID;
         public RectangleF Rectangle;
+        public DrawType DrawType;
         public Color4? FillColor;
         public Color4? BorderColor;
         public Color4? TextColor;
