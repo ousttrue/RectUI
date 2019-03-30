@@ -1,11 +1,10 @@
-﻿using RectUI.Graphics;
-using RectUI.Widgets;
+﻿using RectUI.Widgets;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 
 
-namespace RectUI
+namespace RectUI.Graphics
 {
     /// <summary>
     /// RectRegionの内部を描画する

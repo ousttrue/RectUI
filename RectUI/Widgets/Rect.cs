@@ -1,4 +1,4 @@
-﻿namespace RectUI
+﻿namespace RectUI.Widgets
 {
     public struct Rect
     {

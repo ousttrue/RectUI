@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RectUI
+namespace RectUI.Application
 {
     public class WindowState : IDisposable
     {

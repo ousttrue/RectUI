@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI;
+using RectUI.Application;
 using RectUI.Assets;
 using RectUI.Widgets;
 using System;

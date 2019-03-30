@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace RectUI
+namespace RectUI.Widgets
 {
     public enum StyleColorKey
     {

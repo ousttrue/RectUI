@@ -1,9 +1,8 @@
-﻿using RectUI.Widgets;
-using System;
+﻿using System;
 using System.Linq;
 
 
-namespace RectUI
+namespace RectUI.Widgets
 {
     /// <summary>
     /// 
