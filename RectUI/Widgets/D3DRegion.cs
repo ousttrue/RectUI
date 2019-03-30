@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RectUI.Widgets
 {
-    public class D3DRegion: RectRegion
+    public class D3DRegion : RectRegion
     {
         Camera _camera = new Camera();
 
@@ -79,17 +79,17 @@ namespace RectUI.Widgets
             _camera.Resize(Rect.Width, Rect.Height);
         }
 
-        public override IEnumerable<D2DDrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
         {
             _camera.Update();
 
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
                 DrawType = DrawType.Scene,
                 Camera = _camera,
-            };
+            });
         }
     }
 }

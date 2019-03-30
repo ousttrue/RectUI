@@ -48,18 +48,18 @@ namespace RectUI.Widgets
             Size = 18,
         };
 
-        public override IEnumerable<D2DDrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
         {
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
                 DrawType = DrawType.Rectangle,
                 FillColor = GetFillColor(isActive, isHover),
                 BorderColor = GetBorderColor(isActive, isHover)
-            };
+            });
 
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
@@ -72,7 +72,7 @@ namespace RectUI.Widgets
                     HorizontalAlignment = TextHorizontalAlignment.Center,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }
-            };
+            });
         }
 
         public override void Dispose()

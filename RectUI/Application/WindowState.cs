@@ -2,12 +2,34 @@
 using RectUI.Graphics;
 using RectUI.Widgets;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 
 namespace RectUI.Application
 {
+    public class CommandList
+    {
+        List<D2DDrawCommand> m_list = new List<D2DDrawCommand>();
+        public List<D2DDrawCommand> List
+        {
+            get { return m_list; }
+        }
+
+        Action<CommandList> m_release;
+
+        public CommandList(Action<CommandList> release)
+        {
+            m_release = release;
+        }
+
+        public void Release()
+        {
+            m_release(this);
+        }
+    }
+
     public class WindowState : IDisposable
     {
         RectRegion m_root;
@@ -33,7 +55,7 @@ namespace RectUI.Application
             UIContext = new UIContext();
 
             window.OnResize += Window_OnResize;
-            //window.OnPaint += Window_OnPaint;
+            window.OnPaint += Window_OnPaint;
             window.OnMouseLeftDown += Window_OnMouseLeftDown;
             window.OnMouseLeftUp += Window_OnMouseLeftUp;
             window.OnMouseRightDown += Window_OnMouseRightDown;
@@ -103,23 +125,42 @@ namespace RectUI.Application
         }
 
         #region OnPaing
-        public event Action<D2DDrawCommand[]> OnPaint;
+        public event Action<CommandList> OnPaint;
 
-        IEnumerable<D2DDrawCommand> Flatten(RectRegion root)
+        Queue<CommandList> m_pool = new Queue<CommandList>();
+
+        public void ReleaseList(CommandList list)
         {
-            foreach (var r in root.Traverse())
+            list.List.Clear();
+            lock (((ICollection)m_pool).SyncRoot)
             {
-                foreach (var c in r.GetDrawCommands(UIContext.Active == r, UIContext.Hover == r))
+                m_pool.Enqueue(list);
+            }
+        }
+
+        CommandList GetList()
+        {
+            lock (((ICollection)m_pool).SyncRoot)
+            {
+                if (m_pool.Count > 0)
                 {
-                    yield return c;
+                    return m_pool.Dequeue();
                 }
             }
+            Console.WriteLine("CreateList");
+            return new CommandList(ReleaseList);
         }
 
         private void Window_OnPaint()
         {
-            var commands = Flatten(m_root).ToArray();
-            OnPaint?.Invoke(commands.ToArray());
+            var list = GetList();
+
+            foreach (var r in m_root.Traverse())
+            {
+                r.GetDrawCommands(list.List, UIContext.Active == r, UIContext.Hover == r);
+            }
+
+            OnPaint?.Invoke(list);
         }
         #endregion
     }

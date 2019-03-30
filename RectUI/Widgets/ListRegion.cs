@@ -76,29 +76,28 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        public virtual IEnumerable<D2DDrawCommand> GetIconCommands()
+        public virtual void GetIconCommands(List<D2DDrawCommand> list)
         {
-            yield break;
         }
 
-        public override IEnumerable<D2DDrawCommand> GetDrawCommands(bool isActive, bool isHover)
+        public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
         {
             if (Content == null)
             {
-                yield break;
+                return;
             }
 
             var rect = Rect.ToSharpDX();
             rect.X += 16;
             rect.Width -= 16;
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
                 DrawType = DrawType.Rectangle,
                 FillColor = GetFillColor(isActive, isHover),
                 BorderColor = GetBorderColor(isActive, isHover)
-            };
+            });
 
             /*
             if (dir.Current.Parent.FullName == r.Content.FullName)
@@ -107,15 +106,12 @@ namespace RectUI.Widgets
             }
             */
 
-            foreach (var c in GetIconCommands())
-            {
-                yield return c;
-            }
+            GetIconCommands(list);
 
             var color = GetTextColor(isActive, isHover);
 
             // todo: m_padding
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
@@ -132,7 +128,7 @@ namespace RectUI.Widgets
                     HorizontalAlignment = TextHorizontalAlignment.Left,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }
-            };
+            });
         }
 
         Padding m_padding = new Padding

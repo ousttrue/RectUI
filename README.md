@@ -1,15 +1,14 @@
 # ToDo
-* [ ] Render thread
+* [ ] mouse capture
+* [x] Render thread
 * [x] 3D scene
 * [x] vbox, hbox
 * [ ] Logger(to console)
 * [x] Text alignment
-* [ ] style each region
-* [ ] save/restore state
+* [x] save/restore state
 * [ ] middle drag list
 * [x] left drag splitter
 * [x] scroll
-* [ ] fix, expand, shrink
 * [x] propagate event to parent
 * [x] Cursor
 * [x] Click

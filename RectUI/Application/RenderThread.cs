@@ -41,7 +41,7 @@ namespace RectUI.Application
             public Window Target;
             public int Width;
             public int Height;
-            public D2DDrawCommand[] Commands;
+            public CommandList Commands;
         }
 
         List<Command> m_commandQueue = new List<Command>();
@@ -116,7 +116,7 @@ namespace RectUI.Application
             });
         }
 
-        public void EnqueueCommand(Window target, D2DDrawCommand[] commands)
+        public void EnqueueCommand(Window target, CommandList commands)
         {
             Enqueue(new Command
             {
@@ -134,7 +134,7 @@ namespace RectUI.Application
 
         void RenderLoop()
         {
-            var commandMap = new Dictionary<Window, D2DDrawCommand[]>();
+            var commandMap = new Dictionary<Window, CommandList>();
 
             using (var context = new Context())
             {
@@ -159,7 +159,13 @@ namespace RectUI.Application
                                 break;
 
                             case ThreadCommand.ExecuteCommands:
-                                commandMap[command.Target] = command.Commands;
+                                {
+                                    CommandList list;
+                                    if(commandMap.TryGetValue(command.Target, out list)){
+                                        list.Release();
+                                    }
+                                    commandMap[command.Target] = command.Commands;
+                                }
                                 break;
 
                             case ThreadCommand.AddTarget:
@@ -180,7 +186,9 @@ namespace RectUI.Application
                     {
                         foreach (var kv in commandMap)
                         {
-                            context.Draw(kv.Key, kv.Value);
+                            var list = kv.Value;
+                            context.Draw(kv.Key, list.List);
+                            list.Release();
                         }
                     }
                     else

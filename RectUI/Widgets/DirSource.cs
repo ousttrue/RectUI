@@ -115,19 +115,19 @@ namespace RectUI.Widgets
         {
         }
 
-        public override IEnumerable<D2DDrawCommand> GetIconCommands()
+        public override void GetIconCommands(List<D2DDrawCommand> list)
         {
             var f = Content as FileSystemInfo;
             var icon = SystemIcon.Get(f.FullName, true);
 
-            yield return new D2DDrawCommand
+            list.Add(new D2DDrawCommand
             {
                 RegionID = ID,
                 Rectangle = Rect.ToSharpDX(),
                 DrawType = DrawType.ImageList,
                 Icon = icon.ImageList,
                 ImageListIndex = icon.ImageListIndex,
-            };
+            });
         }
     }
 }

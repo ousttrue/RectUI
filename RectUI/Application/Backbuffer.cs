@@ -68,7 +68,7 @@ namespace RectUI.Application
 
         public void ExecuteCommands(D3D11Device device,
             Scene scene,
-            D2DDrawCommand[] commands)
+            List<D2DDrawCommand> commands)
         {
             m_backbuffer.Begin(device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
             foreach (var command in commands)
