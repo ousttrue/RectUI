@@ -108,20 +108,26 @@ namespace RectUI.Application
             UIContext.MouseLeftDown(x, y);
         }
 
-        private void Window_OnPaint()
-        {
-            m_backbuffer.Begin(m_device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
+        public event Action<D2D1Bitmap, DXGISwapChain, KeyValuePair<uint, D2DDrawCommand>[]> OnPaint;
 
-            foreach (var r in m_root.Traverse())
+        IEnumerable<KeyValuePair<uint, D2DDrawCommand>> Flatten(RectRegion root)
+        {
+            foreach(var r in root.Traverse())
             {
-                foreach (var c in r.GetDrawCommands(UIContext.Active==r, UIContext.Hover==r).SelectMany(x => x))
+                foreach(var commands in r.GetDrawCommands(UIContext.Active == r, UIContext.Hover == r))
                 {
-                    m_backbuffer.Draw(m_device, r.ID, c);
+                    foreach (var c in commands)
+                    {
+                        yield return new KeyValuePair<uint, D2DDrawCommand>(r.ID, c);
+                    }
                 }
             }
+        }
 
-            m_backbuffer.End(m_device);
-            m_swapchain.Present();
+        private void Window_OnPaint()
+        {
+            var commands = Flatten(m_root).ToArray();
+            OnPaint?.Invoke(m_backbuffer, m_swapchain, commands.ToArray());
         }
 
         private void Window_OnResize(int w, int h)
@@ -161,9 +167,23 @@ namespace RectUI.Application
 
         public void Bind(Window window, RectRegion root)
         {
-            m_windowStateMap.Add(window, new WindowState(m_device, window, root));
+            var state = new WindowState(m_device, window, root);
+            state.OnPaint += State_OnPaint;
+            m_windowStateMap.Add(window, state);
 
             window.OnDestroy += () => Window_OnDestroy(window);
+        }
+
+        private void State_OnPaint(D2D1Bitmap m_backbuffer, DXGISwapChain m_swapchain, 
+            KeyValuePair<uint, D2DDrawCommand>[] commands)
+        {
+            m_backbuffer.Begin(m_device, new Color4(0.1f, 0.2f, 0.1f, 1.0f));
+            foreach (var kv in commands)
+            {
+                m_backbuffer.Draw(m_device, kv.Key, kv.Value);
+            }       
+            m_backbuffer.End(m_device);
+            m_swapchain.Present();
         }
 
         private void Window_OnDestroy(Window window)
