@@ -93,6 +93,17 @@ namespace RectUI.Widgets
     /// </summary>
     public class RectRegion : IEnumerable<RectRegion>, IDisposable
     {
+        static uint s_id = 1;
+        public uint ID
+        {
+            get;
+            private set;
+        }
+        public RectRegion()
+        {
+            ID = s_id++;
+        }
+
         public object Content
         {
             get;

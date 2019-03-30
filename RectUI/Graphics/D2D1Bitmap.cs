@@ -156,7 +156,7 @@ namespace RectUI.Graphics
             device.D2DDeviceContext.EndDraw();
         }
 
-        public void Draw(D3D11Device device, D2DDrawCommand command)
+        public void Draw(D3D11Device device, uint regionID, D2DDrawCommand command)
         {
             switch(command.DrawType)
             {
