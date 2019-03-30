@@ -80,21 +80,6 @@ namespace RectUI.Graphics
                 return null;
             }
 
-            /*
-            // ARGB to BGRA
-            for(int i=0; i<lpbitmap.Length; i+=4)
-            {
-                var r = lpbitmap[i];
-                var g = lpbitmap[i+1];
-                var b = lpbitmap[i+2];
-                var a = lpbitmap[i+3];
-                lpbitmap[i] = a;
-                lpbitmap[i+1] = r;
-                lpbitmap[i+2] = g;
-                lpbitmap[i+3] = b;
-            }
-            */
-
             return lpbitmap;
         }
     }
