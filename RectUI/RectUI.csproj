@@ -126,6 +126,7 @@
     <Compile Include="Graphics\Triangle.cs" />
     <Compile Include="Widgets\BoxRegion.cs" />
     <Compile Include="Widgets\ButtonRegion.cs" />
+    <Compile Include="Widgets\ColorKeys.cs" />
     <Compile Include="Widgets\D3DRegion.cs" />
     <Compile Include="Widgets\DirSource.cs" />
     <Compile Include="Widgets\FileDialog.cs" />

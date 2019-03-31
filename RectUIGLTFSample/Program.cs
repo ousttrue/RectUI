@@ -20,7 +20,7 @@ namespace RectUIGLTFSample
                 {
                     Action = _ => onOpen(),
                     Rect = new Rect(200, 40),
-                    Content = "open",
+                    Label = "open",
                 },
 
                 {BoxItem.Expand, new D3DRegion()}

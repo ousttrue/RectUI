@@ -1,5 +1,13 @@
-﻿namespace RectUI.Widgets
+﻿using System.Collections.Generic;
+
+namespace RectUI.Widgets
 {
+    public enum BoxItem
+    {
+        Fixed,
+        Expand,
+    }
+
     public abstract class BoxRegion : RectRegion
     {
         protected BoxRegion(Rect rect)
@@ -7,18 +15,19 @@
             Rect = rect;
         }
 
+        readonly List<BoxItem> m_boxItems = new List<BoxItem>();
         public void Add(RectRegion child)
         {
-            child.BoxItem = BoxItem.Fixed;
             child.Parent = this;
             Children.Add(child);
+            m_boxItems.Add(BoxItem.Fixed);
         }
 
         public void Add(BoxItem boxItem, RectRegion child)
         {
-            child.BoxItem = boxItem;
             child.Parent = this;
             Children.Add(child);
+            m_boxItems.Add(boxItem);
         }
 
         protected abstract int GetLength(Rect r);
@@ -29,9 +38,11 @@
             // fix が使った残りの領域を得る
             var remain = GetLength(Rect);
             var expandCount = 0;
-            foreach (var child in Children)
+            for (int i = 0; i < Children.Count; ++i)
             {
-                switch (child.BoxItem)
+                var child = Children[i];
+                var boxItem = m_boxItems[i];
+                switch (boxItem)
                 {
                     case BoxItem.Fixed:
                         remain -= GetLength(child.Rect);
@@ -50,9 +61,11 @@
 
             // レイアウト
             var pos = 0;
-            foreach (var child in Children)
+            for (int i = 0; i < Children.Count; ++i)
             {
-                switch (child.BoxItem)
+                var child = Children[i];
+                var boxItem = m_boxItems[i];
+                switch (boxItem)
                 {
                     case BoxItem.Fixed:
                         child.Rect = CreateRect(ref pos, child.Rect.Height);

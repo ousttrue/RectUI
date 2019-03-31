@@ -55,22 +55,14 @@ namespace RectUI.Widgets
                 {
                     new ButtonRegion
                     {
-                        Content = "Open",
+                        Label = "Open",
                         Rect = new Rect(96, 24),
-                        Anchor = new Anchor
-                        {
-                            Bottom=5, Left=5,
-                        }
                     },
 
                     new ButtonRegion
                     {
-                        Content = "Cancel",
+                        Label = "Cancel",
                         Rect = new Rect(96, 24),
-                        Anchor = new Anchor
-                        {
-                            Bottom=5, Right=5,
-                        }
                     }
                 }
             };

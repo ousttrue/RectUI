@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI.Graphics;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -105,20 +106,15 @@ namespace RectUI.Widgets
 
         public override ListItemRegion<FileSystemInfo> CreateItem()
         {
-            return new DirItemRegion(this);
+            return new DirItemRegion();
         }
     }
 
     public class DirItemRegion : ListItemRegion<FileSystemInfo>
     {
-        public DirItemRegion(DirSource source) : base(source)
+        protected override void GetIconCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
         {
-        }
-
-        public override void GetIconCommands(List<D2DDrawCommand> list)
-        {
-            var f = Content as FileSystemInfo;
-            var icon = SystemIcon.Get(f.FullName, true);
+            var icon = SystemIcon.Get(Content.FullName, true);
 
             list.Add(new D2DDrawCommand
             {
@@ -127,6 +123,37 @@ namespace RectUI.Widgets
                 DrawType = DrawType.ImageList,
                 Icon = icon.ImageList,
                 ImageListIndex = icon.ImageListIndex,
+            });
+        }
+
+        protected override void GetTextCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        {
+            var color = GetTextColor(isActive, isHover);
+
+            // todo: m_padding
+            var rect = new RectangleF(
+                m_padding.Left + Rect.X,
+                m_padding.Top + Rect.Y,
+                Rect.Width - m_padding.Horizontal,
+                Rect.Height - m_padding.Vertical
+                );
+            list.Add(new D2DDrawCommand
+            {
+                RegionID = ID,
+                Rectangle = rect,
+                DrawType = DrawType.Text,
+                TextColor = color,
+                Font = new FontInfo
+                {
+                    Font = "MS Gothic",
+                    Size = Rect.Height - m_padding.Top - m_padding.Bottom,
+                },
+                Text = new TextInfo
+                {
+                    Text = Content.Name,
+                    HorizontalAlignment = TextHorizontalAlignment.Left,
+                    VerticalAlignment = TextVerticalAlignment.Center,
+                }
             });
         }
     }

@@ -1,12 +1,23 @@
-﻿namespace RectUI.Widgets
+﻿using System.Collections.Generic;
+
+namespace RectUI.Widgets
 {
+    public struct Anchor
+    {
+        public int? Left;
+        public int? Top;
+        public int? Right;
+        public int? Bottom;
+    }
+
     public class PanelRegion : RectRegion
     {
+        List<Anchor> m_anchors = new List<Anchor>();
         public void Add(Anchor anchor, RectRegion child)
         {
-            child.Anchor = anchor;
             child.Parent = this;
             Children.Add(child);
+            m_anchors.Add(anchor);
         }
 
         (int, int) GetPosLen(int total, int pos, int value, int? head, int? tail)
@@ -31,10 +42,12 @@
 
         protected override void Layout()
         {
-            foreach (var child in Children)
+            for (int i = 0; i < Children.Count; ++i)
             {
-                var (x, w) = GetPosLen(Rect.Width, child.Rect.X, child.Rect.Width, child.Anchor.Left, child.Anchor.Right);
-                var (y, h) = GetPosLen(Rect.Height, child.Rect.Y, child.Rect.Height, child.Anchor.Top, child.Anchor.Bottom);
+                var child = Children[i];
+                var anchor = m_anchors[i];
+                var (x, w) = GetPosLen(Rect.Width, child.Rect.X, child.Rect.Width, anchor.Left, anchor.Right);
+                var (y, h) = GetPosLen(Rect.Height, child.Rect.Y, child.Rect.Height, anchor.Top, anchor.Bottom);
                 child.Rect = new Rect(x, y, w, h);
             }
         }

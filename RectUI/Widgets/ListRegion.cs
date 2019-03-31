@@ -1,5 +1,4 @@
 ﻿using RectUI.Graphics;
-using SharpDX;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace RectUI.Widgets
         ListItemRegion<T> CreateItem();
     }
 
-    public class ListSource<T> : IListSource<T>, IEnumerable<T>
+    public abstract class ListSource<T> : IListSource<T>, IEnumerable<T>
     {
         protected List<T> m_items = new List<T>();
         public int Count => m_items.Count;
@@ -56,30 +55,26 @@ namespace RectUI.Widgets
             m_items.Add(value);
         }
 
-        public virtual ListItemRegion<T> CreateItem()
-        {
-            return new ListItemRegion<T>(this)
-            {
-            };
-        }
+        public abstract ListItemRegion<T> CreateItem();
     }
 
-    public class ListItemRegion<T> : RectRegion
+    public abstract class ListItemRegion<T> : RectRegion
     {
-        IListSource<T> m_source;
-
-        public ListItemRegion(IListSource<T> source)
+        public T Content
         {
-            m_source = source;
+            get;
+            set;
+        }
 
+        public ListItemRegion()
+        {
             NormalColor = ColorKeys.ListItemNormal;
             HoverColor = ColorKeys.ListItemHover;
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        public virtual void GetIconCommands(List<D2DDrawCommand> list)
-        {
-        }
+        protected abstract void GetIconCommands(List<D2DDrawCommand> list, bool isActive, bool isHover);
+        protected abstract void GetTextCommands(List<D2DDrawCommand> list, bool isActive, bool isHover);
 
         public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
         {
@@ -89,6 +84,7 @@ namespace RectUI.Widgets
             }
 
             {
+                // Rect
                 var rect = Rect.ToSharpDX();
                 rect.X += 16;
                 rect.Width -= 16;
@@ -102,47 +98,12 @@ namespace RectUI.Widgets
                 });
             }
 
-            /*
-            if (dir.Current.Parent.FullName == r.Content.FullName)
-            {
-                label = "..";
-            }
-            */
+            GetIconCommands(list, isActive, isHover);
 
-            GetIconCommands(list);
-
-            {
-                var color = GetTextColor(isActive, isHover);
-
-                // todo: m_padding
-                var rect = new RectangleF(
-                    m_padding.Left + Rect.X,
-                    m_padding.Top + Rect.Y,
-                    Rect.Width - m_padding.Horizontal,
-                    Rect.Height - m_padding.Vertical
-                    );
-                list.Add(new D2DDrawCommand
-                {
-                    RegionID = ID,
-                    Rectangle = rect,
-                    DrawType = DrawType.Text,
-                    TextColor = color,
-                    Font = new FontInfo
-                    {
-                        Font = "MS Gothic",
-                        Size = Rect.Height - m_padding.Top - m_padding.Bottom,
-                    },
-                    Text = new TextInfo
-                    {
-                        Text = Content.ToString(),
-                        HorizontalAlignment = TextHorizontalAlignment.Left,
-                        VerticalAlignment = TextVerticalAlignment.Center,
-                    }
-                });
-            }
+            GetTextCommands(list, isActive, isHover);
         }
 
-        Padding m_padding = new Padding
+        protected Padding m_padding = new Padding
         {
             Left = 21,
             Top = 3,
@@ -243,24 +204,24 @@ namespace RectUI.Widgets
             int i = 0;
             for (; i < count; ++i, ++index)
             {
-                RectRegion r = null;
+                ListItemRegion<T> r = null;
                 if (i < Children.Count)
                 {
-                    r = Children[i];
+                    r = Children[i] as ListItemRegion<T>;
                 }
                 else
                 {
                     r = m_source.CreateItem();
                     r.Parent = this;
-                    r.MouseLeftClicked += x => R_LeftClicked(x);
-                    r.MouseLeftDoubleClicked += x => R_LeftDoubleClicked(x);
+                    r.MouseLeftClicked += x => R_LeftClicked(x as ListItemRegion<T>);
+                    r.MouseLeftDoubleClicked += x => R_LeftDoubleClicked(x as ListItemRegion<T>);
                     Children.Add(r);
                 }
 
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
                 if (index < 0 || index >= m_source.Count)
                 {
-                    r.Content = null;
+                    r.Content = default(T);
                 }
                 else
                 {
@@ -271,16 +232,16 @@ namespace RectUI.Widgets
             }
         }
 
-        public event Action<int, object> ItemLeftClicked;
-        private void R_LeftClicked(RectRegion r)
+        public event Action<int, T> ItemLeftClicked;
+        private void R_LeftClicked(ListItemRegion<T> r)
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
             ItemLeftClicked?.Invoke(first+index, r.Content);
         }
 
-        public event Action<int, object> ItemLeftDoubleClicked;
-        private void R_LeftDoubleClicked(RectRegion r)
+        public event Action<int, T> ItemLeftDoubleClicked;
+        private void R_LeftDoubleClicked(ListItemRegion<T> r)
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;

@@ -1,15 +1,18 @@
 ﻿using RectUI.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace RectUI.Widgets
 {
     public class ButtonRegion : RectRegion
     {
+        public string Label
+        {
+            get;
+            set;
+        }
+
         Action<RectRegion> m_action;
         public Action<RectRegion> Action
         {
@@ -68,7 +71,7 @@ namespace RectUI.Widgets
                 Font = m_font,
                 Text = new TextInfo
                 {
-                    Text = Content as string,
+                    Text = Label,
                     HorizontalAlignment = TextHorizontalAlignment.Center,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }
