@@ -147,7 +147,6 @@ namespace RectUI.Application
                     return m_pool.Dequeue();
                 }
             }
-            Console.WriteLine("CreateList");
             return new CommandList(ReleaseList);
         }
 
