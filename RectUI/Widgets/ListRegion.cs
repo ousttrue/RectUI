@@ -150,6 +150,8 @@ namespace RectUI.Widgets
             source.Updated += () =>
             {
                 Layout();
+                m_scrollY = 0;
+                Invalidate();
             };
 
             OnWheel += (_, delta) =>

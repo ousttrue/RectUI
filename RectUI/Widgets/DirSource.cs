@@ -95,6 +95,7 @@ namespace RectUI.Widgets
                 if (d != null)
                 {
                     ChangeDirectory(d);
+                    RaiseUpdate();
                 }
             };
         }

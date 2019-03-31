@@ -87,6 +87,7 @@ namespace RectUIGLTFSample
                     if (d != null)
                     {
                         State.Instance.OpenDir = d.FullName;
+                        m_app.Draw();
                         return;
                     }
                 };

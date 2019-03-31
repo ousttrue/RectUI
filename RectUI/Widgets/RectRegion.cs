@@ -16,6 +16,12 @@ namespace RectUI.Widgets
 
     public class RectRegion : IEnumerable<RectRegion>, IDisposable
     {
+        public event Action Invalidated;
+        public void Invalidate()
+        {
+            Root.Invalidated?.Invoke();
+        }
+
         #region ID
         static uint s_id = 1;
         public uint ID
@@ -92,6 +98,19 @@ namespace RectUI.Widgets
         {
             get;
             set;
+        }
+
+        public RectRegion Root
+        {
+            get
+            {
+                var root = this;
+                while (root.Parent != null)
+                {
+                    root = root.Parent;
+                }
+                return root;
+            }
         }
 
         public IEnumerable<RectRegion> ParentPath
