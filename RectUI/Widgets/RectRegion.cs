@@ -5,11 +5,8 @@ using System.Linq;
 using RectUI.Graphics;
 using SharpDX;
 
-
 namespace RectUI.Widgets
 {
-    public delegate IEnumerable<D2DDrawCommand> GetDrawCommandsFunc(UIContext uiContext, RectRegion r);
-
     public enum DragEvent
     {
         Begin,
@@ -17,11 +14,9 @@ namespace RectUI.Widgets
         End,
     }
 
-    /// <summary>
-    /// RectRegion + IRectDrawer => Widget
-    /// </summary>
     public class RectRegion : IEnumerable<RectRegion>, IDisposable
     {
+        #region ID
         static uint s_id = 1;
         public uint ID
         {
@@ -32,6 +27,7 @@ namespace RectUI.Widgets
         {
             ID = s_id++;
         }
+        #endregion
 
         #region IEnumerable<RectRegion>
         public virtual void Dispose()
@@ -110,6 +106,7 @@ namespace RectUI.Widgets
         }
         #endregion
 
+        #region Layout
         Rect m_rect;
         public Rect Rect
         {
@@ -126,6 +123,7 @@ namespace RectUI.Widgets
         {
 
         }
+        #endregion
 
         #region Style & DrawCommands
         Style m_style = new Style();
@@ -141,7 +139,7 @@ namespace RectUI.Widgets
 
         protected Color4? GetFillColor(bool isActive, bool isHover)
         {
-            if(isActive && ActiveColor.HasValue)
+            if (isActive && ActiveColor.HasValue)
             {
                 var color = Style.GetColor(ActiveColor.Value.FillColorKey);
                 if (color.HasValue)
@@ -150,7 +148,8 @@ namespace RectUI.Widgets
                 }
             }
 
-            if((isActive||isHover) && HoverColor.HasValue){
+            if ((isActive || isHover) && HoverColor.HasValue)
+            {
                 var color = Style.GetColor(HoverColor.Value.FillColorKey);
                 if (color.HasValue)
                 {
