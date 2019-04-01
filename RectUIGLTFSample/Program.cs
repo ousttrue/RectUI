@@ -4,6 +4,7 @@ using RectUI.Assets;
 using RectUI.Widgets;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -58,11 +59,11 @@ namespace RectUIGLTFSample
                     return;
                 }
 
-                Console.WriteLine($"open: {path}");
+                Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} open: {path}");
                 var source = await Task.Run(() => AssetSource.Load(path));
-                Console.WriteLine($"loaded: {source}");
+                Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} loaded: {source}");
                 var asset = await Task.Run(() => AssetContext.Load(source));
-                Console.WriteLine($"build: {source}");
+                Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} build: {source}");
                 m_app.SetAsset(asset);
             }
 
