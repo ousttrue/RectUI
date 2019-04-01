@@ -198,6 +198,8 @@ namespace RectUI.Widgets
 
                 y += ItemHeight;
             }
+
+            Invalidate();
         }
 
         public event Action<int, T> ItemLeftClicked;
