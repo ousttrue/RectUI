@@ -129,11 +129,36 @@ namespace RectUIGLTFSample
                 };
                 m_app.Bind(window, BuildUI(onOpen));
 
-                MessageLoop.Run(() =>
+                //
+                // main loop
+                //
+                uint last = Winmm.timeGetTime();
+                var MS_PER_FRAME = 30;
+                while (true)
                 {
-                    m_app.Draw();
-                });
-            
+                    bool quit;
+                    MessageLoop.ProcessMessage(out quit);
+                    if (quit)
+                    {
+                        break;
+                    }
+
+                    var now = Winmm.timeGetTime();
+                    var delta = (int)(now - last);
+                    if (delta > MS_PER_FRAME)
+                    {
+                        last = now;
+                        m_app.Draw(); // 描画
+                    }
+                    else
+                    {
+                        var sleep = MS_PER_FRAME - delta;
+                        if (sleep > 0)
+                        {
+                            Thread.Sleep(sleep);
+                        }
+                    }
+                }
 
                 State.Save();
             }
