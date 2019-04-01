@@ -1,14 +1,24 @@
 ﻿using RectUI.Graphics;
 using SharpDX;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 
 namespace RectUI.Widgets
 {
-    public class DirSource : ListSource<FileSystemInfo>
+    public class DirSource : IListSource<FileSystemInfo>
     {
         DirectoryInfo m_current;
+
+        public event Action Updated;
+        void RaiseUpdated()
+        {
+            Updated?.Invoke();
+        }
+
+        List<FileSystemInfo> m_items = new List<FileSystemInfo>();
+
         public DirectoryInfo Current
         {
             get { return m_current; }
@@ -33,9 +43,11 @@ namespace RectUI.Widgets
                     // do nothing
                 }
 
-                RaiseUpdate();
+                RaiseUpdated();
             }
         }
+        public int Count => m_items.Count;
+        public FileSystemInfo this[int index] => m_items[index];
 
         public DirSource() : this(".")
         { }
@@ -47,26 +59,21 @@ namespace RectUI.Widgets
                 path = ".";
             }
             Current = new DirectoryInfo(Path.GetFullPath(path));
-
-            Entered += f =>
-            {
-                var d = f as DirectoryInfo;
-                if (d != null)
-                {
-                    ChangeDirectory(d);
-                    RaiseUpdate();
-                }
-            };
         }
 
-        public void ChangeDirectory(DirectoryInfo d)
-        {
-            Current = d;
-        }
-
-        public override ListItemRegion<FileSystemInfo> CreateItem()
+        public ListItemRegion<FileSystemInfo> CreateItem()
         {
             return new DirItemRegion();
+        }
+
+        public void Enter(int index)
+        {
+            var f = m_items[index];
+            var d = f as DirectoryInfo;
+            if (d != null)
+            {
+                Current = d;
+            }
         }
     }
 

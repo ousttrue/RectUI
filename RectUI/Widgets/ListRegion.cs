@@ -12,13 +12,11 @@ namespace RectUI.Widgets
         T this[int index] { get; }
         event Action Updated;
 
-        event Action<T> Entered;
-        void Enter(int index);
-
         ListItemRegion<T> CreateItem();
     }
 
-    public abstract class ListSource<T> : IListSource<T>, IEnumerable<T>
+    /*
+    public abstract class ListSource<T> : IListSource<T>
     {
         protected List<T> m_items = new List<T>();
         public int Count => m_items.Count;
@@ -31,32 +29,9 @@ namespace RectUI.Widgets
             Updated?.Invoke();
         }
 
-        public event Action<T> Entered;
-        public void Enter(int index)
-        {
-            if (index >= 0 && index < Count)
-            {
-                Entered?.Invoke(this[index]);
-            }
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return m_items.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void Add(T value)
-        {
-            m_items.Add(value);
-        }
-
         public abstract ListItemRegion<T> CreateItem();
     }
+    */
 
     public abstract class ListItemRegion<T> : RectRegion
     {
@@ -172,10 +147,6 @@ namespace RectUI.Widgets
             ItemLeftClicked += (i, content) =>
             {
                 // Todo: select
-            };
-            ItemLeftDoubleClicked += (i, content)=>
-            {
-                source.Enter(i);
             };
         }
 

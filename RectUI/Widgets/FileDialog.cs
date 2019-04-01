@@ -42,14 +42,21 @@ namespace RectUI.Widgets
 
             var source = new DirSource(Path.GetDirectoryName(openDir));
 
-            source.Entered += obj =>
+            var list = new ListRegion<FileSystemInfo>(source);
+
+            list.ItemLeftDoubleClicked += (i, obj) =>
             {
+                var d = obj as DirectoryInfo;
+                if (d != null)
+                {
+                    source.Current = d;
+                }
                 FileChanged?.Invoke(obj);
             };
 
             UI = new VBoxRegion()
             {
-                {BoxItem.Expand, new ListRegion<FileSystemInfo>(source) },
+                {BoxItem.Expand, list },
 
                 new HBoxRegion(new Rect(200, 40))
                 {

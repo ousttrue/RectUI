@@ -137,7 +137,8 @@ namespace RectUI.Widgets
 
         public void MouseLeftDoubleClicked()
         {
-            _mouseLeftDown?.MouseLeftDoubleClick(_mouseLeftDown);
+            var target = (_mouseLeftDown ?? Active ?? Hover);
+            target.MouseLeftDoubleClick(target);
         }
     }
 }
