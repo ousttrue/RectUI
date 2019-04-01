@@ -4,12 +4,6 @@ using System;
 
 namespace RectUI.Widgets
 {
-    public interface ISingleSelector<T>
-    {
-        event Action SelectionChanged;
-        T Selected { get; }
-    }
-
     public interface IListSource<T>
     {
         int Count { get; }
@@ -34,6 +28,12 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
+        public bool IsSelected
+        {
+            get;
+            set;
+        }
+
         protected abstract void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover);
         protected abstract void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover);
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
@@ -49,8 +49,8 @@ namespace RectUI.Widgets
                 rect.X += 16;
                 rect.Width -= 16;
                 rpc.Rectangle(ID, Rect.ToSharpDX(),
-                    GetFillColor(isActive, isHover),
-                    GetBorderColor(isActive, isHover)
+                    GetFillColor(isActive || IsSelected, isHover),
+                    GetBorderColor(isActive || IsSelected, isHover)
                 );
             }
 
@@ -66,6 +66,12 @@ namespace RectUI.Widgets
             Right = 5,
             Bottom = 2,
         };
+    }
+
+    public interface ISingleSelector<T>
+    {
+        event Action SelectionChanged;
+        ListItemRegion<T> Selected { get; }
     }
 
     public class ListRegion<T> : RectRegion, ISingleSelector<T>
@@ -105,9 +111,9 @@ namespace RectUI.Widgets
             m_source = source;
             source.Updated += () =>
             {
-                Layout();
                 m_scrollY = 0;
-                Invalidate();
+                Selected = null;
+                Layout();
             };
 
             OnWheel += (_, delta) =>
@@ -150,14 +156,25 @@ namespace RectUI.Widgets
 
         public event Action SelectionChanged;
 
-        T m_selected;
-        public T Selected
+        ListItemRegion<T> m_selected;
+        public ListItemRegion<T> Selected
         {
             get { return m_selected; }
             private set
             {
-                if (m_selected.Equals(value)) return;
+                if (m_selected == value)
+                {
+                    return;
+                }
+                if (m_selected != null)
+                {
+                    m_selected.IsSelected = false;
+                }
                 m_selected = value;
+                if (m_selected != null)
+                {
+                    m_selected.IsSelected = true;
+                }
                 SelectionChanged?.Invoke();
             }
         }
@@ -207,7 +224,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
-            Selected = r.Content;
+            Selected = r;
             ItemLeftClicked?.Invoke(first+index, r.Content);
         }
 
@@ -216,7 +233,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
-            Selected = r.Content;
+            Selected = r;
             ItemLeftDoubleClicked?.Invoke(first + index, r.Content);
         }
     }
