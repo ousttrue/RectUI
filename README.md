@@ -1,4 +1,5 @@
 # ToDo
+* [ ] reuse msgpack parser list
 * [x] use RPC
 * [ ] hierarchy
 * [ ] inspector
