@@ -148,7 +148,7 @@ namespace RectUI.Application
             var paramTypes = mi.GetParameters().Select(x => x.ParameterType).ToArray();
 
             MethodInfo g = null;
-            switch(paramTypes.Length)
+            switch (paramTypes.Length)
             {
                 case 3:
                     g = typeof(Dispatcher).GetMethod(nameof(CreateCall3),
@@ -156,9 +156,9 @@ namespace RectUI.Application
                     break;
 
                 case 4:
-                        g = typeof(Dispatcher).GetMethod(nameof(CreateCall4), 
-                            BindingFlags.Static|BindingFlags.NonPublic);
-                        break;
+                    g = typeof(Dispatcher).GetMethod(nameof(CreateCall4),
+                        BindingFlags.Static | BindingFlags.NonPublic);
+                    break;
 
                 case 5:
                     g = typeof(Dispatcher).GetMethod(nameof(CreateCall5),
