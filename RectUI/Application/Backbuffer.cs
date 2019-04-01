@@ -29,15 +29,15 @@ namespace RectUI.Application
 
             GenericDeserializer<MsgPackValue, Color4?>.SetCustomDeserializer(parsed =>
             {
-                if (parsed.IsNull())
-                {
-                    return default(Color4?);
-                }
-                else
+                if (!parsed.IsNull())
                 {
                     var c = default(Color4);
                     parsed.Deserialize(ref c);
                     return c;
+                }
+                else
+                {
+                    return default(Color4?);
                 }
             });
         }
