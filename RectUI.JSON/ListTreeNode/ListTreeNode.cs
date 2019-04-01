@@ -423,9 +423,27 @@ namespace RectUI.JSON
             return AddValue(default(T).New(bytes, valueType, ValueIndex));
         }
 
-        public ListTreeNode<T> AddValue(T value)
+        public void Clear()
         {
             if (m_Values == null)
+            {
+                m_Values = new List<T>();
+            }
+            else
+            {
+                m_Values.Clear();
+            }
+            _valueIndex = -2;
+        }
+
+        public ListTreeNode<T> AddValue(T value)
+        {
+            if (_valueIndex == -2)
+            {
+                // cleared
+                _valueIndex = -1;
+            }
+            else if (m_Values == null)
             {
                 // initialize empty tree
                 m_Values = new List<T>();

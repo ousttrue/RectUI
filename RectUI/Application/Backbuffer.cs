@@ -50,6 +50,8 @@ namespace RectUI.Application
             return new ArraySegment<byte>(src.Array, src.Offset + skip, src.Count - skip);
         }
 
+        ListTreeNode<MsgPackValue> m_parsed = new ListTreeNode<MsgPackValue>();
+
         public void RenderMsgPackCommands(D3D11Device device,
             Scene scene,
             ArraySegment<byte> commands)
@@ -59,7 +61,8 @@ namespace RectUI.Application
             {
                 try
                 {
-                    var parsed = MsgPackParser.Parse(commands);
+                    m_parsed.Clear();
+                    var parsed = MsgPackParser.Parse(m_parsed, commands);
 
                     m_dispatcher.Dispatch(parsed);
 

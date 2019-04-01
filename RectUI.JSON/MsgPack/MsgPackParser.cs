@@ -408,6 +408,11 @@ namespace RectUI.JSON
             }
         }
 
+        public static ListTreeNode<MsgPackValue> Parse(ListTreeNode<MsgPackValue> cleared, ArraySegment<Byte> bytes)
+        {
+            return _Parse(cleared, bytes);
+        }
+
         public static ListTreeNode<MsgPackValue> Parse(ArraySegment<Byte> bytes)
         {
             return _Parse(default(ListTreeNode<MsgPackValue>), bytes);
