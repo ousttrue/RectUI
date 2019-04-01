@@ -1,7 +1,7 @@
 # ToDo
 * [x] MouseEvent invalidate
-* [ ] Selector(selected)
-* [ ] reuse msgpack parser list
+* [x] Selector(selected)
+* [x] reuse msgpack parser list
 * [x] use RPC
 * [ ] hierarchy
 * [ ] inspector
