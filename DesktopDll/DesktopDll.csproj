@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Comctl32.cs" />
     <Compile Include="Gdi32.cs" />
+    <Compile Include="MemoryBitmap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell32.cs" />
     <Compile Include="Types.cs" />
