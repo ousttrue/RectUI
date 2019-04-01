@@ -7,8 +7,14 @@ using System.Collections.Generic;
 
 namespace RectUI.Graphics
 {
-    public class D2D1Bitmap : IDisposable
+    public class D2D1Bitmap : IDisposable, IDrawRPC
     {
+        public D3D11Device Device
+        {
+            get;
+            set;
+        }
+
         Bitmap1 _bitmap;
         Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
         TextFormat _textFormat;
@@ -64,67 +70,23 @@ namespace RectUI.Graphics
             }
         }
 
-        public void Begin(D3D11Device device, Color4 clear)
+        public void Begin(Color4 clear)
         {
             if (_bitmap == null)
             {
-                CreateBitmap(device);
+                CreateBitmap(Device);
             }
 
-            device.D2DDeviceContext.Target = _bitmap;
-            device.D2DDeviceContext.BeginDraw();
-            device.D2DDeviceContext.Clear(clear);
-            device.D2DDeviceContext.Transform = Matrix3x2.Identity;
+            Device.D2DDeviceContext.Target = _bitmap;
+            Device.D2DDeviceContext.BeginDraw();
+            Device.D2DDeviceContext.Clear(clear);
+            Device.D2DDeviceContext.Transform = Matrix3x2.Identity;
         }
 
-        public void End(D3D11Device device)
+        public void End()
         {
-            device.D2DDeviceContext.Target = null;
-            device.D2DDeviceContext.EndDraw();
-        }
-
-        public void DrawRect(D3D11Device device,
-            RectangleF rect,
-            Color4? fill,
-            Color4? border)
-        {
-            SolidColorBrush fillBrush = null;
-            if (fill.HasValue)
-            {
-                if (!_brushMap.TryGetValue(fill.Value, out fillBrush))
-                {
-                    fillBrush = new SolidColorBrush(device.D2DDeviceContext, fill.Value);
-                    _brushMap.Add(fill.Value, fillBrush);
-                }
-                device.D2DDeviceContext.FillRectangle(rect, fillBrush);
-            }
-
-            SolidColorBrush borderBrush = null;
-            if (border.HasValue)
-            {
-                if (!_brushMap.TryGetValue(border.Value, out borderBrush))
-                {
-                    borderBrush = new SolidColorBrush(device.D2DDeviceContext, border.Value);
-                    _brushMap.Add(border.Value, borderBrush);
-                }
-                device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
-            }
-        }
-
-        public void DrawIcon(D3D11Device device,
-            RectangleF rect,
-            IntPtr icon)
-        {
-            if (icon == IntPtr.Zero)
-            {
-                return;
-            }
-            Bitmap bitmap;
-            if (!_bitmapMap.TryGetValue(icon, out bitmap))
-            {
-                // todo
-            }
-            // todo
+            Device.D2DDeviceContext.Target = null;
+            Device.D2DDeviceContext.EndDraw();
         }
 
         BitmapProperties GetBP
@@ -183,11 +145,52 @@ namespace RectUI.Graphics
             device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
-        public void DrawText(D3D11Device device,
-            RectangleF rect,
-            FontInfo font,
-            Color4? textColor,
-            TextInfo text)
+        Bitmap GetOrCreateBitmap(D3D11Device device, D3D11RenderTarget renderTarget)
+        {
+            Bitmap bitmap;
+            if (!m_rtBitmapMap.TryGetValue(renderTarget, out bitmap))
+            {
+                using (var surface = renderTarget.Texture.QueryInterface<SharpDX.DXGI.Surface>())
+                {
+                    bitmap = new Bitmap(device.D2DDeviceContext, surface, GetBP);
+                }
+            }
+            return bitmap;
+        }
+
+        public void DrawRenderTarget(D3D11Device device, RectangleF rect, 
+            D3D11RenderTarget renderTarget)
+        {
+            var bitmap = GetOrCreateBitmap(device, renderTarget);
+            device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
+        }
+
+        public void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border)
+        {
+            SolidColorBrush fillBrush = null;
+            if (fill.HasValue)
+            {
+                if (!_brushMap.TryGetValue(fill.Value, out fillBrush))
+                {
+                    fillBrush = new SolidColorBrush(Device.D2DDeviceContext, fill.Value);
+                    _brushMap.Add(fill.Value, fillBrush);
+                }
+                Device.D2DDeviceContext.FillRectangle(rect, fillBrush);
+            }
+
+            SolidColorBrush borderBrush = null;
+            if (border.HasValue)
+            {
+                if (!_brushMap.TryGetValue(border.Value, out borderBrush))
+                {
+                    borderBrush = new SolidColorBrush(Device.D2DDeviceContext, border.Value);
+                    _brushMap.Add(border.Value, borderBrush);
+                }
+                Device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
+            }
+        }
+
+        public void Text(uint id, RectangleF rect, Color4? textColor, FontInfo font, TextInfo text)
         {
             if (!textColor.HasValue)
             {
@@ -201,7 +204,7 @@ namespace RectUI.Graphics
             SolidColorBrush brush;
             if (!_brushMap.TryGetValue(textColor.Value, out brush))
             {
-                brush = new SolidColorBrush(device.D2DDeviceContext, textColor.Value);
+                brush = new SolidColorBrush(Device.D2DDeviceContext, textColor.Value);
                 _brushMap.Add(textColor.Value, brush);
             }
 
@@ -243,27 +246,17 @@ namespace RectUI.Graphics
                 }
             }
 
-            device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
+            Device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
         }
 
-        Bitmap GetOrCreateBitmap(D3D11Device device, D3D11RenderTarget renderTarget)
+        public void FileIcon(uint id, RectangleF rect, string path)
         {
-            Bitmap bitmap;
-            if (!m_rtBitmapMap.TryGetValue(renderTarget, out bitmap))
-            {
-                using (var surface = renderTarget.Texture.QueryInterface<SharpDX.DXGI.Surface>())
-                {
-                    bitmap = new Bitmap(device.D2DDeviceContext, surface, GetBP);
-                }
-            }
-            return bitmap;
+            //throw new NotImplementedException();
         }
 
-        public void DrawRenderTarget(D3D11Device device, RectangleF rect, 
-            D3D11RenderTarget renderTarget)
+        public void CameraMatrix(uint id, RectangleF rect, Matrix m)
         {
-            var bitmap = GetOrCreateBitmap(device, renderTarget);
-            device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
+            //throw new NotImplementedException();
         }
     }
 }

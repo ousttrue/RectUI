@@ -484,9 +484,9 @@ namespace RectUI.JSON
             return GenericValidator<T>.Validate(Required, Properties, c, o);
         }
 
-        static class GenericSerializer<T>
+        public static class GenericSerializer<T>
         {
-            class Serializer
+            public class Serializer
             {
                 delegate void FieldSerializer(JsonSchema s, JsonSchemaValidationContext c, IFormatter f, T o,
                     Dictionary<string, ValidationResult> vRes, string[] deps);
@@ -574,6 +574,11 @@ namespace RectUI.JSON
 
             static FieldInfo[] s_fields;
             static Serializer s_serializer;
+
+            public static void SetCustomSerializer(Serializer s)
+            {
+                s_serializer = s;
+            }
 
             public static void Serialize(JsonObjectValidator objectValidator,
                     IFormatter f, JsonSchemaValidationContext c, T value)

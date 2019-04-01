@@ -587,7 +587,7 @@ namespace RectUI.JSON
 
         public void Notify<A0, A1, A2>(Utf8String method, A0 a0, A1 a1, A2 a2)
         {
-            BeginList(4);
+            BeginList(3);
             Value(NOTIFY_TYPE);
             Value(method);
             BeginList(3); // params
@@ -602,7 +602,7 @@ namespace RectUI.JSON
 
         public void Notify<A0, A1, A2, A3>(Utf8String method, A0 a0, A1 a1, A2 a2, A3 a3)
         {
-            BeginList(5);
+            BeginList(3);
             Value(NOTIFY_TYPE);
             Value(method);
             BeginList(4); // params
@@ -618,7 +618,7 @@ namespace RectUI.JSON
 
         public void Notify<A0, A1, A2, A3, A4>(Utf8String method, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4)
         {
-            BeginList(6);
+            BeginList(3);
             Value(NOTIFY_TYPE);
             Value(method);
             BeginList(5); // params
