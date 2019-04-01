@@ -10,6 +10,7 @@ namespace RectUI.Widgets
         public RectRegion UI;
 
         public event Action<FileSystemInfo> FileChanged;
+        public event Action Canceled;
 
         public class AwaiterContext
         {
@@ -18,15 +19,26 @@ namespace RectUI.Widgets
             public Action<FileInfo> SetResult;
         }
         AwaiterContext m_context;
+        DirSource m_source;
 
         /// <summary>
         /// Call when dialog window is closed
         /// </summary>
-        public void Close()
+        public void OnClosed()
         {
             var context = m_context;
             m_context = null;
             context.Complete();
+        }
+
+        void Enter(FileSystemInfo obj)
+        {
+            var d = obj as DirectoryInfo;
+            if (d != null)
+            {
+                m_source.Current = d;
+            }
+            FileChanged?.Invoke(obj);
         }
 
         public FileDialog(string openDir)
@@ -40,19 +52,14 @@ namespace RectUI.Widgets
                 }
             };
 
-            var source = new DirSource(Path.GetDirectoryName(openDir));
+            m_source = new DirSource(Path.GetDirectoryName(openDir));
 
-            var list = new ListRegion<FileSystemInfo>(source);
+            var list = new ListRegion<FileSystemInfo>(m_source);
 
             list.ItemLeftDoubleClicked += (i, obj) =>
             {
-                var d = obj as DirectoryInfo;
-                if (d != null)
-                {
-                    source.Current = d;
-                }
-                FileChanged?.Invoke(obj);
-            };
+                Enter(obj);
+            };          
 
             UI = new VBoxRegion()
             {
@@ -63,12 +70,19 @@ namespace RectUI.Widgets
                     new ButtonRegion
                     {
                         Label = "Open",
+                        Action = _ => {
+                            if (list.Selected != null)
+                            {
+                                Enter(list.Selected.Content);
+                            }
+                        },
                         Rect = new Rect(96, 24),
                     },
 
                     new ButtonRegion
                     {
                         Label = "Cancel",
+                        Action = _ => Canceled?.Invoke(),
                         Rect = new Rect(96, 24),
                     }
                 }

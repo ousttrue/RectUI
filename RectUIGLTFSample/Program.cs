@@ -101,8 +101,13 @@ namespace RectUIGLTFSample
 
                 dialogWindow.OnClose += () =>
                 {
-                    dialog.Close();
+                    dialog.OnClosed();
                 };
+
+                dialog.Canceled += () =>
+                 {
+                     dialogWindow.Close();
+                 };
 
                 m_app.Bind(dialogWindow, dialog.UI);
 
