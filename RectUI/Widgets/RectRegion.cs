@@ -264,44 +264,45 @@ namespace RectUI.Widgets
         }
 
         public event Action<RectRegion> MouseLeftDoubleClicked;
-        public bool MouseLeftDoubleClick(RectRegion sender)
+        public void MouseLeftDoubleClick(RectRegion sender)
         {
-            if (MouseLeftDoubleClicked == null) return false;
             MouseLeftDoubleClicked?.Invoke(sender);
-            return true;
         }
 
         public event Action<RectRegion, DragEvent, int, int> MouseLeftDragged;
-        public bool MouseLeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        public void MouseLeftDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
         {
-            if (MouseLeftDragged == null) return false;
-            MouseLeftDragged(sender, dragEvent, x, y);
-            return true;
+            MouseLeftDragged?.Invoke(sender, dragEvent, x, y);
         }
+
+        public bool RequireMouseLeftCapture => MouseLeftClicked != null
+            || MouseLeftDoubleClicked != null
+            || MouseLeftDragged != null
+            ;
 
         public event Action<RectRegion, DragEvent, int, int> MouseRightDragged;
-        public bool MouseRightDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        public void MouseRightDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
         {
-            if (MouseRightDragged == null) return false;
-            MouseRightDragged(sender, dragEvent, x, y);
-            return true;
+            MouseRightDragged?.Invoke(sender, dragEvent, x, y);
         }
+
+        public bool RequireMouseRightCapture => MouseRightDragged != null;
 
         public event Action<RectRegion, DragEvent, int, int> MouseMiddleDragged;
-        public bool MouseMiddleDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
+        public void MouseMiddleDrag(RectRegion sender, DragEvent dragEvent, int x, int y)
         {
-            if (MouseMiddleDragged == null) return false;
-            MouseMiddleDragged(sender, dragEvent, x, y);
-            return true;
+            MouseMiddleDragged?.Invoke(sender, dragEvent, x, y);
         }
 
+        public bool RequireMouseMiddleCapture => MouseMiddleDragged != null;
+
         public event Action<RectRegion, int> OnWheel;
-        public bool Wheel(RectRegion sender, int delta)
+        public void MouseWheel(RectRegion sender, int delta)
         {
-            if (OnWheel == null) return false;
-            OnWheel(sender, delta);
-            return true;
+            OnWheel?.Invoke(sender, delta);
         }
+
+        public bool UseMouseWheel => OnWheel != null;
         #endregion
     }
 }

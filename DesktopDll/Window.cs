@@ -249,7 +249,7 @@ namespace DesktopDll
             while (true)
             {
                 var msg = default(MSG);
-                if (User32.PeekMessageW(ref msg, 0, 0, 0, PM.REMOVE))
+                while (User32.PeekMessageW(ref msg, 0, 0, 0, PM.REMOVE))
                 {
                     if (msg.message == WM.QUIT)
                     {
