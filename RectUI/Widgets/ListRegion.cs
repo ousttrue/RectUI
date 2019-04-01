@@ -15,23 +15,30 @@ namespace RectUI.Widgets
 
     public abstract class ListItemRegion<T> : RectRegion
     {
-        public T Content
-        {
-            get;
-            private set;
-        }
-
         public int? SourceIndex
         {
             get;
-            private set;
+            set;
         }
 
-        public void SetContent(int? i, T content)
+        ListRegion<T> ParentList => Parent as ListRegion<T>;
+
+        public T Content
         {
-            SourceIndex = i;
-            Content = content;
+            get
+            {
+                if (SourceIndex.HasValue)
+                {
+                    return ParentList.Source[SourceIndex.Value];
+                }
+                else
+                {
+                    return default(T);
+                }
+            }
         }
+
+        public bool IsSelected => SourceIndex == ParentList.SelectedSourceIndex;
 
         public ListItemRegion()
         {
@@ -40,19 +47,11 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        public bool IsSelected
-        {
-            get
-            {
-                return SourceIndex == (Parent as ListRegion<T>).SelectedSourceIndex;
-            }
-        }
-
         protected abstract void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover);
         protected abstract void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover);
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
-            if (Content == null)
+            if (!SourceIndex.HasValue)
             {
                 return;
             }
@@ -107,6 +106,7 @@ namespace RectUI.Widgets
         }
 
         IListSource<T> m_source;
+        public IListSource<T> Source => m_source;
 
         int MaxScrollY
         {
@@ -228,11 +228,11 @@ namespace RectUI.Widgets
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
                 if (index < 0 || index >= m_source.Count)
                 {
-                    r.SetContent(null, default(T));
+                    r.SourceIndex = null;
                 }
                 else
                 {
-                    r.SetContent(index, m_source[index]);
+                    r.SourceIndex = index;
                 }
 
                 y += ItemHeight;
