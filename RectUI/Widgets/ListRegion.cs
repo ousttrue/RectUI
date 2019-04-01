@@ -1,11 +1,15 @@
 ﻿using RectUI.Graphics;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 
 namespace RectUI.Widgets
 {
+    public interface ISingleSelector<T>
+    {
+        event Action SelectionChanged;
+        T Selected { get; }
+    }
+
     public interface IListSource<T>
     {
         int Count { get; }
@@ -14,24 +18,6 @@ namespace RectUI.Widgets
 
         ListItemRegion<T> CreateItem();
     }
-
-    /*
-    public abstract class ListSource<T> : IListSource<T>
-    {
-        protected List<T> m_items = new List<T>();
-        public int Count => m_items.Count;
-
-        public T this[int index] { get { return m_items[index]; } }
-
-        public event Action Updated;
-        protected void RaiseUpdate()
-        {
-            Updated?.Invoke();
-        }
-
-        public abstract ListItemRegion<T> CreateItem();
-    }
-    */
 
     public abstract class ListItemRegion<T> : RectRegion
     {
@@ -82,7 +68,7 @@ namespace RectUI.Widgets
         };
     }
 
-    public class ListRegion<T> : RectRegion
+    public class ListRegion<T> : RectRegion, ISingleSelector<T>
     {
         int m_itemHeight = 18;
         public int ItemHeight
@@ -162,6 +148,20 @@ namespace RectUI.Widgets
             }
         }
 
+        public event Action SelectionChanged;
+
+        T m_selected;
+        public T Selected
+        {
+            get { return m_selected; }
+            private set
+            {
+                if (m_selected.Equals(value)) return;
+                m_selected = value;
+                SelectionChanged?.Invoke();
+            }
+        }
+
         protected override void Layout()
         {
             var count = Rect.Height / ItemHeight + 1;
@@ -205,6 +205,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
+            Selected = r.Content;
             ItemLeftClicked?.Invoke(first+index, r.Content);
         }
 
@@ -213,6 +214,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
+            Selected = r.Content;
             ItemLeftDoubleClicked?.Invoke(first + index, r.Content);
         }
     }
