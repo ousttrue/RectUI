@@ -1,4 +1,5 @@
 ﻿using DesktopDll;
+using RectUI.Application;
 using RectUI.Assets;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -11,7 +12,6 @@ namespace RectUI.Graphics
     public class D2D1Bitmap : IDisposable, IDrawProcessor
     {
         D3D11Device m_device;
-        Scene m_scene;
 
         Bitmap1 _bitmap;
         Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
@@ -112,64 +112,6 @@ namespace RectUI.Graphics
             }
         }
 
-        public void DrawImageList(D3D11Device device,
-            RectangleF rect,
-            IntPtr imageList, int imageListIndex)
-        {
-            if (imageList == IntPtr.Zero)
-            {
-                return;
-            }
-
-            int w = 0;
-            int h = 0;
-            if (!Comctl32.ImageList_GetIconSize(imageList, ref w, ref h))
-            {
-                return;
-            }
-
-            Bitmap bitmap;
-            if (!_imageListMap.TryGetValue(imageListIndex, out bitmap))
-            {
-                using (var memoryBitmap = new MemoryBitmap(w, h))
-                {
-                    Comctl32.ImageList_Draw(imageList, imageListIndex, memoryBitmap.DC, 0, 0, ILD.NORMAL);
-
-                    var bytes = memoryBitmap.GetBitmap();
-                    if (bytes != null)
-                    {
-                        using (var s = new DataStream(w * h * 4, true, true))
-                        {
-                            s.Write(bytes, 0, bytes.Length);
-                            s.Position = 0;
-                            bitmap = new Bitmap(device.D2DDeviceContext, new Size2(w, h), s, w * 4, GetBP);
-                            _imageListMap.Add(imageListIndex, bitmap);
-                        }
-                    }
-                }
-            }
-
-            device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
-        }
-
-        Bitmap GetOrCreateBitmap(D3D11Device device, D3D11RenderTarget renderTarget)
-        {
-            Bitmap bitmap;
-            if (!m_rtBitmapMap.TryGetValue(renderTarget, out bitmap))
-            {
-                using (var surface = renderTarget.Texture.QueryInterface<SharpDX.DXGI.Surface>())
-                {
-                    bitmap = new Bitmap(device.D2DDeviceContext, surface, GetBP);
-                }
-            }
-            return bitmap;
-        }
-
-        public void DrawRenderTarget(D3D11Device device, RectangleF rect, 
-            D3D11RenderTarget renderTarget)
-        {
-        }
-
         public void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border)
         {
             SolidColorBrush fillBrush = null;
@@ -256,10 +198,49 @@ namespace RectUI.Graphics
 
         public void FileIcon(uint id, RectangleF rect, string path)
         {
+            var systemIcon = SystemIcon.Get(path, true);
+
             //throw new NotImplementedException();
+            if (systemIcon.ImageList == IntPtr.Zero)
+            {
+                return;
+            }
+
+            int w = 0;
+            int h = 0;
+            if (!Comctl32.ImageList_GetIconSize(systemIcon.ImageList, ref w, ref h))
+            {
+                return;
+            }
+
+            Bitmap bitmap;
+            if (!_imageListMap.TryGetValue(systemIcon.ImageListIndex, out bitmap))
+            {
+                using (var memoryBitmap = new MemoryBitmap(w, h))
+                {
+                    Comctl32.ImageList_Draw(systemIcon.ImageList, systemIcon.ImageListIndex,
+                        memoryBitmap.DC, 0, 0, ILD.NORMAL);
+
+                    var bytes = memoryBitmap.GetBitmap();
+                    if (bytes != null)
+                    {
+                        using (var s = new DataStream(w * h * 4, true, true))
+                        {
+                            s.Write(bytes, 0, bytes.Length);
+                            s.Position = 0;
+                            bitmap = new Bitmap(m_device.D2DDeviceContext, new Size2(w, h), s, w * 4, GetBP);
+                            _imageListMap.Add(systemIcon.ImageListIndex, bitmap);
+                        }
+                    }
+                }
+            }
+
+            m_device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
+        #region Scene
         D3D11RenderTarget m_renderTarget;
+        Scene m_scene;
         RectangleF m_rect;
         void GetOrRenderTarget(D3D11Device device, uint id, RectangleF rect)
         {
@@ -278,6 +259,19 @@ namespace RectUI.Graphics
             }
         }
 
+        Bitmap GetOrCreateBitmap(D3D11Device device, D3D11RenderTarget renderTarget)
+        {
+            Bitmap bitmap;
+            if (!m_rtBitmapMap.TryGetValue(renderTarget, out bitmap))
+            {
+                using (var surface = renderTarget.Texture.QueryInterface<SharpDX.DXGI.Surface>())
+                {
+                    bitmap = new Bitmap(device.D2DDeviceContext, surface, GetBP);
+                }
+            }
+            return bitmap;
+        }
+
         public void CameraMatrix(uint id, RectangleF rect, Matrix m)
         {
             // render 3D scene
@@ -291,5 +285,6 @@ namespace RectUI.Graphics
             var bitmap = GetOrCreateBitmap(m_device, m_renderTarget);
             m_device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
+        #endregion
     }
 }
