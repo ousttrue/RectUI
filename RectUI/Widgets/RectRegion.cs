@@ -223,16 +223,11 @@ namespace RectUI.Widgets
             return Style.GetColor(NormalColor.TextColorKey);
         }
 
-        public virtual void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        public virtual void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
         {
-            list.Add(new D2DDrawCommand
-            {
-                RegionID = ID,
-                Rectangle = Rect.ToSharpDX(),
-                DrawType = DrawType.Rectangle,
-                FillColor = GetFillColor(isActive, isHover),
-                BorderColor = GetBorderColor(isActive, isHover)
-            });
+            rpc.Rectangle(ID, Rect.ToSharpDX(), 
+                GetFillColor(isActive, isHover), 
+                GetBorderColor(isActive, isHover));
         }
         #endregion
 

@@ -187,7 +187,7 @@ namespace RectUI.Application
                         foreach (var kv in commandMap)
                         {
                             var list = kv.Value;
-                            context.Draw(kv.Key, list.List);
+                            context.Draw(kv.Key, list.Rpc.MsgPackBytes);
                             list.Release();
                         }
                     }

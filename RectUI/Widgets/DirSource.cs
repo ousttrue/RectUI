@@ -2,7 +2,6 @@
 using RectUI.Graphics;
 using SharpDX;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -113,21 +112,13 @@ namespace RectUI.Widgets
 
     public class DirItemRegion : ListItemRegion<FileSystemInfo>
     {
-        protected override void GetIconCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        protected override void GetIconCommands(IDrawRPC rpc, bool isActive, bool isHover)
         {
-            var icon = SystemIcon.Get(Content.FullName, true);
-
-            list.Add(new D2DDrawCommand
-            {
-                RegionID = ID,
-                Rectangle = Rect.ToSharpDX(),
-                DrawType = DrawType.ImageList,
-                Icon = icon.ImageList,
-                ImageListIndex = icon.ImageListIndex,
-            });
+            //var icon = SystemIcon.Get(Content.FullName, true);
+            rpc.FileIcon(ID, Rect.ToSharpDX(), Content.FullName);
         }
 
-        protected override void GetTextCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        protected override void GetTextCommands(IDrawRPC rpc, bool isActive, bool isHover)
         {
             var color = GetTextColor(isActive, isHover);
 
@@ -138,24 +129,20 @@ namespace RectUI.Widgets
                 Rect.Width - m_padding.Horizontal,
                 Rect.Height - m_padding.Vertical
                 );
-            list.Add(new D2DDrawCommand
-            {
-                RegionID = ID,
-                Rectangle = rect,
-                DrawType = DrawType.Text,
-                TextColor = color,
-                Font = new FontInfo
+            rpc.Text(ID, rect,
+                color,
+                new FontInfo
                 {
                     Font = "MS Gothic",
                     Size = Rect.Height - m_padding.Top - m_padding.Bottom,
                 },
-                Text = new TextInfo
+                new TextInfo
                 {
                     Text = Content.Name,
                     HorizontalAlignment = TextHorizontalAlignment.Left,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }
-            });
+            );
         }
     }
 }

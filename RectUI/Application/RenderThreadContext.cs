@@ -72,7 +72,7 @@ namespace RectUI.Application
             bb.Dispose();
         }
 
-        public void Draw(Window target, List<D2DDrawCommand> commands)
+        public void Draw(Window target, ArraySegment<byte> commands)
         {
             Backbuffer bb;
             if (!m_bbMap.TryGetValue(target, out bb))

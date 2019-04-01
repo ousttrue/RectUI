@@ -73,10 +73,9 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        protected abstract void GetIconCommands(List<D2DDrawCommand> list, bool isActive, bool isHover);
-        protected abstract void GetTextCommands(List<D2DDrawCommand> list, bool isActive, bool isHover);
-
-        public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        protected abstract void GetIconCommands(IDrawRPC rpc, bool isActive, bool isHover);
+        protected abstract void GetTextCommands(IDrawRPC rpc, bool isActive, bool isHover);
+        public override void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
         {
             if (Content == null)
             {
@@ -88,19 +87,15 @@ namespace RectUI.Widgets
                 var rect = Rect.ToSharpDX();
                 rect.X += 16;
                 rect.Width -= 16;
-                list.Add(new D2DDrawCommand
-                {
-                    RegionID = ID,
-                    Rectangle = Rect.ToSharpDX(),
-                    DrawType = DrawType.Rectangle,
-                    FillColor = GetFillColor(isActive, isHover),
-                    BorderColor = GetBorderColor(isActive, isHover)
-                });
+                rpc.Rectangle(ID, Rect.ToSharpDX(),
+                    GetFillColor(isActive, isHover),
+                    GetBorderColor(isActive, isHover)
+                );
             }
 
-            GetIconCommands(list, isActive, isHover);
+            GetIconCommands(rpc, isActive, isHover);
 
-            GetTextCommands(list, isActive, isHover);
+            GetTextCommands(rpc, isActive, isHover);
         }
 
         protected Padding m_padding = new Padding

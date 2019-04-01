@@ -11,10 +11,10 @@ namespace RectUI.Application
 {
     public class CommandList
     {
-        List<D2DDrawCommand> m_list = new List<D2DDrawCommand>();
-        public List<D2DDrawCommand> List
+        DrawRPCBuffer m_rpc = new DrawRPCBuffer();
+        public DrawRPCBuffer Rpc
         {
-            get { return m_list; }
+            get { return m_rpc; }
         }
 
         Action<CommandList> m_release;
@@ -131,7 +131,7 @@ namespace RectUI.Application
 
         public void ReleaseList(CommandList list)
         {
-            list.List.Clear();
+            list.Rpc.Clear();
             lock (((ICollection)m_pool).SyncRoot)
             {
                 m_pool.Enqueue(list);
@@ -166,7 +166,7 @@ namespace RectUI.Application
 
             foreach (var r in m_root.Traverse())
             {
-                r.GetDrawCommands(list.List, UIContext.Active == r, UIContext.Hover == r);
+                r.GetDrawCommands(list.Rpc, UIContext.Active == r, UIContext.Hover == r);
             }
 
             OnPaint?.Invoke(list);

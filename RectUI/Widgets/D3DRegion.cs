@@ -79,17 +79,11 @@ namespace RectUI.Widgets
             _camera.Resize(Rect.Width, Rect.Height);
         }
 
-        public override void GetDrawCommands(List<D2DDrawCommand> list, bool isActive, bool isHover)
+        public override void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
         {
             _camera.Update();
 
-            list.Add(new D2DDrawCommand
-            {
-                RegionID = ID,
-                Rectangle = Rect.ToSharpDX(),
-                DrawType = DrawType.Scene,
-                Camera = _camera,
-            });
+            rpc.CameraMatrix(ID, Rect.ToSharpDX(), _camera.ViewProjection);
         }
     }
 }
