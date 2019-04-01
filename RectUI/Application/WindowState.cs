@@ -1,10 +1,8 @@
 ﻿using DesktopDll;
-using RectUI.Graphics;
 using RectUI.Widgets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace RectUI.Application
@@ -69,7 +67,7 @@ namespace RectUI.Application
             UIContext = new UIContext();
 
             window.OnResize += Window_OnResize;
-            window.OnPaint += () => m_invalidated = true;
+            window.OnPaint += Invalidate;
             window.OnMouseLeftDown += Window_OnMouseLeftDown;
             window.OnMouseLeftUp += Window_OnMouseLeftUp;
             window.OnMouseRightDown += Window_OnMouseRightDown;
@@ -80,9 +78,8 @@ namespace RectUI.Application
             window.OnMouseWheel += Window_OnMouseWheel;
             window.OnMouseLeftDoubleClicked += Window_OnMouseLeftDoubleClicked;
 
-            //UIContext.Updated += () => window.Invalidate();
-            //UIContext.Updated += () => m_invalidated = true;
-            m_root.Invalidated += Invalidate;
+            UIContext.Updated += Invalidate; // Active, Hover changed
+            m_root.Invalidated += Invalidate; // UI Tree changed
 
             Window_OnResize(window.Width, window.Height);
         }

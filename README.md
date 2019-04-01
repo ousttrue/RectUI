@@ -1,5 +1,5 @@
 # ToDo
-* [ ] MouseEvent invalidate
+* [x] MouseEvent invalidate
 * [ ] Selector(selected)
 * [ ] reuse msgpack parser list
 * [x] use RPC
