@@ -34,6 +34,20 @@ namespace RectUI.Application
     {
         RectRegion m_root;
 
+        bool m_invalidated;
+        void Invalidate()
+        {
+            m_invalidated = true;
+        }
+        public void Draw()
+        {
+            if (m_invalidated)
+            {
+                m_invalidated = false;
+                Window_OnPaint();
+            }
+        }
+
         public void Dispose()
         {
             if (m_root != null)
@@ -67,7 +81,8 @@ namespace RectUI.Application
             window.OnMouseLeftDoubleClicked += Window_OnMouseLeftDoubleClicked;
 
             //UIContext.Updated += () => window.Invalidate();
-            UIContext.Updated += () => m_invalidated = true;
+            //UIContext.Updated += () => m_invalidated = true;
+            m_root.Invalidated += Invalidate;
 
             Window_OnResize(window.Width, window.Height);
         }
@@ -148,16 +163,6 @@ namespace RectUI.Application
                 }
             }
             return new CommandList(ReleaseList);
-        }
-
-        bool m_invalidated;
-        public void Draw()
-        {
-            if (m_invalidated)
-            {
-                m_invalidated = false;
-                Window_OnPaint();
-            }
         }
 
         private void Window_OnPaint()

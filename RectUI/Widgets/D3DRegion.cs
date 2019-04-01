@@ -22,6 +22,7 @@ namespace RectUI.Widgets
         private void D3DRegion_OnWheel(RectRegion arg1, int arg2)
         {
             _camera.Dolly(arg2);
+            Invalidate();
         }
 
         int _mx;
@@ -38,6 +39,7 @@ namespace RectUI.Widgets
                         var dx = arg3 - _mx;
                         var dy = arg4 - _my;
                         _camera.Shift(dx, dy);
+                        Invalidate();
                     }
                     break;
 
@@ -63,6 +65,7 @@ namespace RectUI.Widgets
                         var dx = arg3 - _rx;
                         var dy = arg4 - _ry;
                         _camera.YawPitch(dx, dy);
+                        Invalidate();
                     }
                     break;
 

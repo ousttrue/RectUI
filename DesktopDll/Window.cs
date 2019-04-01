@@ -237,6 +237,7 @@ namespace DesktopDll
             User32.PostMessageW(m_hwnd, WM.CLOSE, 0, 0);
         }
 
+        const int MS_PER_FRAME = 30;
         public static void MessageLoop(Action onFrame)
         {
             if (onFrame == null)
@@ -244,11 +245,11 @@ namespace DesktopDll
                 onFrame = () => { };
             }
 
-            uint last = 0;
+            uint last = Winmm.timeGetTime();
             while (true)
             {
                 var msg = default(MSG);
-                while (User32.PeekMessageW(ref msg, 0, 0, 0, PM.REMOVE))
+                if (User32.PeekMessageW(ref msg, 0, 0, 0, PM.REMOVE))
                 {
                     if (msg.message == WM.QUIT)
                     {
@@ -259,17 +260,20 @@ namespace DesktopDll
                 }
 
                 var now = Winmm.timeGetTime();
-                onFrame();
-                if (last != 0)
+                var delta = (int)(now - last);
+                if (delta > MS_PER_FRAME)
                 {
-                    var delta = (int)(now - last);
-                    var sleep = 30 - delta;
+                    last = now;
+                    onFrame();
+                }
+                else
+                {
+                    var sleep = MS_PER_FRAME - delta;
                     if (sleep > 0)
                     {
                         Thread.Sleep(sleep);
                     }
                 }
-                last = now;
             }
         }
 
