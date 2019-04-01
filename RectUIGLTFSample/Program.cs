@@ -167,6 +167,7 @@ namespace RectUIGLTFSample
         [STAThread]
         static void Main(string[] args)
         {
+            MessageLoop.EnsureContext();
             using (var man = new Manager())
             {
                 man.Run();

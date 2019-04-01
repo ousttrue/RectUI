@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-
+using System.Threading;
 
 namespace RectUI.Widgets
 {
@@ -136,7 +136,8 @@ namespace RectUI.Widgets
                     Complete = () =>
                     {
                         awaiter.m_isCompleted = true;
-                        awaiter.m_continuation();
+                        //awaiter.m_continuation();
+                        SynchronizationContext.Current.Post(_ => awaiter.m_continuation(), null);
                     },
                     SetResult = f => awaiter.m_result = f,
                 };
