@@ -18,7 +18,19 @@ namespace RectUI.Widgets
         public T Content
         {
             get;
-            set;
+            private set;
+        }
+
+        public int? SourceIndex
+        {
+            get;
+            private set;
+        }
+
+        public void SetContent(int? i, T content)
+        {
+            SourceIndex = i;
+            Content = content;
         }
 
         public ListItemRegion()
@@ -30,8 +42,10 @@ namespace RectUI.Widgets
 
         public bool IsSelected
         {
-            get;
-            set;
+            get
+            {
+                return SourceIndex == (Parent as ListRegion<T>).SelectedSourceIndex;
+            }
         }
 
         protected abstract void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover);
@@ -71,7 +85,8 @@ namespace RectUI.Widgets
     public interface ISingleSelector<T>
     {
         event Action SelectionChanged;
-        ListItemRegion<T> Selected { get; }
+        int? SelectedSourceIndex { get; }
+        T Selected { get; }
     }
 
     public class ListRegion<T> : RectRegion, ISingleSelector<T>
@@ -112,7 +127,7 @@ namespace RectUI.Widgets
             source.Updated += () =>
             {
                 m_scrollY = 0;
-                Selected = null;
+                SelectedSourceIndex = null;
                 Layout();
             };
 
@@ -156,8 +171,8 @@ namespace RectUI.Widgets
 
         public event Action SelectionChanged;
 
-        ListItemRegion<T> m_selected;
-        public ListItemRegion<T> Selected
+        int? m_selected;
+        public int? SelectedSourceIndex
         {
             get { return m_selected; }
             private set
@@ -166,16 +181,23 @@ namespace RectUI.Widgets
                 {
                     return;
                 }
-                if (m_selected != null)
-                {
-                    m_selected.IsSelected = false;
-                }
                 m_selected = value;
-                if (m_selected != null)
-                {
-                    m_selected.IsSelected = true;
-                }
                 SelectionChanged?.Invoke();
+            }
+        }
+
+        public T Selected
+        {
+            get
+            {
+                if (SelectedSourceIndex.HasValue)
+                {
+                    return m_source[SelectedSourceIndex.Value];
+                }
+                else
+                {
+                    return default(T);
+                }
             }
         }
 
@@ -206,11 +228,11 @@ namespace RectUI.Widgets
                 r.Rect = new Rect(Rect.X, y, Rect.Width, ItemHeight);
                 if (index < 0 || index >= m_source.Count)
                 {
-                    r.Content = default(T);
+                    r.SetContent(null, default(T));
                 }
                 else
                 {
-                    r.Content = m_source[index];
+                    r.SetContent(index, m_source[index]);
                 }
 
                 y += ItemHeight;
@@ -224,7 +246,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
-            Selected = r;
+            SelectedSourceIndex = r.SourceIndex;
             ItemLeftClicked?.Invoke(first+index, r.Content);
         }
 
@@ -233,7 +255,7 @@ namespace RectUI.Widgets
         {
             var index = Children.IndexOf(r);
             var first = ScrollY / ItemHeight;
-            Selected = r;
+            SelectedSourceIndex = r.SourceIndex;
             ItemLeftDoubleClicked?.Invoke(first + index, r.Content);
         }
     }

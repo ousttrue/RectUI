@@ -71,9 +71,9 @@ namespace RectUI.Widgets
                     {
                         Label = "Open",
                         Action = _ => {
-                            if (list.Selected != null)
+                            if (list.SelectedSourceIndex != null)
                             {
-                                Enter(list.Selected.Content);
+                                Enter(list.Selected);
                             }
                         },
                         Rect = new Rect(96, 24),
