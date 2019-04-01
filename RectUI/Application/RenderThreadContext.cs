@@ -79,7 +79,7 @@ namespace RectUI.Application
             {
                 return;
             }
-            bb.ExecuteCommands(m_device, m_scene, commands);
+            bb.RenderMsgPackCommands(m_device, m_scene, commands);
         }
     }
 }

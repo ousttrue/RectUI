@@ -1,4 +1,5 @@
 ﻿using DesktopDll;
+using RectUI.Assets;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -9,11 +10,8 @@ namespace RectUI.Graphics
 {
     public class D2D1Bitmap : IDisposable, IDrawProcessor
     {
-        public D3D11Device Device
-        {
-            get;
-            set;
-        }
+        D3D11Device m_device;
+        Scene m_scene;
 
         Bitmap1 _bitmap;
         Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
@@ -24,7 +22,13 @@ namespace RectUI.Graphics
 
         public void Dispose()
         {
-            foreach(var kv in m_rtBitmapMap)
+            if (m_renderTarget != null)
+            {
+                m_renderTarget.Dispose();
+                m_renderTarget = null;
+            }
+
+            foreach (var kv in m_rtBitmapMap)
             {
                 kv.Value.Dispose();
             }
@@ -70,23 +74,26 @@ namespace RectUI.Graphics
             }
         }
 
-        public void Begin(Color4 clear)
+        public void Begin(D3D11Device device, Scene scene, Color4 clear)
         {
+            m_device = device;
+            m_scene = scene;
+
             if (_bitmap == null)
             {
-                CreateBitmap(Device);
+                CreateBitmap(m_device);
             }
 
-            Device.D2DDeviceContext.Target = _bitmap;
-            Device.D2DDeviceContext.BeginDraw();
-            Device.D2DDeviceContext.Clear(clear);
-            Device.D2DDeviceContext.Transform = Matrix3x2.Identity;
+            m_device.D2DDeviceContext.Target = _bitmap;
+            m_device.D2DDeviceContext.BeginDraw();
+            m_device.D2DDeviceContext.Clear(clear);
+            m_device.D2DDeviceContext.Transform = Matrix3x2.Identity;
         }
 
         public void End()
         {
-            Device.D2DDeviceContext.Target = null;
-            Device.D2DDeviceContext.EndDraw();
+            m_device.D2DDeviceContext.Target = null;
+            m_device.D2DDeviceContext.EndDraw();
         }
 
         BitmapProperties GetBP
@@ -161,8 +168,6 @@ namespace RectUI.Graphics
         public void DrawRenderTarget(D3D11Device device, RectangleF rect, 
             D3D11RenderTarget renderTarget)
         {
-            var bitmap = GetOrCreateBitmap(device, renderTarget);
-            device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
 
         public void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border)
@@ -172,10 +177,10 @@ namespace RectUI.Graphics
             {
                 if (!_brushMap.TryGetValue(fill.Value, out fillBrush))
                 {
-                    fillBrush = new SolidColorBrush(Device.D2DDeviceContext, fill.Value);
+                    fillBrush = new SolidColorBrush(m_device.D2DDeviceContext, fill.Value);
                     _brushMap.Add(fill.Value, fillBrush);
                 }
-                Device.D2DDeviceContext.FillRectangle(rect, fillBrush);
+                m_device.D2DDeviceContext.FillRectangle(rect, fillBrush);
             }
 
             SolidColorBrush borderBrush = null;
@@ -183,10 +188,10 @@ namespace RectUI.Graphics
             {
                 if (!_brushMap.TryGetValue(border.Value, out borderBrush))
                 {
-                    borderBrush = new SolidColorBrush(Device.D2DDeviceContext, border.Value);
+                    borderBrush = new SolidColorBrush(m_device.D2DDeviceContext, border.Value);
                     _brushMap.Add(border.Value, borderBrush);
                 }
-                Device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
+                m_device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
             }
         }
 
@@ -204,7 +209,7 @@ namespace RectUI.Graphics
             SolidColorBrush brush;
             if (!_brushMap.TryGetValue(textColor.Value, out brush))
             {
-                brush = new SolidColorBrush(Device.D2DDeviceContext, textColor.Value);
+                brush = new SolidColorBrush(m_device.D2DDeviceContext, textColor.Value);
                 _brushMap.Add(textColor.Value, brush);
             }
 
@@ -246,7 +251,7 @@ namespace RectUI.Graphics
                 }
             }
 
-            Device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
+            m_device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
         }
 
         public void FileIcon(uint id, RectangleF rect, string path)
@@ -254,9 +259,37 @@ namespace RectUI.Graphics
             //throw new NotImplementedException();
         }
 
+        D3D11RenderTarget m_renderTarget;
+        RectangleF m_rect;
+        void GetOrRenderTarget(D3D11Device device, uint id, RectangleF rect)
+        {
+            if (rect != m_rect)
+            {
+                m_rect = rect;
+                if (m_renderTarget != null)
+                {
+                    m_renderTarget.Dispose();
+                    m_renderTarget = null;
+                }
+            }
+            if (m_renderTarget == null)
+            {
+                m_renderTarget = D3D11RenderTarget.Create(device, (int)rect.Width, (int)rect.Height);
+            }
+        }
+
         public void CameraMatrix(uint id, RectangleF rect, Matrix m)
         {
-            //throw new NotImplementedException();
+            // render 3D scene
+            GetOrRenderTarget(m_device, id, rect);
+            m_renderTarget.Setup(m_device, new Color4(0.2f, 0, 0, 1));
+            m_device.SetViewport(new Viewport(0, 0,
+                (int)rect.Width,
+                (int)rect.Height));
+            m_scene.Draw(m_device, m);
+
+            var bitmap = GetOrCreateBitmap(m_device, m_renderTarget);
+            m_device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
     }
 }

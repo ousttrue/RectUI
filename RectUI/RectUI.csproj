@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Application\App.cs" />
     <Compile Include="Application\Backbuffer.cs" />
+    <Compile Include="Application\Dispatcher.cs" />
     <Compile Include="Application\RenderThread.cs" />
     <Compile Include="Application\RenderThreadContext.cs" />
     <Compile Include="Application\WindowState.cs" />
