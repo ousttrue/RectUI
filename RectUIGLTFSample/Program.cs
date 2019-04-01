@@ -23,7 +23,15 @@ namespace RectUIGLTFSample
                     Label = "open",
                 },
 
-                {BoxItem.Expand, new D3DRegion()}
+                {BoxItem.Expand, new HBoxRegion
+                {
+                    new RectRegion
+                    {
+                        Rect = new Rect(200, 40),
+                    },
+
+                    {BoxItem.Expand, new D3DRegion()}
+                }}
             };
         }
 

@@ -68,7 +68,7 @@ namespace RectUI.Widgets
                 switch (boxItem)
                 {
                     case BoxItem.Fixed:
-                        child.Rect = CreateRect(ref pos, child.Rect.Height);
+                        child.Rect = CreateRect(ref pos, GetLength(child.Rect));
                         break;
 
                     case BoxItem.Expand:
@@ -86,7 +86,9 @@ namespace RectUI.Widgets
 
         protected override Rect CreateRect(ref int pos, int length)
         {
-            var rect = new Rect(Rect.X, Rect.Y + pos, Rect.Width, length);
+            var rect = new Rect(
+                Rect.X, Rect.Y + pos, 
+                Rect.Width, length);
             pos += length;
             return rect;
         }
@@ -104,7 +106,9 @@ namespace RectUI.Widgets
 
         protected override Rect CreateRect(ref int pos, int length)
         {
-            var rect = new Rect(Rect.X + pos, Rect.Y, length, Rect.Height);
+            var rect = new Rect(
+                Rect.X + pos, Rect.Y, 
+                length, Rect.Height);
             pos += length;
             return rect;
         }
