@@ -11,8 +11,8 @@ namespace RectUI.Application
 {
     public class CommandList
     {
-        DrawRPCBuffer m_rpc = new DrawRPCBuffer();
-        public DrawRPCBuffer Rpc
+        RpcDrawProcessorBuffer m_rpc = new RpcDrawProcessorBuffer();
+        public RpcDrawProcessorBuffer Rpc
         {
             get { return m_rpc; }
         }

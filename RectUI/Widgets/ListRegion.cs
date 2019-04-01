@@ -73,9 +73,9 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        protected abstract void GetIconCommands(IDrawRPC rpc, bool isActive, bool isHover);
-        protected abstract void GetTextCommands(IDrawRPC rpc, bool isActive, bool isHover);
-        public override void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        protected abstract void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover);
+        protected abstract void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover);
+        public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             if (Content == null)
             {

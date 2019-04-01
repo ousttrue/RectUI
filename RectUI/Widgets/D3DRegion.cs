@@ -79,7 +79,7 @@ namespace RectUI.Widgets
             _camera.Resize(Rect.Width, Rect.Height);
         }
 
-        public override void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             _camera.Update();
 

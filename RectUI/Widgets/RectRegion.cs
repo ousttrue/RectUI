@@ -223,7 +223,7 @@ namespace RectUI.Widgets
             return Style.GetColor(NormalColor.TextColorKey);
         }
 
-        public virtual void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        public virtual void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             rpc.Rectangle(ID, Rect.ToSharpDX(), 
                 GetFillColor(isActive, isHover), 

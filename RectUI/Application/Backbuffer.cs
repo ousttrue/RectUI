@@ -240,7 +240,7 @@ namespace RectUI.Application
             m_swapchain = device.CreateSwapchain(window.WindowHandle);
             m_backbuffer = m_swapchain.CreateBitmap();
 
-            m_dispatcher.RegisterInterface(typeof(IDrawRPC), m_backbuffer);
+            m_dispatcher.RegisterInterface(typeof(IDrawProcessor), m_backbuffer);
         }
 
         public void Resize(int w, int h)
@@ -293,65 +293,6 @@ namespace RectUI.Application
                 {
                     Console.WriteLine(ex);
                     break;
-                }
-            }
-            m_backbuffer.End();
-            m_swapchain.Present();
-        }
-
-        public void ExecuteCommands(D3D11Device device,
-            Scene scene,
-            List<D2DDrawCommand> commands)
-        {
-            m_backbuffer.Device = device;
-
-            m_backbuffer.Begin(m_clear);
-            foreach (var command in commands)
-            {
-                switch (command.DrawType)
-                {
-                    case DrawType.Rectangle:
-                        m_backbuffer.Rectangle(command.RegionID, command.Rectangle,
-                            command.FillColor, command.BorderColor);
-                        break;
-
-                    case DrawType.Text:
-                        m_backbuffer.Text(command.RegionID, command.Rectangle,
-                            command.TextColor,
-                            command.Font,
-                            command.Text);
-                        break;
-
-                    case DrawType.Icon:
-                        /*
-                        m_backbuffer.DrawIcon(device, command.Rectangle,
-                            command.Icon);
-                        */
-                        break;
-
-                    case DrawType.ImageList:
-                        /*
-                        m_backbuffer.DrawImageList(device, command.Rectangle,
-                            command.Icon, command.ImageListIndex);
-                        */
-                        break;
-
-                    case DrawType.Scene:
-                        {
-                            // render 3D scene
-                            var m_renderTarget = GetOrRenderTarget(device, command.RegionID, command.Rectangle);
-                            m_renderTarget.Setup(device, new Color4(0.2f, 0, 0, 1));
-                            device.SetViewport(new Viewport(0, 0,
-                                (int)command.Rectangle.Width,
-                                (int)command.Rectangle.Height));
-                            scene.Draw(device, command.Camera.ViewProjection);
-
-                            m_backbuffer.DrawRenderTarget(device, command.Rectangle, m_renderTarget);
-                        }
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
                 }
             }
             m_backbuffer.End();

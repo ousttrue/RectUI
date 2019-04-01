@@ -1,20 +1,8 @@
-﻿using RectUI.Assets;
-using SharpDX;
-using System;
+﻿using SharpDX;
 
 
 namespace RectUI.Graphics
 {
-    public enum DrawType
-    {
-        None,
-        Rectangle,
-        Text,
-        Icon,
-        ImageList,
-        Scene,
-    }
-
     public struct FontInfo
     {
         public string Font;
@@ -53,19 +41,12 @@ namespace RectUI.Graphics
         public float Vertical => Top + Bottom;
     }
 
-    public struct D2DDrawCommand
+    public interface IDrawProcessor
     {
-        public uint RegionID;
-        public RectangleF Rectangle;
-        public DrawType DrawType;
-        public Color4? FillColor;
-        public Color4? BorderColor;
-        public Color4? TextColor;
-        public TextInfo Text;
-        public FontInfo Font;
-        public IntPtr Icon;
-        public int ImageListIndex;
-        public Camera Camera;
-        public Scene Scene;
+        void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
+        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, TextInfo text);
+        void FileIcon(uint id, RectangleF rect, string path);
+
+        void CameraMatrix(uint id, RectangleF rect, Matrix m);
     }
 }

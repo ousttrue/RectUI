@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace RectUI.Graphics
 {
-    public class D2D1Bitmap : IDisposable, IDrawRPC
+    public class D2D1Bitmap : IDisposable, IDrawProcessor
     {
         public D3D11Device Device
         {

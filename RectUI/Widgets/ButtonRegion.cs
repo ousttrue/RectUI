@@ -1,6 +1,5 @@
 ﻿using RectUI.Graphics;
 using System;
-using System.Collections.Generic;
 
 
 namespace RectUI.Widgets
@@ -51,7 +50,7 @@ namespace RectUI.Widgets
             Size = 18,
         };
 
-        public override void GetDrawCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             rpc.Rectangle(ID,Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),

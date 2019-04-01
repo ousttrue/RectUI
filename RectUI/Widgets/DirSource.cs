@@ -112,13 +112,13 @@ namespace RectUI.Widgets
 
     public class DirItemRegion : ListItemRegion<FileSystemInfo>
     {
-        protected override void GetIconCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        protected override void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             //var icon = SystemIcon.Get(Content.FullName, true);
             rpc.FileIcon(ID, Rect.ToSharpDX(), Content.FullName);
         }
 
-        protected override void GetTextCommands(IDrawRPC rpc, bool isActive, bool isHover)
+        protected override void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             var color = GetTextColor(isActive, isHover);
 

@@ -4,18 +4,9 @@ using SharpDX;
 using System;
 
 
-namespace RectUI
+namespace RectUI.Widgets
 {
-    public interface IDrawRPC
-    {
-        void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
-        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, TextInfo text);
-        void FileIcon(uint id, RectangleF rect, string path);
-
-        void CameraMatrix(uint id, RectangleF rect, Matrix m);
-    }
-
-    public class DrawRPCBuffer : IDrawRPC
+    public class RpcDrawProcessorBuffer : IDrawProcessor
     {
         MsgPackFormatter m_f = new MsgPackFormatter();
         public void Clear()
