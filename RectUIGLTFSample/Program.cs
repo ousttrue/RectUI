@@ -129,7 +129,7 @@ namespace RectUIGLTFSample
                 };
                 m_app.Bind(window, BuildUI(onOpen));
 
-                Window.MessageLoop(() =>
+                MessageLoop.Run(() =>
                 {
                     m_app.Draw();
                 });
