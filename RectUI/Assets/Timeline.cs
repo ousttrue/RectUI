@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -29,13 +30,16 @@ namespace RectUI.Assets
         }
 
         Task _timer;
+        CancellationTokenSource _cts;
 
-        async Task Timer()
+        async Task Timer(CancellationToken ct)
         {
             _timeSubject.OnNext(TimeSpan.Zero);
             var sw = Stopwatch.StartNew();
             while (true)
             {
+                ct.ThrowIfCancellationRequested();
+
                 // 30 FPS
                 await Task.Delay(1000 / 30);
 
@@ -63,8 +67,9 @@ namespace RectUI.Assets
         public void Start(Action<TimeSpan> callback)
         {
             Stop();
-           
-            _timer = Timer();
+
+            _cts = new CancellationTokenSource();
+            _timer = Timer(_cts.Token);
             _subscription = TimeObservable.Subscribe(callback);
         }
 
@@ -78,7 +83,8 @@ namespace RectUI.Assets
 
             if (_timer != null)
             {
-                _timer.Dispose();
+                _cts.Cancel();
+                _cts = null;
                 _timer = null;
             }
         }
