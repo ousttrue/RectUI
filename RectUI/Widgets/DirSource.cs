@@ -45,6 +45,7 @@ namespace RectUI.Widgets
                 RaiseUpdated();
             }
         }
+        public string CurrentFullName => Current == null ? "" : Current.FullName;
         public int Count => m_items.Count;
         public FileSystemInfo this[int index] => m_items[index];
 

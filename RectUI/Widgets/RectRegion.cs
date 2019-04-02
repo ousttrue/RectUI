@@ -322,7 +322,7 @@ namespace RectUI.Widgets
 
         FontInfo m_font = new FontInfo
         {
-            Font = "MSGothic",
+            Font = "MS Gothic",
             Size = 18,
         };
 
@@ -340,7 +340,7 @@ namespace RectUI.Widgets
                     new TextInfo
                     {
                         Text = Label,
-                        HorizontalAlignment = TextHorizontalAlignment.Center,
+                        HorizontalAlignment = TextHorizontalAlignment.Left,
                         VerticalAlignment = TextVerticalAlignment.Center,
                     });
             }

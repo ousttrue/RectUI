@@ -13,11 +13,11 @@ namespace RectUI.Graphics
     {
         D3D11Device m_device;
 
-        Bitmap1 _bitmap;
-        Dictionary<Color4, SolidColorBrush> _brushMap = new Dictionary<Color4, SolidColorBrush>();
-        TextFormat _textFormat;
-        Dictionary<IntPtr, Bitmap> _bitmapMap = new Dictionary<IntPtr, Bitmap>();
-        Dictionary<int, Bitmap> _imageListMap = new Dictionary<int, Bitmap>();
+        Bitmap1 m_bitmap;
+        Dictionary<Color4, SolidColorBrush> m_brushMap = new Dictionary<Color4, SolidColorBrush>();
+        Dictionary<FontInfo, TextFormat> m_formatMap = new Dictionary<FontInfo, TextFormat>();
+        Dictionary<IntPtr, Bitmap> m_bitmapMap = new Dictionary<IntPtr, Bitmap>();
+        Dictionary<int, Bitmap> m_imageListMap = new Dictionary<int, Bitmap>();
         Dictionary<D3D11RenderTarget, Bitmap> m_rtBitmapMap = new Dictionary<D3D11RenderTarget, Bitmap>();
 
         public void Dispose()
@@ -34,22 +34,22 @@ namespace RectUI.Graphics
             }
             m_rtBitmapMap.Clear();
 
-            if (_textFormat != null)
-            {
-                _textFormat.Dispose();
-                _textFormat = null;
+            foreach(var kv in m_formatMap)
+            { 
+                kv.Value.Dispose();
             }
+            m_formatMap.Clear();
 
-            foreach (var kv in _brushMap)
+            foreach (var kv in m_brushMap)
             {
                 kv.Value.Dispose();
             }
-            _brushMap.Clear();
+            m_brushMap.Clear();
 
-            if (_bitmap != null)
+            if (m_bitmap != null)
             {
-                _bitmap.Dispose();
-                _bitmap = null;
+                m_bitmap.Dispose();
+                m_bitmap = null;
             }
         }
 
@@ -70,7 +70,7 @@ namespace RectUI.Graphics
 
             using (var surface = _getSurface())
             {
-                _bitmap = new Bitmap1(device.D2DDeviceContext, surface);
+                m_bitmap = new Bitmap1(device.D2DDeviceContext, surface);
             }
         }
 
@@ -79,12 +79,12 @@ namespace RectUI.Graphics
             m_device = device;
             m_scene = scene;
 
-            if (_bitmap == null)
+            if (m_bitmap == null)
             {
                 CreateBitmap(m_device);
             }
 
-            m_device.D2DDeviceContext.Target = _bitmap;
+            m_device.D2DDeviceContext.Target = m_bitmap;
             m_device.D2DDeviceContext.BeginDraw();
             m_device.D2DDeviceContext.Clear(clear);
             m_device.D2DDeviceContext.Transform = Matrix3x2.Identity;
@@ -117,10 +117,10 @@ namespace RectUI.Graphics
             SolidColorBrush fillBrush = null;
             if (fill.HasValue)
             {
-                if (!_brushMap.TryGetValue(fill.Value, out fillBrush))
+                if (!m_brushMap.TryGetValue(fill.Value, out fillBrush))
                 {
                     fillBrush = new SolidColorBrush(m_device.D2DDeviceContext, fill.Value);
-                    _brushMap.Add(fill.Value, fillBrush);
+                    m_brushMap.Add(fill.Value, fillBrush);
                 }
                 m_device.D2DDeviceContext.FillRectangle(rect, fillBrush);
             }
@@ -128,10 +128,10 @@ namespace RectUI.Graphics
             SolidColorBrush borderBrush = null;
             if (border.HasValue)
             {
-                if (!_brushMap.TryGetValue(border.Value, out borderBrush))
+                if (!m_brushMap.TryGetValue(border.Value, out borderBrush))
                 {
                     borderBrush = new SolidColorBrush(m_device.D2DDeviceContext, border.Value);
-                    _brushMap.Add(border.Value, borderBrush);
+                    m_brushMap.Add(border.Value, borderBrush);
                 }
                 m_device.D2DDeviceContext.DrawRectangle(rect, borderBrush, 2.0f);
             }
@@ -149,51 +149,51 @@ namespace RectUI.Graphics
             }
 
             SolidColorBrush brush;
-            if (!_brushMap.TryGetValue(textColor.Value, out brush))
+            if (!m_brushMap.TryGetValue(textColor.Value, out brush))
             {
                 brush = new SolidColorBrush(m_device.D2DDeviceContext, textColor.Value);
-                _brushMap.Add(textColor.Value, brush);
+                m_brushMap.Add(textColor.Value, brush);
             }
 
-            if (_textFormat == null)
-            {
+            TextFormat textFormat;
+            if(!m_formatMap.TryGetValue(font, out textFormat)) { 
                 using (var f = new SharpDX.DirectWrite.Factory())
                 {
-                    _textFormat = new TextFormat(f, font.Font, font.Size);
+                    textFormat = new TextFormat(f, font.Font, font.Size);
                 }
 
                 switch (text.HorizontalAlignment)
                 {
                     case TextHorizontalAlignment.Left:
-                        _textFormat.TextAlignment = TextAlignment.Leading;
+                        textFormat.TextAlignment = TextAlignment.Leading;
                         break;
 
                     case TextHorizontalAlignment.Center:
-                        _textFormat.TextAlignment = TextAlignment.Center;
+                        textFormat.TextAlignment = TextAlignment.Center;
                         break;
 
                     case TextHorizontalAlignment.Right:
-                        _textFormat.TextAlignment = TextAlignment.Trailing;
+                        textFormat.TextAlignment = TextAlignment.Trailing;
                         break;
                 }
 
                 switch (text.VerticalAlignment)
                 {
                     case TextVerticalAlignment.Top:
-                        _textFormat.ParagraphAlignment = ParagraphAlignment.Near;
+                        textFormat.ParagraphAlignment = ParagraphAlignment.Near;
                         break;
 
                     case TextVerticalAlignment.Center:
-                        _textFormat.ParagraphAlignment = ParagraphAlignment.Center;
+                        textFormat.ParagraphAlignment = ParagraphAlignment.Center;
                         break;
 
                     case TextVerticalAlignment.Bottom:
-                        _textFormat.ParagraphAlignment = ParagraphAlignment.Far;
+                        textFormat.ParagraphAlignment = ParagraphAlignment.Far;
                         break;
                 }
             }
 
-            m_device.D2DDeviceContext.DrawText(text.Text, _textFormat, rect, brush);
+            m_device.D2DDeviceContext.DrawText(text.Text, textFormat, rect, brush);
         }
 
         public void FileIcon(uint id, RectangleF rect, string path)
@@ -214,7 +214,7 @@ namespace RectUI.Graphics
             }
 
             Bitmap bitmap;
-            if (!_imageListMap.TryGetValue(systemIcon.ImageListIndex, out bitmap))
+            if (!m_imageListMap.TryGetValue(systemIcon.ImageListIndex, out bitmap))
             {
                 using (var memoryBitmap = new MemoryBitmap(w, h))
                 {
@@ -229,7 +229,7 @@ namespace RectUI.Graphics
                             s.Write(bytes, 0, bytes.Length);
                             s.Position = 0;
                             bitmap = new Bitmap(m_device.D2DDeviceContext, new Size2(w, h), s, w * 4, GetBP);
-                            _imageListMap.Add(systemIcon.ImageListIndex, bitmap);
+                            m_imageListMap.Add(systemIcon.ImageListIndex, bitmap);
                         }
                     }
                 }
