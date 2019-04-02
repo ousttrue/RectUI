@@ -52,5 +52,15 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DesktopDll\DesktopDll.csproj">
+      <Project>{63011582-C45F-471A-ACD6-37361D521184}</Project>
+      <Name>DesktopDll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RectUI\RectUI.csproj">
+      <Project>{F07B7387-018C-4A7C-855C-AF7967F3F0F9}</Project>
+      <Name>RectUI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

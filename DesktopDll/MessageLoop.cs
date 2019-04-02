@@ -6,6 +6,33 @@ using System.Threading;
 
 namespace DesktopDll
 {
+    public class FPSTimer
+    {
+        uint m_last;
+        int m_msInFrame;
+
+        public FPSTimer(int fps)
+        {
+            m_last = Winmm.timeGetTime();
+            m_msInFrame = 1000 / fps - 5;
+        }
+
+        public void Update(Action frameAction)
+        {
+            var now = Winmm.timeGetTime();
+            var delta = (int)(now - m_last);
+            if (delta > m_msInFrame)
+            {
+                frameAction();
+                m_last = now;
+            }
+            else
+            {
+                Thread.Sleep(m_msInFrame - delta);
+            }
+        }
+    }
+
     public class MessageLoop
     {
         class CustomSynchronizationContext: SynchronizationContext
@@ -68,8 +95,9 @@ namespace DesktopDll
             s_context.Process();
         }
 
-        public static void Run()
+        public static void Run(Action draw, int fps)
         {
+            var timer = new FPSTimer(1000 / fps);
             while (true)
             {
                 bool isQuit;
@@ -78,6 +106,8 @@ namespace DesktopDll
                 {
                     return;
                 }
+
+                timer.Update(draw);
             }
         }
     }

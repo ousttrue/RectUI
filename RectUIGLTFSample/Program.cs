@@ -132,33 +132,7 @@ namespace RectUIGLTFSample
                 //
                 // main loop
                 //
-                uint last = Winmm.timeGetTime();
-                var MS_PER_FRAME = 30;
-                while (true)
-                {
-                    bool quit;
-                    MessageLoop.ProcessMessage(out quit);
-                    if (quit)
-                    {
-                        break;
-                    }
-
-                    var now = Winmm.timeGetTime();
-                    var delta = (int)(now - last);
-                    if (delta > MS_PER_FRAME)
-                    {
-                        last = now;
-                        m_app.Draw(); // 描画
-                    }
-                    else
-                    {
-                        var sleep = MS_PER_FRAME - delta;
-                        if (sleep > 0)
-                        {
-                            Thread.Sleep(sleep);
-                        }
-                    }
-                }
+                MessageLoop.Run(() => m_app.Draw(), 30);
 
                 State.Save();
             }
