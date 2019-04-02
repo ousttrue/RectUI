@@ -42,6 +42,10 @@ namespace RectUI.Widgets
             {
                 foreach (var child in m_children)
                 {
+                    if (child == null)
+                    {
+                        continue;
+                    }
                     child.Dispose();
                 }
             }
@@ -83,6 +87,10 @@ namespace RectUI.Widgets
             {
                 foreach (var child in m_children)
                 {
+                    if (child == null)
+                    {
+                        continue;
+                    }
                     foreach (var x in child.Traverse())
                     {
                         if (x != null)
@@ -239,6 +247,10 @@ namespace RectUI.Widgets
             {
                 foreach (var r in Enumerable.Reverse(m_children))
                 {
+                    if (r == null)
+                    {
+                        continue;
+                    }
                     var hover = r.MouseMove(x, y);
                     if (hover != null)
                     {

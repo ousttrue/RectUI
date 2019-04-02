@@ -176,6 +176,7 @@ namespace RectUI.Widgets
                 {
                     ScrollY = MaxScrollY;
                 }
+                Layout();
             };
 
             ItemLeftClicked += (i, content) =>

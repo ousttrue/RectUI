@@ -11,7 +11,11 @@ namespace RectUITextSample
         static RectRegion BuildUI()
         {
             var fs = new FontSource();
-            return new ListRegion<FontFaceName>(fs);
+
+            return new HorizontalSplitter
+            {           
+               Left = new ListRegion<FontFaceName>(fs),
+            };
         }
 
         [STAThread]

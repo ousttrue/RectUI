@@ -15,6 +15,10 @@ namespace RectUI.Widgets
             set
             {
                 if (Children[0] == value) return;
+                if (value != null)
+                {
+                    value.Parent = this;
+                }
                 Children[0] = value;
                 Layout();
             }
@@ -26,6 +30,10 @@ namespace RectUI.Widgets
             set
             {
                 if (Children[1] == value) return;
+                if (value != null)
+                {
+                    value.Parent = this;
+                }
                 Children[1] = value;
                 Layout();
             }
