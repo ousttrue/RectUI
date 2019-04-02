@@ -31,7 +31,6 @@ namespace RectUI.Widgets
                 m_current = value;
 
                 m_items.Clear();
-                m_items.Add(m_current.Parent);
                 try
                 {
                     m_items.AddRange(
@@ -48,6 +47,14 @@ namespace RectUI.Widgets
         }
         public int Count => m_items.Count;
         public FileSystemInfo this[int index] => m_items[index];
+
+        public void GoUp()
+        {
+            if(Current!=null && Current.Parent != null)
+            {
+                Current = Current.Parent;
+            }
+        }
 
         public DirSource() : this(".")
         { }
@@ -81,12 +88,16 @@ namespace RectUI.Widgets
     {
         protected override void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
+            if (!SourceIndex.HasValue) return;
+
             //var icon = SystemIcon.Get(Content.FullName, true);
             rpc.FileIcon(ID, Rect.ToSharpDX(), Content.FullName);
         }
 
         protected override void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
+            if (!SourceIndex.HasValue) return;
+
             var color = GetTextColor(isActive, isHover);
 
             // todo: m_padding

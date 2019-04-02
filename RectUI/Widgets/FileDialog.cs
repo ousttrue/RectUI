@@ -59,10 +59,32 @@ namespace RectUI.Widgets
             list.ItemLeftDoubleClicked += (i, obj) =>
             {
                 Enter(obj);
-            };          
+            };
+
+            var current = new TextRegion();
+
+            m_source.Updated += () =>
+            {
+                current.Label = m_source.Current.FullName;
+            };
 
             UI = new VBoxRegion()
             {
+                new HBoxRegion(new Rect(200, 40))
+                {
+                    new ButtonRegion
+                    {
+                        Label = "Up",
+                        Action = _ =>
+                        {
+                            m_source.GoUp();
+                        },
+                        Rect= new Rect(40, 40)
+                    },
+
+                    {BoxItem.Expand, current }
+                },
+
                 {BoxItem.Expand, list },
 
                 new HBoxRegion(new Rect(200, 40))

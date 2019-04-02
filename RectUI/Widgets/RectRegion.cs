@@ -305,4 +305,45 @@ namespace RectUI.Widgets
         public bool UseMouseWheel => OnWheel != null;
         #endregion
     }
+
+    public class TextRegion: RectRegion
+    {
+        string m_label;
+        public string Label
+        {
+            get { return m_label; }
+            set
+            {
+                if (m_label == value) return;
+                m_label = value;
+                Invalidate();
+            }
+        }
+
+        FontInfo m_font = new FontInfo
+        {
+            Font = "MSGothic",
+            Size = 18,
+        };
+
+        public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
+        {
+            rpc.Rectangle(ID, Rect.ToSharpDX(),
+                GetFillColor(isActive, isHover),
+                GetBorderColor(isActive, isHover));
+
+            if (!string.IsNullOrEmpty(Label))
+            {
+                rpc.Text(ID, Rect.ToSharpDX(),
+                    GetTextColor(isActive, isHover),
+                    m_font,
+                    new TextInfo
+                    {
+                        Text = Label,
+                        HorizontalAlignment = TextHorizontalAlignment.Center,
+                        VerticalAlignment = TextVerticalAlignment.Center,
+                    });
+            }
+        }
+    }
 }

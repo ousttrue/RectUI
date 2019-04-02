@@ -56,15 +56,18 @@ namespace RectUI.Widgets
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
-            rpc.Text(ID, Rect.ToSharpDX(),
-                GetTextColor(isActive, isHover),
-                m_font,
-                new TextInfo
-                {
-                    Text = Label,
-                    HorizontalAlignment = TextHorizontalAlignment.Center,
-                    VerticalAlignment = TextVerticalAlignment.Center,
-                });
+            if (!string.IsNullOrEmpty(Label))
+            {
+                rpc.Text(ID, Rect.ToSharpDX(),
+                    GetTextColor(isActive, isHover),
+                    m_font,
+                    new TextInfo
+                    {
+                        Text = Label,
+                        HorizontalAlignment = TextHorizontalAlignment.Center,
+                        VerticalAlignment = TextVerticalAlignment.Center,
+                    });
+            }
         }
 
         public override void Dispose()
