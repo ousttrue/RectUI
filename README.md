@@ -1,4 +1,6 @@
 # ToDo
+* [ ] GridSize
+* [ ] FontSize
 * [x] MouseEvent invalidate
 * [x] Selector(selected)
 * [x] reuse msgpack parser list

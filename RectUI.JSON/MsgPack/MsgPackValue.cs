@@ -763,5 +763,19 @@ namespace RectUI.JSON
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            switch(ValueType)
+            {
+                case ValueNodeType.Null: return "null";
+                case ValueNodeType.Boolean: return GetBoolean().ToString();
+                case ValueNodeType.Integer: return GetInt64().ToString();
+                case ValueNodeType.Number: return GetDouble().ToString();
+                case ValueNodeType.String: return GetString();
+            }
+
+            return base.ToString();
+        }
     }
 }

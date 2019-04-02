@@ -69,7 +69,6 @@ namespace RectUI.JSON
             {
                 var sb = new StringBuilder();
                 sb.Append("[");
-                /*
                 bool isFirst = true;
                 foreach (var x in this.ArrayItems())
                 {
@@ -83,7 +82,6 @@ namespace RectUI.JSON
                     }
                     sb.Append(x.ToString());                    
                 }
-                */
                 sb.Append("]");
                 return sb.ToString();
             }
@@ -91,7 +89,6 @@ namespace RectUI.JSON
             {
                 var sb = new StringBuilder();
                 sb.Append("{");
-                /*
                 bool isFirst = true;
                 foreach (var kv in this.ObjectItems())
                 {
@@ -107,7 +104,6 @@ namespace RectUI.JSON
                     sb.Append(": ");
                     sb.Append(kv.Value.ToString());
                 }
-                */
                 sb.Append("}");
                 return sb.ToString();
             }
