@@ -40,6 +40,11 @@ namespace RectUI.Widgets
             Call(nameof(Rectangle), id, rect, fill, border);
         }
 
+        public void Grid(uint id, RectangleF rect, Color4? fill, Color4? border, GridInfo grid)
+        {
+            Call(nameof(Grid), id, rect, fill, border, grid);
+        }
+
         public void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment)
         {
             Call(nameof(Text), id, rect, color, font, text, alignment);

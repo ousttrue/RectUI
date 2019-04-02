@@ -1,4 +1,5 @@
 ﻿using RectUI.Graphics;
+using SharpDX;
 
 namespace RectUI.Widgets
 {
@@ -16,11 +17,20 @@ namespace RectUI.Widgets
             }
         }
 
+        public GridInfo Grid => new GridInfo
+        {
+            CellSize = 18.0f,
+            LineWidth = 1.0f,
+        };
+
+        public Color4? GridColor;
+
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
-            rpc.Rectangle(ID, Rect.ToSharpDX(),
+            rpc.Grid(ID, Rect.ToSharpDX(),
                 GetFillColor(isActive, isHover),
-                GetBorderColor(isActive, isHover));
+                GridColor,
+                Grid);
 
             if (!string.IsNullOrEmpty(Text))
             {

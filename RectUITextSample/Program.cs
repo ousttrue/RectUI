@@ -2,6 +2,7 @@
 using RectUI.Application;
 using RectUI.Graphics;
 using RectUI.Widgets;
+using SharpDX;
 using System;
 
 
@@ -16,6 +17,7 @@ namespace RectUITextSample
             var tr = new TextRegion()
             {
                 Text = Lorem.Text,
+                GridColor = new Color4(0.7f, 0.7f, 0.7f, 1.0f),
             };
 
             var list = new ListRegion<FontFaceName>(fs);

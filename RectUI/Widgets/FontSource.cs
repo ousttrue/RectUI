@@ -37,6 +37,7 @@ namespace RectUI.Widgets
                                     var faceName = font.FaceNames.GetString(0);
                                     yield return new FontFaceName(fontFamilyName, faceName);
                                 }
+                                break;
                             }
                         }
                     }

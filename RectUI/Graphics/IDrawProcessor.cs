@@ -59,11 +59,18 @@ namespace RectUI.Graphics
         public float Vertical => Top + Bottom;
     }
 
+    public struct GridInfo
+    {
+        public float CellSize;
+        public float LineWidth;
+    }
+
     public interface IDrawProcessor
     {
         void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
-        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment);
+        void Grid(uint id, RectangleF rect, Color4? fill, Color4? border, GridInfo grid);
         void FileIcon(uint id, RectangleF rect, string path);
+        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment);
 
         void CameraMatrix(uint id, RectangleF rect, Matrix m);
     }

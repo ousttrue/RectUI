@@ -137,6 +137,38 @@ namespace RectUI.Graphics
             }
         }
 
+        public void Grid(uint id, RectangleF rect, Color4? fillColor, Color4? gridColor, GridInfo grid)
+        {
+            SolidColorBrush fillBrush = null;
+            if (fillColor.HasValue)
+            {
+                if (!m_brushMap.TryGetValue(fillColor.Value, out fillBrush))
+                {
+                    fillBrush = new SolidColorBrush(m_device.D2DDeviceContext, fillColor.Value);
+                    m_brushMap.Add(fillColor.Value, fillBrush);
+                }
+                m_device.D2DDeviceContext.FillRectangle(rect, fillBrush);
+            }
+
+            SolidColorBrush gridBrush = null;
+            if (gridColor.HasValue)
+            {
+                if (!m_brushMap.TryGetValue(gridColor.Value, out gridBrush))
+                {
+                    gridBrush = new SolidColorBrush(m_device.D2DDeviceContext, gridColor.Value);
+                    m_brushMap.Add(gridColor.Value, gridBrush);
+                }
+                for(var y=rect.Y; y<=(rect.Y+rect.Height); y+=grid.CellSize)
+                {
+                    m_device.D2DDeviceContext.DrawLine(new Vector2(rect.X, y), new Vector2(rect.X+rect.Width, y), gridBrush, grid.LineWidth);
+                }
+                for(var x = rect.X; x<=(rect.X+rect.Width); x+=grid.CellSize)
+                {
+                    m_device.D2DDeviceContext.DrawLine(new Vector2(x, rect.Y), new Vector2(x, rect.Y + rect.Height), gridBrush, grid.LineWidth);
+                }
+            }
+        }
+
         public void Text(uint id, RectangleF rect, Color4? textColor, FontInfo font, string text, TextAlignment alignment)
         {
             if (!textColor.HasValue)
