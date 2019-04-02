@@ -67,5 +67,18 @@ namespace DesktopDll
             // process tasks
             s_context.Process();
         }
+
+        public static void Run()
+        {
+            while (true)
+            {
+                bool isQuit;
+                ProcessMessage(out isQuit);
+                if (isQuit)
+                {
+                    return;
+                }
+            }
+        }
     }
 }

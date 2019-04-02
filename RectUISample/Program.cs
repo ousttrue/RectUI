@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI;
+using RectUI.Application;
 using RectUI.Widgets;
 using System;
 using System.IO;
@@ -26,7 +27,7 @@ namespace RectUISample
             {
                 app.Bind(Window.Create(), BuildUI());
 
-                Window.MessageLoop();
+                MessageLoop.Run();
             }
         }
     }
