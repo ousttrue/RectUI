@@ -13,7 +13,7 @@ namespace RectUI.Widgets
         ListItemRegion<T> CreateItem();
     }
 
-    public abstract class ListItemRegion<T> : RectRegion
+    public class ListItemRegion<T> : RectRegion
     {
         public int? SourceIndex
         {
@@ -47,8 +47,35 @@ namespace RectUI.Widgets
             ActiveColor = ColorKeys.ListItemActive;
         }
 
-        protected abstract void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover);
-        protected abstract void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover);
+        protected virtual void GetIconCommands(IDrawProcessor rpc, bool isActive, bool isHover)
+        {
+            if (!SourceIndex.HasValue)
+            {
+                return;
+            }
+        }
+
+        protected virtual void GetTextCommands(IDrawProcessor rpc, bool isActive, bool isHover)
+        {
+            if (!SourceIndex.HasValue)
+            {
+                return;
+            }
+
+            rpc.Text(ID, Rect.ToSharpDX(),
+                GetTextColor(isActive, isHover),
+                new FontInfo {
+                    Font = "MS Gothic",
+                    Size = 18,
+                },
+                new TextInfo
+                {
+                    Text = Content.ToString(),
+                    HorizontalAlignment = TextHorizontalAlignment.Left,
+                    VerticalAlignment = TextVerticalAlignment.Center,
+                }
+                );
+        }
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             if (!SourceIndex.HasValue)

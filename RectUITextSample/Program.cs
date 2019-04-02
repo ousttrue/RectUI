@@ -10,7 +10,8 @@ namespace RectUITextSample
     {
         static RectRegion BuildUI()
         {
-            return new RectRegion();
+            var fs = new FontSource();
+            return new ListRegion<FontFaceName>(fs);
         }
 
         [STAThread]

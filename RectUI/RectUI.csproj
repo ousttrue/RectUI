@@ -126,6 +126,7 @@
     <Compile Include="Graphics\ImageLoader.cs" />
     <Compile Include="Graphics\InterleavedBuffer.cs" />
     <Compile Include="Graphics\Triangle.cs" />
+    <Compile Include="Widgets\FontSource.cs" />
     <Compile Include="Widgets\NodeTreeRegion.cs" />
     <Compile Include="Widgets\RpcDrawProcessorBuffer.cs" />
     <Compile Include="Widgets\BoxRegion.cs" />
