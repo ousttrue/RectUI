@@ -44,12 +44,6 @@ namespace RectUI.Widgets
             Bottom = 2,
         };
 
-        FontInfo m_font = new FontInfo
-        {
-            Font = FontFaceName.MSGothic,
-            Size = 18,
-        };
-
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
             rpc.Rectangle(ID,Rect.ToSharpDX(),
@@ -60,7 +54,7 @@ namespace RectUI.Widgets
             {
                 rpc.Text(ID, Rect.ToSharpDX(),
                     GetTextColor(isActive, isHover),
-                    m_font,
+                    Style.GetFont(FontSize),
                     Label,
                     new TextAlignment
                     {

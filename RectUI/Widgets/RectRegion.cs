@@ -22,6 +22,28 @@ namespace RectUI.Widgets
             Root.Invalidated?.Invoke();
         }
 
+        #region Text
+        float m_fontSize = 18;
+        public float FontSize
+        {
+            get => m_fontSize;
+            set
+            {
+                if (m_fontSize == value)
+                {
+                    return;
+                }
+                m_fontSize = value;
+            }
+        }       
+
+        public TextAlignment Alignment
+        {
+            get;
+            set;
+        }
+        #endregion
+
         #region ID
         static uint s_id = 1;
         public uint ID
@@ -316,49 +338,5 @@ namespace RectUI.Widgets
 
         public bool UseMouseWheel => OnWheel != null;
         #endregion
-    }
-
-    public class TextRegion: RectRegion
-    {
-        string m_label;
-        public string Text
-        {
-            get { return m_label; }
-            set
-            {
-                if (m_label == value) return;
-                m_label = value;
-                Invalidate();
-            }
-        }
-
-        FontInfo m_font = new FontInfo
-        {
-            Font = FontFaceName.MSGothic,
-            Size = 18,
-        };
-
-        public TextAlignment Alignment
-        {
-            get;
-            set;
-        }
-
-        public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
-        {
-            rpc.Rectangle(ID, Rect.ToSharpDX(),
-                GetFillColor(isActive, isHover),
-                GetBorderColor(isActive, isHover));
-
-            if (!string.IsNullOrEmpty(Text))
-            {
-                rpc.Text(ID, Rect.ToSharpDX(),
-                    GetTextColor(isActive, isHover),
-                    m_font,
-                    Text,
-                    Alignment
-                    );
-            }
-        }
     }
 }

@@ -13,13 +13,22 @@ namespace RectUITextSample
         {
             var fs = new FontSource();
 
+            var tr = new TextRegion()
+            {
+                Text = Lorem.Text,
+            };
+
+            var list = new ListRegion<FontFaceName>(fs);
+
+            list.SelectionChanged += () =>
+            {
+                tr.Style.Font = list.Selected;
+            };
+
             return new HorizontalSplitter
             {           
-               Left = new ListRegion<FontFaceName>(fs),
-               Right = new TextRegion()
-               {
-                   Text = Lorem.Text,
-               },
+               Left = list,
+               Right = tr,
             };
         }
 

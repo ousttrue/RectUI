@@ -142,6 +142,7 @@
     <Compile Include="Widgets\RectRegion.cs" />
     <Compile Include="Widgets\Splitter.cs" />
     <Compile Include="Widgets\Style.cs" />
+    <Compile Include="Widgets\TextReagion.cs" />
     <Compile Include="Widgets\UIContext.cs" />
   </ItemGroup>
   <ItemGroup>

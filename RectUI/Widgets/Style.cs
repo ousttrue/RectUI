@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using RectUI.Graphics;
+using SharpDX;
 using System.Collections.Generic;
 
 
@@ -54,8 +55,31 @@ namespace RectUI.Widgets
             }
         }
 
+        public FontFaceName Font
+        {
+            get;
+            set;
+        }
+
+        public FontInfo GetFont(float size)
+        { 
+            if (!string.IsNullOrEmpty(Font.FamilylName))
+            {
+                return new FontInfo
+                {
+                    Font = Font,
+                    Size = size,
+                };
+            }
+            else
+            {
+                return Fallback.GetFont(size);
+            }
+        }
+
         static Style s_default= new Style(null)
         {
+            Font = FontFaceName.MSGothic,
             m_colorMap = new Dictionary<StyleColorKey, Color4>
                         {
                             //{StyleColorKey.PanelBorder, new Color4(45/255f, 45/255f, 48/255f, 1) },
