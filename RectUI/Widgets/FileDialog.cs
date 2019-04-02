@@ -65,7 +65,7 @@ namespace RectUI.Widgets
 
             m_source.Updated += () =>
             {
-                current.Label = m_source.CurrentFullName;
+                current.Text = m_source.CurrentFullName;
             };
 
             UI = new VBoxRegion()

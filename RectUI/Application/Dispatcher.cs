@@ -139,6 +139,42 @@ namespace RectUI.Application
             };
         }
 
+        static NotifyFunc CreateCall6<S, A0, A1, A2, A3, A4, A5>(MethodInfo mi, S self)
+        {
+            var call = GenericInvokeCallFactory.BindAction<S, A0, A1, A2, A3, A4, A5>(mi, self);
+
+            return args =>
+            {
+                var it = args.ArrayItems().GetEnumerator();
+
+                if (!it.MoveNext()) throw new Exception();
+                var a0 = default(A0);
+                it.Current.Deserialize(ref a0);
+
+                if (!it.MoveNext()) throw new Exception();
+                var a1 = default(A1);
+                it.Current.Deserialize(ref a1);
+
+                if (!it.MoveNext()) throw new Exception();
+                var a2 = default(A2);
+                it.Current.Deserialize(ref a2);
+
+                if (!it.MoveNext()) throw new Exception();
+                var a3 = default(A3);
+                it.Current.Deserialize(ref a3);
+
+                if (!it.MoveNext()) throw new Exception();
+                var a4 = default(A4);
+                it.Current.Deserialize(ref a4);
+
+                if (!it.MoveNext()) throw new Exception();
+                var a5 = default(A5);
+                it.Current.Deserialize(ref a5);
+
+                call(a0, a1, a2, a3, a4, a5);
+            };
+        }
+
         static NotifyFunc CreateCall(MethodInfo mi, object self)
         {
             var paramTypes = mi.GetParameters().Select(x => x.ParameterType).ToArray();
@@ -158,6 +194,11 @@ namespace RectUI.Application
 
                 case 5:
                     g = typeof(Dispatcher).GetMethod(nameof(CreateCall5),
+                        BindingFlags.Static | BindingFlags.NonPublic);
+                    break;
+
+                case 6:
+                    g = typeof(Dispatcher).GetMethod(nameof(CreateCall6),
                         BindingFlags.Static | BindingFlags.NonPublic);
                     break;
 

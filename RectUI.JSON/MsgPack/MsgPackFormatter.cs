@@ -635,7 +635,20 @@ namespace RectUI.JSON
 
         public void Notify<A0, A1, A2, A3, A4, A5>(Utf8String method, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
         {
-            throw new NotImplementedException();
+            BeginList(3);
+            Value(NOTIFY_TYPE);
+            Value(method);
+            BeginList(6); // params
+            {
+                this.Serialize(a0);
+                this.Serialize(a1);
+                this.Serialize(a2);
+                this.Serialize(a3);
+                this.Serialize(a4);
+                this.Serialize(a5);
+            }
+            EndList();
+            EndList();
         }
         #endregion
     }

@@ -65,12 +65,12 @@ namespace RectUI.Widgets
             rpc.Text(ID, Rect.ToSharpDX(),
                 GetTextColor(isActive, isHover),
                 new FontInfo {
-                    Font = "MS Gothic",
+                    Font = FontFaceName.MSGothic,
                     Size = 18,
                 },
-                new TextInfo
+                Content.ToString(),
+                new TextAlignment
                 {
-                    Text = Content.ToString(),
                     HorizontalAlignment = TextHorizontalAlignment.Left,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }

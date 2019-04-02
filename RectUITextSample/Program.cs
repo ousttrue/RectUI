@@ -1,5 +1,6 @@
 ﻿using DesktopDll;
 using RectUI.Application;
+using RectUI.Graphics;
 using RectUI.Widgets;
 using System;
 
@@ -15,6 +16,10 @@ namespace RectUITextSample
             return new HorizontalSplitter
             {           
                Left = new ListRegion<FontFaceName>(fs),
+               Right = new TextRegion()
+               {
+                   Text = Lorem.Text,
+               },
             };
         }
 

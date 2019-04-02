@@ -112,12 +112,12 @@ namespace RectUI.Widgets
                 color,
                 new FontInfo
                 {
-                    Font = "MS Gothic",
+                    Font = FontFaceName.MSGothic,
                     Size = Rect.Height - m_padding.Top - m_padding.Bottom,
                 },
-                new TextInfo
+                Content.Name,
+                new TextAlignment
                 {
-                    Text = Content.Name,
                     HorizontalAlignment = TextHorizontalAlignment.Left,
                     VerticalAlignment = TextVerticalAlignment.Center,
                 }

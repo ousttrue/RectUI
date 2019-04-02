@@ -1,27 +1,11 @@
-﻿using SharpDX.DirectWrite;
+﻿using RectUI.Graphics;
+using SharpDX.DirectWrite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RectUI.Widgets
 {
-    public struct FontFaceName
-    {
-        public string FamilylName;
-        public string FaceName;
-
-        public FontFaceName(string family, string face)
-        {
-            FamilylName = family;
-            FaceName = face;
-        }
-
-        public override string ToString()
-        {
-            return $"{FamilylName}: {FaceName}";
-        }
-    }
-
     public class FontSource : IListSource<FontFaceName>
     {
         List<FontFaceName> m_list;

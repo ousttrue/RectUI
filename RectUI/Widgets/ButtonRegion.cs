@@ -46,7 +46,7 @@ namespace RectUI.Widgets
 
         FontInfo m_font = new FontInfo
         {
-            Font = "MSGothic",
+            Font = FontFaceName.MSGothic,
             Size = 18,
         };
 
@@ -61,9 +61,9 @@ namespace RectUI.Widgets
                 rpc.Text(ID, Rect.ToSharpDX(),
                     GetTextColor(isActive, isHover),
                     m_font,
-                    new TextInfo
+                    Label,
+                    new TextAlignment
                     {
-                        Text = Label,
                         HorizontalAlignment = TextHorizontalAlignment.Center,
                         VerticalAlignment = TextVerticalAlignment.Center,
                     });

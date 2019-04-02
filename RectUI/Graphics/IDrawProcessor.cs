@@ -3,9 +3,28 @@
 
 namespace RectUI.Graphics
 {
+    public struct FontFaceName
+    {
+        public string FamilylName;
+        public string FaceName;
+
+        public FontFaceName(string family, string face)
+        {
+            FamilylName = family;
+            FaceName = face;
+        }
+
+        public static FontFaceName MSGothic => new FontFaceName("MS Gothic", "Regular");
+
+        public override string ToString()
+        {
+            return $"{FamilylName}: {FaceName}";
+        }
+    }
+
     public struct FontInfo
     {
-        public string Font;
+        public FontFaceName Font;
         public float Size;
     }
 
@@ -23,9 +42,8 @@ namespace RectUI.Graphics
         Bottom,
     }
 
-    public struct TextInfo
+    public struct TextAlignment
     {
-        public string Text;
         public TextHorizontalAlignment HorizontalAlignment;
         public TextVerticalAlignment VerticalAlignment;
     }
@@ -44,7 +62,7 @@ namespace RectUI.Graphics
     public interface IDrawProcessor
     {
         void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
-        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, TextInfo text);
+        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment);
         void FileIcon(uint id, RectangleF rect, string path);
 
         void CameraMatrix(uint id, RectangleF rect, Matrix m);

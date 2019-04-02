@@ -321,7 +321,7 @@ namespace RectUI.Widgets
     public class TextRegion: RectRegion
     {
         string m_label;
-        public string Label
+        public string Text
         {
             get { return m_label; }
             set
@@ -334,9 +334,15 @@ namespace RectUI.Widgets
 
         FontInfo m_font = new FontInfo
         {
-            Font = "MS Gothic",
+            Font = FontFaceName.MSGothic,
             Size = 18,
         };
+
+        public TextAlignment Alignment
+        {
+            get;
+            set;
+        }
 
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
@@ -344,17 +350,14 @@ namespace RectUI.Widgets
                 GetFillColor(isActive, isHover),
                 GetBorderColor(isActive, isHover));
 
-            if (!string.IsNullOrEmpty(Label))
+            if (!string.IsNullOrEmpty(Text))
             {
                 rpc.Text(ID, Rect.ToSharpDX(),
                     GetTextColor(isActive, isHover),
                     m_font,
-                    new TextInfo
-                    {
-                        Text = Label,
-                        HorizontalAlignment = TextHorizontalAlignment.Left,
-                        VerticalAlignment = TextVerticalAlignment.Center,
-                    });
+                    Text,
+                    Alignment
+                    );
             }
         }
     }

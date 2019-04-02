@@ -1,4 +1,5 @@
 # ToDo
+* [ ] Slider
 * [ ] GridSize
 * [ ] FontSize
 * [x] MouseEvent invalidate

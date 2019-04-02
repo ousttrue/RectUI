@@ -137,13 +137,13 @@ namespace RectUI.Graphics
             }
         }
 
-        public void Text(uint id, RectangleF rect, Color4? textColor, FontInfo font, TextInfo text)
+        public void Text(uint id, RectangleF rect, Color4? textColor, FontInfo font, string text, TextAlignment alignment)
         {
             if (!textColor.HasValue)
             {
                 return;
             }
-            if (string.IsNullOrEmpty(text.Text))
+            if (string.IsNullOrEmpty(text))
             {
                 return;
             }
@@ -159,25 +159,25 @@ namespace RectUI.Graphics
             if(!m_formatMap.TryGetValue(font, out textFormat)) { 
                 using (var f = new SharpDX.DirectWrite.Factory())
                 {
-                    textFormat = new TextFormat(f, font.Font, font.Size);
+                    textFormat = new TextFormat(f, font.Font.FamilylName, font.Size);
                 }
 
-                switch (text.HorizontalAlignment)
+                switch (alignment.HorizontalAlignment)
                 {
                     case TextHorizontalAlignment.Left:
-                        textFormat.TextAlignment = TextAlignment.Leading;
+                        textFormat.TextAlignment = SharpDX.DirectWrite.TextAlignment.Leading;
                         break;
 
                     case TextHorizontalAlignment.Center:
-                        textFormat.TextAlignment = TextAlignment.Center;
+                        textFormat.TextAlignment = SharpDX.DirectWrite.TextAlignment.Center;
                         break;
 
                     case TextHorizontalAlignment.Right:
-                        textFormat.TextAlignment = TextAlignment.Trailing;
+                        textFormat.TextAlignment = SharpDX.DirectWrite.TextAlignment.Trailing;
                         break;
                 }
 
-                switch (text.VerticalAlignment)
+                switch (alignment.VerticalAlignment)
                 {
                     case TextVerticalAlignment.Top:
                         textFormat.ParagraphAlignment = ParagraphAlignment.Near;
@@ -193,7 +193,7 @@ namespace RectUI.Graphics
                 }
             }
 
-            m_device.D2DDeviceContext.DrawText(text.Text, textFormat, rect, brush);
+            m_device.D2DDeviceContext.DrawText(text, textFormat, rect, brush);
         }
 
         public void FileIcon(uint id, RectangleF rect, string path)

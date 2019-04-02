@@ -142,6 +142,16 @@ namespace RectUI.JSON
             return (Action<A0, A1, A2, A3, A4>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2, A3, A4>), instance, m);
         }
 
+        public static Action<A0, A1, A2, A3, A4, A5> BindAction<S, A0, A1, A2, A3, A4, A5>(MethodInfo m, S instance)
+        {
+            if (m.IsStatic)
+            {
+                throw new ArgumentException(string.Format("{0} is static", m));
+            }
+
+            return (Action<A0, A1, A2, A3, A4, A5>)Delegate.CreateDelegate(typeof(Action<A0, A1, A2, A3, A4, A5>), instance, m);
+        }
+
 //////////// StaticFunc
 
         public static Func<A0, T> StaticFunc<A0, T>(MethodInfo m)
