@@ -1,4 +1,10 @@
 # ToDo
+
+* [ ] Style.LineHeight
+* [ ] Style.LineFontSize
+
+* [ ] Grid(cell)
+    * https://qiita.com/atsushieno/items/8f6b582bffd35dc1706d
 * [ ] Slider
 * [ ] GridSize
 * [ ] FontSize

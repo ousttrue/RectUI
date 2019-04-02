@@ -18,6 +18,7 @@ namespace RectUITextSample
             {
                 Text = Lorem.Text,
                 GridColor = new Color4(0.7f, 0.7f, 0.7f, 1.0f),
+                FontSize = 36,
             };
 
             var list = new ListRegion<FontFaceName>(fs);

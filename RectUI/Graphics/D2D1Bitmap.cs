@@ -6,6 +6,7 @@ using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RectUI.Graphics
 {
@@ -16,6 +17,7 @@ namespace RectUI.Graphics
         Bitmap1 m_bitmap;
         Dictionary<Color4, SolidColorBrush> m_brushMap = new Dictionary<Color4, SolidColorBrush>();
         Dictionary<FontInfo, TextFormat> m_formatMap = new Dictionary<FontInfo, TextFormat>();
+        Dictionary<FontInfo, FontFace> m_faceMap = new Dictionary<FontInfo, FontFace>();
         Dictionary<IntPtr, Bitmap> m_bitmapMap = new Dictionary<IntPtr, Bitmap>();
         Dictionary<int, Bitmap> m_imageListMap = new Dictionary<int, Bitmap>();
         Dictionary<D3D11RenderTarget, Bitmap> m_rtBitmapMap = new Dictionary<D3D11RenderTarget, Bitmap>();
@@ -39,6 +41,12 @@ namespace RectUI.Graphics
                 kv.Value.Dispose();
             }
             m_formatMap.Clear();
+
+            foreach(var kv in m_faceMap)
+            {
+                kv.Value.Dispose();
+            }
+            m_faceMap.Clear();
 
             foreach (var kv in m_brushMap)
             {
@@ -187,8 +195,62 @@ namespace RectUI.Graphics
                 m_brushMap.Add(textColor.Value, brush);
             }
 
+#if false
+            TextByFormat(rect, font, text, alignment, brush);
+#else
+            TextByGlyph(rect, font, text, alignment, brush);
+#endif
+        }
+
+        IEnumerable<int> EnumCodePoints(string input)
+        {
+            for (var i = 0; i < input.Length; i += char.IsSurrogatePair(input, i) ? 2 : 1)
+            {
+                yield return char.ConvertToUtf32(input, i);
+            }
+        }
+
+        private void TextByGlyph(RectangleF rect, FontInfo fontInfo, string text, TextAlignment alignment, SolidColorBrush brush)
+        {
+            FontFace fontFace;
+            if(!m_faceMap.TryGetValue(fontInfo, out fontFace))
+            {
+                using (var f = new SharpDX.DirectWrite.Factory())
+                using(var collection = f.GetSystemFontCollection(false))
+                {
+                    int familyIndex;
+                    if(!collection.FindFamilyName(fontInfo.Font.FamilylName, out familyIndex))
+                    {
+                        return;
+                    }
+
+                    using (var family = collection.GetFontFamily(familyIndex))
+                    using (var font = family.GetFont(0))
+                    {
+                        fontFace = new FontFace(font);
+                        m_faceMap.Add(fontInfo, fontFace);
+                    }
+                }
+            }
+
+            var codePoints = EnumCodePoints(text).ToArray();
+            var indices = fontFace.GetGlyphIndices(codePoints);
+
+            var glyphRun = new GlyphRun
+            {
+                FontFace = fontFace,
+                Indices = indices,
+                FontSize = fontInfo.Size,               
+            };
+
+            m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, fontInfo.Size), glyphRun, brush, MeasuringMode.Natural);
+        }
+
+        private void TextByFormat(RectangleF rect, FontInfo font, string text, TextAlignment alignment, SolidColorBrush brush)
+        {
             TextFormat textFormat;
-            if(!m_formatMap.TryGetValue(font, out textFormat)) { 
+            if (!m_formatMap.TryGetValue(font, out textFormat))
+            {
                 using (var f = new SharpDX.DirectWrite.Factory())
                 {
                     textFormat = new TextFormat(f, font.Font.FamilylName, font.Size);
@@ -270,7 +332,7 @@ namespace RectUI.Graphics
             m_device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
-        #region Scene
+#region Scene
         D3D11RenderTarget m_renderTarget;
         Scene m_scene;
         RectangleF m_rect;
@@ -317,6 +379,6 @@ namespace RectUI.Graphics
             var bitmap = GetOrCreateBitmap(m_device, m_renderTarget);
             m_device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
-        #endregion
+#endregion
     }
 }
