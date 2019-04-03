@@ -63,15 +63,17 @@ namespace RectUI.Widgets
             }
 
             rpc.Text(ID, Rect.ToSharpDX(),
-                GetTextColor(isActive, isHover),
-                Style.GetFont(FontSize),
                 Content.ToString(),
-                new TextAlignment
+                GetTextColor(isActive, isHover),
+                new TextInfo
                 {
-                    HorizontalAlignment = TextHorizontalAlignment.Left,
-                    VerticalAlignment = TextVerticalAlignment.Center,
-                }
-                );
+                    Font = Style.GetFont(FontSize),
+                    Alignment = new TextAlignment
+                    {
+                        HorizontalAlignment = TextHorizontalAlignment.Left,
+                        VerticalAlignment = TextVerticalAlignment.Center,
+                    }
+                });
         }
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {

@@ -553,6 +553,11 @@ namespace RectUI.JSON
                         c, o, validationResults);
 
                     // Serialize fields
+                    if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        throw new NotImplementedException();
+                    }
+
                     f.BeginMap(objectValidator.Properties.Count());
                     foreach (var property in objectValidator.Properties)
                     {

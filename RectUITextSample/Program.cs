@@ -21,7 +21,7 @@ namespace RectUITextSample
                 FontSize = 36,
             };
 
-            var list = new ListRegion<FontFaceName>(fs);
+            var list = new ListRegion<FontInfo>(fs);
 
             list.SelectionChanged += () =>
             {

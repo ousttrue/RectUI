@@ -39,6 +39,18 @@ namespace RectUI.JSON
             f.EndList();
         }
 
+        public static void SerializeNullable<T>(this IFormatter f, Nullable<T> nullable) where T : struct
+        {
+            if (nullable.HasValue)
+            {
+                f.Serialize(nullable.Value);
+            }
+            else
+            {
+                f.Null();
+            }
+        }
+
         public static void SerializeObject(this IFormatter f, object value)
         {
             if (value == null)
@@ -136,6 +148,15 @@ namespace RectUI.JSON
                 {
                     var g = FormatterExtensionsSerializer.GetMethod("SerializeArray");
                     var mi = g.MakeGenericMethod(ienumerable.GetGenericArguments());
+                    return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
+                }
+            }
+
+            {
+                // nullable
+                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)){
+                    var g = FormatterExtensionsSerializer.GetMethod(nameof(FormatterExtensionsSerializer.SerializeNullable));
+                    var mi = g.MakeGenericMethod(t.GetGenericArguments());
                     return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
                 }
             }

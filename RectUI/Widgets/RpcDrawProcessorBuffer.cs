@@ -45,9 +45,9 @@ namespace RectUI.Widgets
             Call(nameof(Grid), id, rect, fill, border, grid);
         }
 
-        public void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment)
+        public void Text(uint id, RectangleF rect, string text, Color4? color, TextInfo info)
         {
-            Call(nameof(Text), id, rect, color, font, text, alignment);
+            Call(nameof(Text), id, rect, text, color, info);
         }
 
         public void CameraMatrix(uint id, RectangleF rect, Matrix m)

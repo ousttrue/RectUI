@@ -55,7 +55,7 @@ namespace RectUI.Widgets
             }
         }
 
-        public FontFaceName Font
+        public FontInfo Font
         {
             get;
             set;
@@ -65,11 +65,7 @@ namespace RectUI.Widgets
         { 
             if (!string.IsNullOrEmpty(Font.FamilylName))
             {
-                return new FontInfo
-                {
-                    Font = Font,
-                    Size = size,
-                };
+                return Font.Sized(size);
             }
             else
             {
@@ -79,7 +75,7 @@ namespace RectUI.Widgets
 
         static Style s_default= new Style(null)
         {
-            Font = FontFaceName.MSGothic,
+            Font = FontInfo.MSGothic,
             m_colorMap = new Dictionary<StyleColorKey, Color4>
                         {
                             //{StyleColorKey.PanelBorder, new Color4(45/255f, 45/255f, 48/255f, 1) },

@@ -3,18 +3,29 @@
 
 namespace RectUI.Graphics
 {
-    public struct FontFaceName
+    public struct FontInfo
     {
-        public string FamilylName;
-        public string FaceName;
+        public readonly string FamilylName;
+        public readonly string FaceName;
+        public readonly float Size;
 
-        public FontFaceName(string family, string face)
+        public FontInfo(string family, string face):this(family, face, float.NaN)
+        {
+        }
+
+        public FontInfo(string family, string face, float size)
         {
             FamilylName = family;
             FaceName = face;
+            Size = size;
         }
 
-        public static FontFaceName MSGothic => new FontFaceName("MS Gothic", "Regular");
+        public FontInfo Sized(float size)
+        {
+            return new FontInfo(FamilylName, FaceName, size);
+        }
+
+        public static FontInfo MSGothic => new FontInfo("MS Gothic", "Regular");
 
         public override string ToString()
         {
@@ -22,10 +33,10 @@ namespace RectUI.Graphics
         }
     }
 
-    public struct FontInfo
+    public struct GridInfo
     {
-        public FontFaceName Font;
-        public float Size;
+        public float CellSize;
+        public float LineWidth;
     }
 
     public enum TextHorizontalAlignment
@@ -48,6 +59,13 @@ namespace RectUI.Graphics
         public TextVerticalAlignment VerticalAlignment;
     }
 
+    public struct TextInfo
+    {
+        public FontInfo Font;
+        //public GridInfo? Grid;
+        public TextAlignment Alignment;
+    }
+
     public struct Padding
     {
         public float Left;
@@ -59,18 +77,12 @@ namespace RectUI.Graphics
         public float Vertical => Top + Bottom;
     }
 
-    public struct GridInfo
-    {
-        public float CellSize;
-        public float LineWidth;
-    }
-
     public interface IDrawProcessor
     {
         void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
         void Grid(uint id, RectangleF rect, Color4? fill, Color4? border, GridInfo grid);
         void FileIcon(uint id, RectangleF rect, string path);
-        void Text(uint id, RectangleF rect, Color4? color, FontInfo font, string text, TextAlignment alignment);
+        void Text(uint id, RectangleF rect, string text, Color4? color, TextInfo font);
 
         void CameraMatrix(uint id, RectangleF rect, Matrix m);
     }

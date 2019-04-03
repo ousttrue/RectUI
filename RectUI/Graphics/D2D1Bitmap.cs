@@ -36,13 +36,13 @@ namespace RectUI.Graphics
             }
             m_rtBitmapMap.Clear();
 
-            foreach(var kv in m_formatMap)
-            { 
+            foreach (var kv in m_formatMap)
+            {
                 kv.Value.Dispose();
             }
             m_formatMap.Clear();
 
-            foreach(var kv in m_faceMap)
+            foreach (var kv in m_faceMap)
             {
                 kv.Value.Dispose();
             }
@@ -166,20 +166,20 @@ namespace RectUI.Graphics
                     gridBrush = new SolidColorBrush(m_device.D2DDeviceContext, gridColor.Value);
                     m_brushMap.Add(gridColor.Value, gridBrush);
                 }
-                for(var y=rect.Y; y<=(rect.Y+rect.Height); y+=grid.CellSize)
+                for (var y = rect.Y; y <= (rect.Y + rect.Height); y += grid.CellSize)
                 {
-                    m_device.D2DDeviceContext.DrawLine(new Vector2(rect.X, y), new Vector2(rect.X+rect.Width, y), gridBrush, grid.LineWidth);
+                    m_device.D2DDeviceContext.DrawLine(new Vector2(rect.X, y), new Vector2(rect.X + rect.Width, y), gridBrush, grid.LineWidth);
                 }
-                for(var x = rect.X; x<=(rect.X+rect.Width); x+=grid.CellSize)
+                for (var x = rect.X; x <= (rect.X + rect.Width); x += grid.CellSize)
                 {
                     m_device.D2DDeviceContext.DrawLine(new Vector2(x, rect.Y), new Vector2(x, rect.Y + rect.Height), gridBrush, grid.LineWidth);
                 }
             }
         }
 
-        public void Text(uint id, RectangleF rect, Color4? textColor, FontInfo font, string text, TextAlignment alignment)
+        public void Text(uint id, RectangleF rect, string text, Color4? color, TextInfo info)
         {
-            if (!textColor.HasValue)
+            if (!color.HasValue)
             {
                 return;
             }
@@ -189,17 +189,20 @@ namespace RectUI.Graphics
             }
 
             SolidColorBrush brush;
-            if (!m_brushMap.TryGetValue(textColor.Value, out brush))
+            if (!m_brushMap.TryGetValue(color.Value, out brush))
             {
-                brush = new SolidColorBrush(m_device.D2DDeviceContext, textColor.Value);
-                m_brushMap.Add(textColor.Value, brush);
+                brush = new SolidColorBrush(m_device.D2DDeviceContext, color.Value);
+                m_brushMap.Add(color.Value, brush);
             }
 
-#if false
-            TextByFormat(rect, font, text, alignment, brush);
-#else
-            TextByGlyph(rect, font, text, alignment, brush);
-#endif
+            if (false)
+            {
+                TextByFormat(rect, text, info, brush);
+            }
+            else
+            {
+                TextByGlyph(rect, text, info, brush);
+            }
         }
 
         IEnumerable<int> EnumCodePoints(string input)
@@ -210,16 +213,16 @@ namespace RectUI.Graphics
             }
         }
 
-        private void TextByGlyph(RectangleF rect, FontInfo fontInfo, string text, TextAlignment alignment, SolidColorBrush brush)
+        private void TextByGlyph(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
             FontFace fontFace;
-            if(!m_faceMap.TryGetValue(fontInfo, out fontFace))
+            if (!m_faceMap.TryGetValue(info.Font, out fontFace))
             {
                 using (var f = new SharpDX.DirectWrite.Factory())
-                using(var collection = f.GetSystemFontCollection(false))
+                using (var collection = f.GetSystemFontCollection(false))
                 {
                     int familyIndex;
-                    if(!collection.FindFamilyName(fontInfo.Font.FamilylName, out familyIndex))
+                    if (!collection.FindFamilyName(info.Font.FamilylName, out familyIndex))
                     {
                         return;
                     }
@@ -228,7 +231,7 @@ namespace RectUI.Graphics
                     using (var font = family.GetFont(0))
                     {
                         fontFace = new FontFace(font);
-                        m_faceMap.Add(fontInfo, fontFace);
+                        m_faceMap.Add(info.Font, fontFace);
                     }
                 }
             }
@@ -236,27 +239,34 @@ namespace RectUI.Graphics
             var codePoints = EnumCodePoints(text).ToArray();
             var indices = fontFace.GetGlyphIndices(codePoints);
 
+            // Get glyph
+            var metrices = fontFace.GetDesignGlyphMetrics(indices, false);
+
+            // draw
             var glyphRun = new GlyphRun
             {
                 FontFace = fontFace,
                 Indices = indices,
-                FontSize = fontInfo.Size,               
+                FontSize = info.Font.Size,
             };
-
-            m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, fontInfo.Size), glyphRun, brush, MeasuringMode.Natural);
+            new GlyphRunDescription
+            {
+                
+            };
+            m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, info.Font.Size), glyphRun, brush, MeasuringMode.Natural);
         }
 
-        private void TextByFormat(RectangleF rect, FontInfo font, string text, TextAlignment alignment, SolidColorBrush brush)
+        private void TextByFormat(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
             TextFormat textFormat;
-            if (!m_formatMap.TryGetValue(font, out textFormat))
+            if (!m_formatMap.TryGetValue(info.Font, out textFormat))
             {
                 using (var f = new SharpDX.DirectWrite.Factory())
                 {
-                    textFormat = new TextFormat(f, font.Font.FamilylName, font.Size);
+                    textFormat = new TextFormat(f, info.Font.FamilylName, info.Font.Size);
                 }
 
-                switch (alignment.HorizontalAlignment)
+                switch (info.Alignment.HorizontalAlignment)
                 {
                     case TextHorizontalAlignment.Left:
                         textFormat.TextAlignment = SharpDX.DirectWrite.TextAlignment.Leading;
@@ -271,7 +281,7 @@ namespace RectUI.Graphics
                         break;
                 }
 
-                switch (alignment.VerticalAlignment)
+                switch (info.Alignment.VerticalAlignment)
                 {
                     case TextVerticalAlignment.Top:
                         textFormat.ParagraphAlignment = ParagraphAlignment.Near;
@@ -332,7 +342,7 @@ namespace RectUI.Graphics
             m_device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
-#region Scene
+        #region Scene
         D3D11RenderTarget m_renderTarget;
         Scene m_scene;
         RectangleF m_rect;
@@ -379,6 +389,6 @@ namespace RectUI.Graphics
             var bitmap = GetOrCreateBitmap(m_device, m_renderTarget);
             m_device.D2DDeviceContext.DrawBitmap(bitmap, rect, 1.0f, BitmapInterpolationMode.Linear);
         }
-#endregion
+        #endregion
     }
 }

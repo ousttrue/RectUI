@@ -53,14 +53,18 @@ namespace RectUI.Widgets
             if (!string.IsNullOrEmpty(Label))
             {
                 rpc.Text(ID, Rect.ToSharpDX(),
-                    GetTextColor(isActive, isHover),
-                    Style.GetFont(FontSize),
                     Label,
-                    new TextAlignment
+                    GetTextColor(isActive, isHover),
+                    new TextInfo
                     {
-                        HorizontalAlignment = TextHorizontalAlignment.Center,
-                        VerticalAlignment = TextVerticalAlignment.Center,
-                    });
+                        Font = Style.GetFont(FontSize),                        
+                        Alignment = new TextAlignment
+                        {
+                            HorizontalAlignment = TextHorizontalAlignment.Center,
+                            VerticalAlignment = TextVerticalAlignment.Center,
+                        }
+                    }
+                    );
             }
         }
 

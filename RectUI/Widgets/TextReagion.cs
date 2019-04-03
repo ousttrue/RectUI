@@ -35,10 +35,13 @@ namespace RectUI.Widgets
             if (!string.IsNullOrEmpty(Text))
             {
                 rpc.Text(ID, Rect.ToSharpDX(),
-                    GetTextColor(isActive, isHover),
-                    Style.GetFont(FontSize),
                     Text,
-                    Alignment
+                    GetTextColor(isActive, isHover),
+                    new TextInfo
+                    {
+                        Font = Style.GetFont(FontSize),
+                        Alignment = Alignment
+                    }
                     );
             }
         }

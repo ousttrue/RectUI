@@ -51,7 +51,7 @@ namespace RectUI.Widgets
 
         public void GoUp()
         {
-            if(Current!=null && Current.Parent != null)
+            if (Current != null && Current.Parent != null)
             {
                 Current = Current.Parent;
             }
@@ -109,17 +109,16 @@ namespace RectUI.Widgets
                 Rect.Height - m_padding.Vertical
                 );
             rpc.Text(ID, rect,
-                color,
-                new FontInfo
-                {
-                    Font = FontFaceName.MSGothic,
-                    Size = Rect.Height - m_padding.Top - m_padding.Bottom,
-                },
                 Content.Name,
-                new TextAlignment
+                color,
+                new TextInfo
                 {
-                    HorizontalAlignment = TextHorizontalAlignment.Left,
-                    VerticalAlignment = TextVerticalAlignment.Center,
+                    Font = FontInfo.MSGothic.Sized(Rect.Height - m_padding.Top - m_padding.Bottom),
+                    Alignment = new TextAlignment
+                    {
+                        HorizontalAlignment = TextHorizontalAlignment.Left,
+                        VerticalAlignment = TextVerticalAlignment.Center,
+                    }
                 }
             );
         }

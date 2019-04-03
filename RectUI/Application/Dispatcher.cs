@@ -9,35 +9,6 @@ namespace RectUI.Application
 {
     class Dispatcher
     {
-        static Dispatcher()
-        {
-            FormatterExtensionsSerializer.SetCustomSerializer<Color4?>((f, c) =>
-            {
-                if (c.HasValue)
-                {
-                    f.Serialize(c.Value);
-                }
-                else
-                {
-                    f.Null();
-                }
-            });
-
-            GenericDeserializer<MsgPackValue, Color4?>.SetCustomDeserializer(parsed =>
-            {
-                if (!parsed.IsNull())
-                {
-                    var c = default(Color4);
-                    parsed.Deserialize(ref c);
-                    return c;
-                }
-                else
-                {
-                    return default(Color4?);
-                }
-            });
-        }
-
         delegate void NotifyFunc(ListTreeNode<MsgPackValue> args);
         Dictionary<Utf8String, NotifyFunc> m_map = new Dictionary<Utf8String, NotifyFunc>();
 

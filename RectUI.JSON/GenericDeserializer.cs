@@ -40,6 +40,20 @@ namespace RectUI.JSON
             return u;
         }
 
+        public static Nullable<V> GenericNullableDeserializer<V>(ListTreeNode<T> parsed) where V : struct
+        {
+            if (!parsed.IsNull())
+            {
+                var c = default(V);
+                parsed.Deserialize(ref c);
+                return c;
+            }
+            else
+            {
+                return default(V);
+            }
+        }
+
         public static object DefaultDictionaryDeserializer(ListTreeNode<T> s)
         {
             switch (s.Value.ValueType)
@@ -175,6 +189,14 @@ namespace RectUI.JSON
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("DictionaryDeserializer",
                     BindingFlags.Static | BindingFlags.Public);
                     var g = mi.MakeGenericMethod(target.GetGenericArguments()[1]);
+                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
+                }
+
+                if (target.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    var mi = typeof(GenericDeserializer<T, U>).GetMethod("GenericNullableDeserializer",
+                        BindingFlags.Static | BindingFlags.Public);
+                    var g = mi.MakeGenericMethod(target.GetGenericArguments());
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(g);
                 }
             }

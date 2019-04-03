@@ -77,7 +77,7 @@ namespace RectUI.Application
 
         public void Draw()
         {
-            foreach(var kv in m_windowStateMap)
+            foreach (var kv in m_windowStateMap)
             {
                 kv.Value.Draw();
             }

@@ -6,17 +6,17 @@ using System.Linq;
 
 namespace RectUI.Widgets
 {
-    public class FontSource : IListSource<FontFaceName>
+    public class FontSource : IListSource<FontInfo>
     {
-        List<FontFaceName> m_list;
+        List<FontInfo> m_list;
 
-        public FontFaceName this[int index] => m_list[index];
+        public FontInfo this[int index] => m_list[index];
 
         public int Count => m_list.Count;
 
         public event Action Updated;
 
-        IEnumerable<FontFaceName> EnumerateFaces()
+        IEnumerable<FontInfo> EnumerateFaces()
         {
             using (var factory = new Factory())
             {
@@ -35,7 +35,7 @@ namespace RectUI.Widgets
                                 using (var faceNames = font.FaceNames)
                                 {
                                     var faceName = font.FaceNames.GetString(0);
-                                    yield return new FontFaceName(fontFamilyName, faceName);
+                                    yield return new FontInfo(fontFamilyName, faceName);
                                 }
                                 break;
                             }
@@ -50,9 +50,9 @@ namespace RectUI.Widgets
             m_list = EnumerateFaces().ToList();
         }
 
-        public ListItemRegion<FontFaceName> CreateItem()
+        public ListItemRegion<FontInfo> CreateItem()
         {
-            return new ListItemRegion<FontFaceName>();
+            return new ListItemRegion<FontInfo>();
         }
     }
 }
