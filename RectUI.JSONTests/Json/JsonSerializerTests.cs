@@ -1,4 +1,4 @@
-#pragma warning disable 0649
+﻿#pragma warning disable 0649
 using System;
 using System.Linq;
 using NUnit.Framework;
@@ -26,20 +26,6 @@ namespace RectUI.JSON
         {
             Hoge,
             Fuga,
-        }
-
-        struct EnumTest
-        {
-            public HogeFuga EnumDefault;
-
-            [JsonSchema(EnumSerializationType =EnumSerializationType.AsInt)]
-            public HogeFuga EnumAsInt;
-
-            [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
-            public HogeFuga EnumAsString;
-
-            [JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]
-            public HogeFuga EnumAsLowerString;
         }
 
         #region Serializer
@@ -83,9 +69,27 @@ namespace RectUI.JSON
 
             SerializeValue(HogeFuga.Fuga, "1");
 
-            SerializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
-
             SerializeValue((object)new Point { X = 1 }, "{\"X\":1,\"Y\":0}");
+        }
+
+        struct EnumTest
+        {
+            public HogeFuga EnumDefault;
+
+            [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]
+            public HogeFuga EnumAsInt;
+
+            [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
+            public HogeFuga EnumAsString;
+
+            [JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]
+            public HogeFuga EnumAsLowerString;
+        }
+
+        [Test]
+        public void EnumAttribute()
+        {
+            SerializeValue(new EnumTest(), "{\"EnumDefault\":0,\"EnumAsInt\":0,\"EnumAsString\":\"Hoge\",\"EnumAsLowerString\":\"hoge\"}");
         }
 
         [Test]

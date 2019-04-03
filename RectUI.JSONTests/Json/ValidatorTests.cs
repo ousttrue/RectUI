@@ -5,6 +5,7 @@ namespace RectUI.JSON
 {
     public class ValidatorTests
     {
+#if false
         [Test]
         public void IntValidator()
         {
@@ -437,5 +438,6 @@ namespace RectUI.JSON
                 Assert.True(c.IsEmpty());
             }
         }
+#endif
     }
 }

@@ -62,7 +62,7 @@ namespace RectUI.Graphics
     public struct TextInfo
     {
         public FontInfo Font;
-        //public GridInfo? Grid;
+        public GridInfo? Grid;
         public TextAlignment Alignment;
     }
 

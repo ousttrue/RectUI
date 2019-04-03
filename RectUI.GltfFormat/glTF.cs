@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using RectUI.JSON;
 
 
@@ -565,7 +566,9 @@ namespace UniGLTF
             string json;
             if (UseUniJSONSerializer)
             {
-                json = JsonSchema.FromType(GetType()).Serialize(this);
+                var f = new JsonFormatter();
+                f.Serialize(this);
+                json = Encoding.UTF8.GetString(f.GetStoreBytes().ToArray());
             }
             else
             {

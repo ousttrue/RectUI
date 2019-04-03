@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 
@@ -119,39 +120,48 @@ namespace RectUI.JSON
             };
         }
 
+        /// <summary>
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        static bool IsPrimitiveDeserializer<U>(MethodInfo x)
+        {
+            var u = typeof(U);
+            if (x.Name != $"Get{u.Name}")
+            {
+                /// 名前が違う
+                return false;
+            }
+
+            var parameters = x.GetParameters();
+            if (parameters.Length != 0)
+            {
+                /// 引数がある
+                return false;
+            }
+
+            if (x.ReturnType != typeof(U))
+            {
+                /// 返り値がU型でない
+                return false;
+            }
+
+            return true;
+        }
+
         static Func<ListTreeNode<T>, U> GetDeserializer()
         {
             // primitive
             {
-                var mi = typeof(ListTreeNode<T>).GetMethods().FirstOrDefault(x =>
-                {
-                    if (!x.Name.StartsWith("Get"))
-                    {
-                        return false;
-                    }
-
-                    if (!x.Name.EndsWith(typeof(U).Name))
-                    {
-                        return false;
-                    }
-
-                    var parameters = x.GetParameters();
-                    if (parameters.Length != 0)
-                    {
-                        return false;
-                    }
-
-                    if (x.ReturnType != typeof(U))
-                    {
-                        return false;
-                    }
-
-                    return true;
-                });
-
+                var mi = typeof(T).GetMethods()
+                    .Where(x => x.Name.StartsWith("Get"))
+                    .FirstOrDefault(IsPrimitiveDeserializer<U>)
+                    ;
                 if (mi != null)
                 {
-                    return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(mi);
+                    var getter = GenericInvokeCallFactory.OpenFunc<T, U>(mi);
+                    return s => getter(s.Value);
                 }
             }
 
@@ -177,7 +187,7 @@ namespace RectUI.JSON
 
                 if (target == typeof(Dictionary<string, object>))
                 {
-                    
+
                     var mi = typeof(GenericDeserializer<T, U>).GetMethod("DefaultDictionaryDeserializer",
                     BindingFlags.Static | BindingFlags.Public);
                     return GenericInvokeCallFactory.StaticFunc<ListTreeNode<T>, U>(mi);
@@ -201,59 +211,55 @@ namespace RectUI.JSON
                 }
             }
 
+            if (target.IsEnum)
             {
-                var schema = JsonSchema.FromType<U>();
+                var value = Expression.Parameter(typeof(int), "value");
+                var cast = Expression.Convert(value, target);
+                var func = Expression.Lambda(cast, value);
+                var compiled = (Func<int, U>)func.Compile();
                 return s =>
                 {
-                    var t = default(U);
-                    schema.Validator.Deserialize(s, ref t);
-                    return t;
+                    if (s.IsString())
+                    {
+                        return (U)Enum.Parse(typeof(U), s.GetString(), true);
+                    }
+                    else
+                    {
+                        return compiled(s.GetInt32());
+                    }
                 };
             }
 
-#if false
-                if (target.IsEnum)
+            // reflection
+            {
+                var fields = target.GetFields(BindingFlags.Instance | BindingFlags.Public);
+                var fieldDeserializers = fields.ToDictionary(x => Utf8String.From(x.Name), x =>
                 {
-                    var value = Expression.Parameter(typeof(int), "value");
-                    var cast = Expression.Convert(value, target);
-                    var func = Expression.Lambda(cast, value);
-                    var compiled = (Func<int, T>)func.Compile();
-                    return s =>
-                    {
-                        return compiled(s.GetInt32());
-                    };
-                }
+                    var mi = typeof(GenericDeserializer<T, U>).GetMethod("GetFieldDeserializer",
+                        BindingFlags.Static | BindingFlags.NonPublic);
+                    var g = mi.MakeGenericMethod(x.FieldType);
+                    return (FieldSetter)g.Invoke(null, new object[] { x });
+                });
 
+                return s =>
                 {
-                    var fields = target.GetFields(BindingFlags.Instance | BindingFlags.Public);
-                    var fieldDeserializers = fields.ToDictionary(x => Utf8String.From(x.Name), x =>
+                    if (!s.IsMap())
                     {
-                        var mi = typeof(GenericDeserializer<S, T>).GetMethod("GetFieldDeserializer",
-                            BindingFlags.Static|BindingFlags.NonPublic);
-                        var g = mi.MakeGenericMethod(x.FieldType);
-                        return (FieldSetter)g.Invoke(null, new object[] { x });
-                    });
-                    
-                    return (S s) =>
-                    {
-                        if (!s.IsMap())
-                        {
-                            throw new ArgumentException(s.ValueType.ToString());
-                        }
+                        throw new ArgumentException(s.Value.ValueType.ToString());
+                    }
 
-                        var t = (object)default(GenericCreator<S, T>).Create(s);
-                        foreach(var kv in s.ObjectItems())
+                    var t = (object)default(GenericConstructor<T, U>).Create(s);
+                    foreach (var kv in s.ObjectItems())
+                    {
+                        FieldSetter setter;
+                        if (fieldDeserializers.TryGetValue(kv.Key.GetUtf8String(), out setter))
                         {
-                            FieldSetter setter;
-                            if (fieldDeserializers.TryGetValue(kv.Key, out setter))
-                            {
-                                setter(kv.Value, t);
-                            }
+                            setter(kv.Value, t);
                         }
-                        return (T)t;
-                    };
-                }
-#endif
+                    }
+                    return (U)t;
+                };
+            }
         }
 
         public delegate U Deserializer(ListTreeNode<T> node);

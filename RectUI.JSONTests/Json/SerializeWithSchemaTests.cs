@@ -14,6 +14,7 @@ namespace RectUI.JSON
             public int Y;
         }
 
+#if false
         [Test]
         public void TestCheckConstraints()
         {
@@ -196,5 +197,6 @@ namespace RectUI.JSON
 
             Assert.AreEqual(expected, actual);
         }
+#endif
     }
 }

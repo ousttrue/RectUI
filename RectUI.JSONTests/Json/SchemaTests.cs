@@ -21,6 +21,7 @@ namespace RectUI.JSON
             public int age;
         }
 
+#if false
         [Test]
         public void CreateFromClass()
         {
@@ -146,5 +147,6 @@ namespace RectUI.JSON
 
             Assert.AreEqual(fromJson, fromType);
         }
+#endif
     }
 }

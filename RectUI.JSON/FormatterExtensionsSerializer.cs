@@ -154,7 +154,8 @@ namespace RectUI.JSON
 
             {
                 // nullable
-                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)){
+                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
                     var g = FormatterExtensionsSerializer.GetMethod(nameof(FormatterExtensionsSerializer.SerializeNullable));
                     var mi = g.MakeGenericMethod(t.GetGenericArguments());
                     return GenericInvokeCallFactory.StaticAction<IFormatter, T>(mi);
@@ -162,20 +163,33 @@ namespace RectUI.JSON
             }
 
             {
-                // reflection
-                var schema = JsonSchema.FromType<T>();
-                return (IFormatter f, T value) =>
+                if (t.IsEnum)
                 {
-                    var c = new JsonSchemaValidationContext(value)
+                    return (f, src) =>
                     {
-                        EnableDiagnosisForNotRequiredFields = true
+                        //f.Value(src.ToString());
+                        f.Value(GenericCast<T, Int32>.Cast(src));
                     };
-                    schema.Serialize(f, value, c);
-                };
+                }
             }
 
+            {
+                // reflection
+                var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+                var fieldSerializers = fields.ToDictionary(x => Utf8String.From(x.Name), x => x);
 
-            //throw new NotImplementedException();
+                return (f, src) =>
+                {
+                    f.BeginMap(fields.Length);
+                    foreach (var kv in fieldSerializers)
+                    {
+                        var value = kv.Value.GetValue(src);
+                        f.Key(kv.Key);
+                        f.Serialize(value);
+                    }
+                    f.EndMap();
+                };
+            }
         }
 
         static Serializer s_serializer;
