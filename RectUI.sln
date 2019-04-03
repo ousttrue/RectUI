@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUI.GltfFormat", "RectUI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUITextSample", "RectUITextSample\RectUITextSample.csproj", "{22F5C11C-6CA3-459E-B36D-B04572BE63ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectUI.JSONTests", "RectUI.JSONTests\RectUI.JSONTests.csproj", "{B946FAE6-FA0E-40C3-BCC2-803CF3040F0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{22F5C11C-6CA3-459E-B36D-B04572BE63ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22F5C11C-6CA3-459E-B36D-B04572BE63ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22F5C11C-6CA3-459E-B36D-B04572BE63ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B946FAE6-FA0E-40C3-BCC2-803CF3040F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B946FAE6-FA0E-40C3-BCC2-803CF3040F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B946FAE6-FA0E-40C3-BCC2-803CF3040F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B946FAE6-FA0E-40C3-BCC2-803CF3040F0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

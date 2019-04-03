@@ -27,7 +27,7 @@ namespace RectUISample
             {
                 app.Bind(Window.Create(), BuildUI());
 
-                MessageLoop.Run();
+                MessageLoop.Run(app.Draw, 30);
             }
         }
     }
