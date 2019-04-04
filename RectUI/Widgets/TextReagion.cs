@@ -27,11 +27,6 @@ namespace RectUI.Widgets
 
         public override void GetDrawCommands(IDrawProcessor rpc, bool isActive, bool isHover)
         {
-            rpc.Grid(ID, Rect.ToSharpDX(),
-                GetFillColor(isActive, isHover),
-                GridColor,
-                Grid);
-
             if (!string.IsNullOrEmpty(Text))
             {
                 rpc.Text(ID, Rect.ToSharpDX(),
@@ -40,6 +35,7 @@ namespace RectUI.Widgets
                     new TextInfo
                     {
                         Font = Style.GetFont(FontSize),
+                        Grid= Grid,
                         Alignment = Alignment
                     }
                     );

@@ -196,17 +196,52 @@ namespace RectUI.JSON
             FieldInfo m_fi;
             Utf8String m_key;
             object m_value;
+            EnumSerializationAttribute m_enumAttr;
 
             public FieldSerializer(FieldInfo fi)
             {
                 m_fi = fi;
                 m_key = Utf8String.From(m_fi.Name);
+
+                if (fi.FieldType.IsEnum)
+                {
+                    m_enumAttr = fi.GetCustomAttribute<EnumSerializationAttribute>();
+                }
             }
 
             public bool IsValid(T arg)
             {
                 m_value = m_fi.GetValue(arg);
-                return m_value != null;
+                if(m_value == null)
+                {
+                    return false;
+                }
+
+                if (m_enumAttr != null)
+                {
+                    switch(m_enumAttr.EnumSerializationType)
+                    {
+                        case EnumSerializationType.AsInt:
+                            break;
+
+                        case EnumSerializationType.AsString:
+                            m_value = m_value.ToString();
+                            break;
+
+                        case EnumSerializationType.AsLowerString:
+                            m_value = m_value.ToString().ToLower();
+                            break;
+
+                        case EnumSerializationType.AsUpperString:
+                            m_value = m_value.ToString().ToUpper();
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+
+                return true;
             }
 
             public void Serialize(IFormatter f)

@@ -122,10 +122,10 @@ namespace RectUI.JSON
 
         /// <summary>
         /// </summary>
-        /// <typeparam name="U"></typeparam>
+        /// <typeparam name="V"></typeparam>
         /// <param name="x"></param>
         /// <returns></returns>
-        static bool IsPrimitiveDeserializer<U>(MethodInfo x)
+        static bool IsPrimitiveDeserializer(MethodInfo x)
         {
             var u = typeof(U);
             if (x.Name != $"Get{u.Name}")
@@ -156,7 +156,7 @@ namespace RectUI.JSON
             {
                 var mi = typeof(T).GetMethods()
                     .Where(x => x.Name.StartsWith("Get"))
-                    .FirstOrDefault(IsPrimitiveDeserializer<U>)
+                    .FirstOrDefault(IsPrimitiveDeserializer)
                     ;
                 if (mi != null)
                 {

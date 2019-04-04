@@ -80,7 +80,6 @@ namespace RectUI.Graphics
     public interface IDrawProcessor
     {
         void Rectangle(uint id, RectangleF rect, Color4? fill, Color4? border);
-        void Grid(uint id, RectangleF rect, Color4? fill, Color4? border, GridInfo grid);
         void FileIcon(uint id, RectangleF rect, string path);
         void Text(uint id, RectangleF rect, string text, Color4? color, TextInfo font);
 
