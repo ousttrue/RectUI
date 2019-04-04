@@ -76,13 +76,13 @@ namespace RectUI.JSON
         {
             public HogeFuga EnumDefault;
 
-            [JsonSchema(EnumSerializationType = EnumSerializationType.AsInt)]
+            [EnumSerialization(EnumSerializationType.AsInt)]
             public HogeFuga EnumAsInt;
 
-            [JsonSchema(EnumSerializationType = EnumSerializationType.AsString)]
+            [EnumSerialization(EnumSerializationType.AsString)]
             public HogeFuga EnumAsString;
 
-            [JsonSchema(EnumSerializationType = EnumSerializationType.AsLowerString)]
+            [EnumSerialization(EnumSerializationType.AsLowerString)]
             public HogeFuga EnumAsLowerString;
         }
 

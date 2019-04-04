@@ -176,19 +176,48 @@ namespace RectUI.JSON
             {
                 // reflection
                 var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
-                var fieldSerializers = fields.ToDictionary(x => Utf8String.From(x.Name), x => x);
+                var fieldSerializers = fields.Select(x => new FieldSerializer(x)).ToArray();
 
                 return (f, src) =>
                 {
-                    f.BeginMap(fields.Length);
-                    foreach (var kv in fieldSerializers)
+                    var count = fieldSerializers.Count(x => x.IsValid(src));
+                    f.BeginMap(count);
+                    foreach (var serializer in fieldSerializers)
                     {
-                        var value = kv.Value.GetValue(src);
-                        f.Key(kv.Key);
-                        f.Serialize(value);
+                        serializer.Serialize(f);
                     }
                     f.EndMap();
                 };
+            }
+        }
+
+        class FieldSerializer
+        {
+            FieldInfo m_fi;
+            Utf8String m_key;
+            object m_value;
+
+            public FieldSerializer(FieldInfo fi)
+            {
+                m_fi = fi;
+                m_key = Utf8String.From(m_fi.Name);
+            }
+
+            public bool IsValid(T arg)
+            {
+                m_value = m_fi.GetValue(arg);
+                return m_value != null;
+            }
+
+            public void Serialize(IFormatter f)
+            {
+                if (m_value == null)
+                {
+                    // skip null
+                    return;
+                }
+                f.Key(m_key);
+                f.Serialize(m_value);
             }
         }
 

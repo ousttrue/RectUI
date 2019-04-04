@@ -54,14 +54,11 @@
     <Compile Include="Extensions\ParserExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FormatterExtensions.cs" />
-    <Compile Include="FormatterExtensionsSerializer.cs" />
     <Compile Include="GenericCallUtility\GenericExpressionCallFactory.cs" />
     <Compile Include="GenericCallUtility\GenericExpressionCallFactory.g.cs" />
     <Compile Include="GenericCallUtility\GenericInvokeCallFactory.cs" />
     <Compile Include="GenericCallUtility\GenericInvokeCallFactory.g.cs" />
     <Compile Include="GenericCast.cs" />
-    <Compile Include="GenericConstructor.cs" />
-    <Compile Include="GenericDeserializer.cs" />
     <Compile Include="IFileSystemAccessor.cs" />
     <Compile Include="IFormatter.cs" />
     <Compile Include="IStore\BytesStore.cs" />
@@ -94,6 +91,10 @@
     <Compile Include="MsgPack\MsgPackValue.cs" />
     <Compile Include="Rpc\IRpc.cs" />
     <Compile Include="Rpc\RpcDispatcher.cs" />
+    <Compile Include="Serialization\EnumSerializationAttribute.cs" />
+    <Compile Include="Serialization\GenericConstructor.cs" />
+    <Compile Include="Serialization\GenericDeserializer.cs" />
+    <Compile Include="Serialization\GenericSerializer.cs" />
     <Compile Include="Toml\TomlParser.cs" />
     <Compile Include="Toml\TomlValue.cs" />
     <Compile Include="Utf8String\IUtf8String.cs" />
