@@ -188,14 +188,9 @@ namespace RectUI.Graphics
                 return;
             }
 
-            SolidColorBrush brush;
-            if (!m_brushMap.TryGetValue(color.Value, out brush))
-            {
-                brush = new SolidColorBrush(m_device.D2DDeviceContext, color.Value);
-                m_brushMap.Add(color.Value, brush);
-            }
+            var brush = GetOrCreateBrush(color.Value);
 
-            if (false)
+            if (true)
             {
                 TextByFormat(rect, text, info, brush);
             }
@@ -205,6 +200,18 @@ namespace RectUI.Graphics
             }
         }
 
+        private SolidColorBrush GetOrCreateBrush(Color4 color)
+        {
+            SolidColorBrush brush;
+            if (!m_brushMap.TryGetValue(color, out brush))
+            {
+                brush = new SolidColorBrush(m_device.D2DDeviceContext, color);
+                m_brushMap.Add(color, brush);
+            }
+
+            return brush;
+        }
+
         IEnumerable<int> EnumCodePoints(string input)
         {
             for (var i = 0; i < input.Length; i += char.IsSurrogatePair(input, i) ? 2 : 1)
@@ -212,6 +219,9 @@ namespace RectUI.Graphics
                 yield return char.ConvertToUtf32(input, i);
             }
         }
+
+        const int DWRITE_E_NOCOLORLOR = unchecked((int)0x8898500C);
+        
 
         private void TextByGlyph(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
@@ -249,12 +259,46 @@ namespace RectUI.Graphics
                 Indices = indices,
                 FontSize = info.Font.Size,
             };
-            new GlyphRunDescription
+
+            bool done = false;
+            using (var f = new SharpDX.DirectWrite.Factory())
+            using (var ff = f.QueryInterface<SharpDX.DirectWrite.Factory4>())
             {
-                
-            };
-            m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, info.Font.Size), glyphRun, brush, MeasuringMode.Natural);
+                var desc = new GlyphRunDescription
+                {
+
+                };
+                ColorGlyphRunEnumerator it;
+                var result = ff.TryTranslateColorGlyphRun(0, 0, glyphRun,
+                    null, MeasuringMode.Natural, null, 0, out it);
+                if(result.Code== DWRITE_E_NOCOLORLOR)
+                {
+                    m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, info.Font.Size), glyphRun, brush, MeasuringMode.Natural);
+                }
+                else
+                {
+                    while (true)
+                    {
+                        var colorBrush = GetOrCreateBrush(new Color4(
+                            it.CurrentRun.RunColor.R,
+                            it.CurrentRun.RunColor.G,
+                            it.CurrentRun.RunColor.B,
+                            it.CurrentRun.RunColor.A));
+                        m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, info.Font.Size),
+                            it.CurrentRun.GlyphRun, colorBrush, MeasuringMode.Natural);
+                        done = true;
+
+                        SharpDX.Mathematics.Interop.RawBool hasNext;
+                        it.MoveNext(out hasNext);
+                        if (!hasNext)
+                        {
+                            break; ;
+                        }
+                    }
+                }
+            }
         }
+        
 
         private void TextByFormat(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
@@ -297,7 +341,7 @@ namespace RectUI.Graphics
                 }
             }
 
-            m_device.D2DDeviceContext.DrawText(text, textFormat, rect, brush);
+            m_device.D2DDeviceContext.DrawText(text, textFormat, rect, brush, DrawTextOptions.EnableColorFont);
         }
 
         public void FileIcon(uint id, RectangleF rect, string path)

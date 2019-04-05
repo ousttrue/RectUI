@@ -1,5 +1,6 @@
 ﻿using RectUI.Graphics;
 using SharpDX;
+using NeoSmart.Unicode;
 
 namespace RectUI.Widgets
 {
