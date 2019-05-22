@@ -1,7 +1,8 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
+
 
 namespace RectUI.Assets
 {
@@ -17,7 +18,7 @@ namespace RectUI.Assets
         Linear,
     }
 
-    public struct KeyFrame<T> where T: struct
+    public struct KeyFrame<T> where T : struct
     {
         public readonly float Seconds;
         public readonly T Value;
@@ -49,7 +50,7 @@ namespace RectUI.Assets
 
             if (Translation != null && Translation.Any())
             {
-                if(Translation.Count==1 || seconds <= Translation[0].Seconds)
+                if (Translation.Count == 1 || seconds <= Translation[0].Seconds)
                 {
                     translation = Translation[0].Value;
                 }
@@ -133,7 +134,7 @@ namespace RectUI.Assets
             private set;
         }
 
-        void Add<T>(ref List<KeyFrame<T>> target,  AssetSource source, UniGLTF.glTFAnimationSampler sampler)where T: struct
+        void Add<T>(ref List<KeyFrame<T>> target, AssetSource source, UniGLTF.glTFAnimationSampler sampler) where T : struct
         {
             var interpolation = ParseInterpolation(sampler.interpolation);
             var input = source.GLTF.GetArrayFromAccessor<float>(source.IO, sampler.input);
@@ -187,7 +188,7 @@ namespace RectUI.Assets
         {
             var animation = new Animation();
 
-            foreach(var channel in src.channels)
+            foreach (var channel in src.channels)
             {
                 NodeAnimation nodeAnimation;
                 if (!animation._nodeMap.TryGetValue(channel.target.node, out nodeAnimation))
@@ -208,7 +209,7 @@ namespace RectUI.Assets
 
         public void Animate(TimeSpan time, Node[] nodes)
         {
-            foreach(var kv in _nodeMap)
+            foreach (var kv in _nodeMap)
             {
                 var target = nodes[kv.Key];
                 kv.Value.Animate(time, target);

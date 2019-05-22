@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace RectUI.Graphics
 {
     public class D2D1Bitmap : IDisposable, IDrawProcessor
@@ -221,7 +222,7 @@ namespace RectUI.Graphics
         }
 
         const int DWRITE_E_NOCOLORLOR = unchecked((int)0x8898500C);
-        
+
 
         private void TextByGlyph(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
@@ -271,7 +272,7 @@ namespace RectUI.Graphics
                 ColorGlyphRunEnumerator it;
                 var result = ff.TryTranslateColorGlyphRun(0, 0, glyphRun,
                     null, MeasuringMode.Natural, null, 0, out it);
-                if(result.Code== DWRITE_E_NOCOLORLOR)
+                if (result.Code == DWRITE_E_NOCOLORLOR)
                 {
                     m_device.D2DDeviceContext.DrawGlyphRun(rect.TopLeft + new Vector2(0, info.Font.Size), glyphRun, brush, MeasuringMode.Natural);
                 }
@@ -298,7 +299,7 @@ namespace RectUI.Graphics
                 }
             }
         }
-        
+
 
         private void TextByFormat(RectangleF rect, string text, TextInfo info, SolidColorBrush brush)
         {
@@ -383,7 +384,7 @@ namespace RectUI.Graphics
                 }
             }
 
-            m_device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
+            //m_device.D2DDeviceContext.DrawBitmap(bitmap, new RectangleF(rect.X, rect.Y, w, h), 1.0f, BitmapInterpolationMode.Linear);
         }
 
         #region Scene

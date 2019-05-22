@@ -2,9 +2,8 @@
 using RectUI.Assets;
 using RectUI.Graphics;
 using RectUI.JSON;
-using SharpDX;
 using System;
-
+using SharpDX;
 
 namespace RectUI.Application
 {

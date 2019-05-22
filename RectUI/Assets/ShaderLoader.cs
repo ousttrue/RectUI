@@ -55,7 +55,7 @@ namespace RectUI.Assets
 
         ShaderLoader()
         {
-            var shaderDir = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "shaders");
+            var shaderDir = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "../../../../RectUI/shaders");
             m_map.Add(ShaderType.Unlit, new SourceWatcher(shaderDir, "unlit.hlsl"));
             m_map.Add(ShaderType.Standard, new SourceWatcher(shaderDir, "unlit.hlsl"));
             m_map.Add(ShaderType.Gizmo, new SourceWatcher(shaderDir, "gizmo.hlsl"));
