@@ -1,0 +1,3 @@
+[submodule "ComPtrCS"]
+	path = ComPtrCS
+	url = git@github.com:ousttrue/ComPtrCS.git
